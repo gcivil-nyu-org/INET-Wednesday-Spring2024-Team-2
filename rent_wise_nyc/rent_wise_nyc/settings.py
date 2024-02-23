@@ -29,6 +29,7 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
+SITE_ID = 2
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -37,7 +38,23 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "users",
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 ]
+
+SOCIALACCOUNT_PROVIDERS = {
+    "google" : {
+        "SCOPE" : [
+            "profile",
+            "email"
+        ],
+        "AUTH_PARAMS" : {"access_type" : "online"}
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -47,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'rent_wise_nyc.urls'
@@ -132,3 +150,18 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
+#SITE_ID = 1
+
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_EMAIL_DOMAIN_WHITELIST = ["nyu.edu"]
