@@ -25,6 +25,7 @@
             color: #fff;
             text-decoration: none;
             border-radius: 5px;
+            width: 150px;
         }
 
         p {
@@ -41,10 +42,11 @@
     </style>
 </head>
 <body>
+    <h1>RENTWISE NYC</h1>
     {% load socialaccount %}
     <h2>Google Login</h2>
-    <a href="{% provider_login_url 'google' %}?next=/">Login With Google</a>
-
+    <a href="{% provider_login_url 'google' %}?next=/">Login as User</a>
+    <a href="{% url 'login' %}">Login as Landlord</a>
     {% if user.is_authenticated %}
     <p>You are signed in as {{ user.email }}</p>
     <a href="logout" class="logout">Logout</a>
