@@ -37,7 +37,7 @@ def landlord_login(request):
             # Return an error message or render the login page again
             messages.error(request,'Invalid credentials!!')
             logging.info("invalid credentials")
-            return render(request, 'registration/login.html', {'error': 'Invalid credentials!!'})
+            return render(request, 'registration/login.html', {'error': 'Invalid credentials!'})
     else:
         return render(request,"registration/login.html")
 
