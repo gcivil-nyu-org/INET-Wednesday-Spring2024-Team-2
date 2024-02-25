@@ -1,0 +1,19 @@
+<!-- templates/registration/login.html -->
+<h2>User Log In</h2>
+<form action="" method="post" >
+  {% csrf_token %}
+username:
+<input type="text" name="username" value="{{ username }}" /><br />
+password:
+<input type="password" name="password" value="" /><br />
+
+<input type="submit" value="Log In"/>
+</form>
+{% for message in messages %}
+    
+    <div class="alert alert-success">
+        <a class="close" href="#" data-dismiss="alert">×</a>
+           {{ message }}
+    </div>
+
+{% endfor %}
