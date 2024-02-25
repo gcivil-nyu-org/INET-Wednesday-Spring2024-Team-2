@@ -70,6 +70,5 @@ def user_home(request):
 def landlord_home(request):
     logging.info("hello here at landlord page")
     response = "It's the landlord homepage."
-
     return HttpResponse(response)
 

@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'users',
     'rent_wise_nyc',
-    # 'CustomUser',
 ]
 
 SOCIALACCOUNT_PROVIDERS = {
@@ -160,7 +159,6 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 LOGIN_REDIRECT_URL = "/"
-# LOGIN_URL = 'login'
 LOGOUT_REDIRECT_URL = "/"
 #SITE_ID = 1
 
