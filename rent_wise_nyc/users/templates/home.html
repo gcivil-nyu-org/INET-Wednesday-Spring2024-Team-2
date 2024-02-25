@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Django Google Sign In</title>
+    <title>Django Sign In</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -44,7 +44,7 @@
 <body>
     <h1>RENTWISE NYC</h1>
     {% load socialaccount %}
-    <h2>Google Login</h2>
+    <h2>Login</h2>
     <!-- <a href="{% provider_login_url 'google' %}?next=/">Login as User</a> -->
     <a href="{% url 'user_login' %}">Login as User</a>
     <a href="{% url 'landlord_login' %}">Login as Landlord</a>
