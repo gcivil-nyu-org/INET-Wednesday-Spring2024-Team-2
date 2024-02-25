@@ -22,9 +22,8 @@ LOGGING = {
 logging.config.dictConfig(LOGGING)
 
 def landlord_login(request):
-    logging.info("hello here at login page")
+    logging.info("on login page")
     if request.method == 'POST':
-        logging.info("if request")
         username = request.POST['username']
         password = request.POST['password']
         logging.info(f"logging in as {username}")
@@ -32,6 +31,7 @@ def landlord_login(request):
         logging.info(f"{user=}")
         if user is not None:
             login(request, user)
+            logging.info(f"logged in {user=}")
             return render(request,"landlords.html")
         else:
             # Return an error message or render the login page again
