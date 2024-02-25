@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -99,14 +100,15 @@ WSGI_APPLICATION = 'rent_wise_nyc.wsgi.application'
 #    }
 #}
 
+# TODO: need to add environ variables to own bash/zsh profile
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'db1',
-        'USER': 'team2admin',
-        'PASSWORD': 'Adminteam2',
-        'HOST': 'databasebackend.c1s606eywv6c.us-east-1.rds.amazonaws.com',
-        'PORT': '5432',
+        'NAME': os.environ['TEAM_2_DB_NAME'],
+        'USER': os.environ['TEAM_2_DB_USER'],
+        'PASSWORD': os.environ['TEAM_2_DB_PW'],
+        'HOST': os.environ['TEAM_2_DB_HOST'],
+        'PORT': os.environ['TEAM_2_DB_PORT'],
     }
 }
 
