@@ -58,7 +58,7 @@ def landlord_login(request):
     return login_process(
         request, 
         user_type="landlord", 
-        this_page="registration/landlord_login.html", 
+        this_page="login/landlord_login.html", 
         destination="landlord_homepage.html"
     )
     
@@ -66,7 +66,7 @@ def user_login(request):
     return login_process(
         request, 
         user_type="user", 
-        this_page="registration/user_login.html", 
+        this_page="login/user_login.html", 
         destination="user_homepage.html"
     )
 
