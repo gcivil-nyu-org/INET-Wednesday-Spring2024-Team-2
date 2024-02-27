@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-0!koe(9n(u$8x3g24sctwu^&=&pv%+m70xa3+gqw7uv32h3ej_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['rent-wise-env.eba-3qbiyspq.us-east-1.elasticbeanstalk.com','127.0.0.1']
 
 
 # Application definition
