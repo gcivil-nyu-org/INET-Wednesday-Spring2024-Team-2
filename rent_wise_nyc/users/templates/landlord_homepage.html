@@ -1,1 +1,36 @@
-<h2>Landlord Homepage</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Landlord Homepage</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'users/common_style.css' %}">
+    <style>
+        .logout-link {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+        .logout-link:hover {
+            background-color: #45a049;
+        }
+        body {
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <h2>Landlord Homepage</h2>
+    {% if user.is_authenticated %}
+        <p>Welcome, {{ user.username }}!</p>
+        <a href="{% url 'logout' %}" class="logout-link">Logout</a>
+    {% endif %}
+</body>
+</html>
