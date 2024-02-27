@@ -1,70 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Django Sign In</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'users/style.css' %}">
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
+            margin: 20px;
+            padding: 20px;
             background-color: #f8f8f8;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start; /* Changed to flex-start to move content to the top */
-            height: 100vh;
         }
 
-        .login-container {
-            text-align: center;
-            margin-top: 50px; /* Add top margin to position container lower if needed */
+        h2 {
+            color: #333;
         }
 
-        .login-section {
-            margin-bottom: 30px;
-        }
-
-        .login-section p, .login-section a {
-            font-size: 20px;
-            font-weight: bold;
-            color: #fff; /* Change text color to white */
+        a {
             display: inline-block;
-            vertical-align: middle;
-        }
-
-        .login-section a {
-            padding: 15px 25px;
-            margin-left: 20px;
-            background-color: #494d55;
+            padding: 10px 20px;
+            margin-top: 10px;
+            background-color: #4285F4;
+            color: #fff;
             text-decoration: none;
             border-radius: 5px;
+            width: 150px;
+        }
+
+        p {
+            margin-top: 20px;
+            color: #555;
         }
 
         a.logout {
-            display: inline-block;
-            font-size: 18px;
-            font-weight: bold;
+            display: block;
+            margin-top: 10px;
             color: #c00;
             text-decoration: none;
-            margin-top: 20px;
         }
     </style>
 </head>
 <body>
+    <h1>RENTWISE NYC</h1>
     {% load socialaccount %}
-    <div class="login-container">
-        <div class="login-section">
-            <p>Moving to NYC? Discover your ideal rental! Explore our listings in NYC</p>
-            <a href="{% url 'user_login' %}">Login as User</a>
-        </div>
-        <div class="login-section">
-            <p>Are you a landlord? Post your listings, reach potential tenants</p>
-            <a href="{% url 'landlord_login' %}">Login as Landlord</a>
-        </div>
-    </div>
+    <h2>Login</h2>
+    <!-- <a href="{% provider_login_url 'google' %}?next=/">Login as User</a> -->
+    <a href="{% url 'user_login' %}">Login as User</a>
+    <a href="{% url 'landlord_login' %}">Login as Landlord</a>
+    {% if user.is_authenticated %}
+    <p>You are signed in as {{ user.username }}</p>
+    <a href="logout" class="logout">Logout</a>
+    {% endif %}
 </body>
 </html>

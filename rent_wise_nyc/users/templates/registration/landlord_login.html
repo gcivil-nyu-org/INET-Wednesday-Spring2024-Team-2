@@ -1,28 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Landlord Log In</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'users/common_style.css' %}">
-</head>
-<body>
-    <h2>Landlord Log In</h2>
-    <form action="" method="post">
-        {% csrf_token %}
-        username:
-        <input type="text" name="username" value="{{ username }}" required /><br />
-        password:
-        <input type="password" name="password" value="" required /><br />
+<h2>Landlord Log In</h2>
+<form action="" method="post">
+  {% csrf_token %}
+username:
+<input type="text" name="username" value="{{ username }}" required /><br />
+password:
+<input type="password" name="password" value="" required /><br />
 
-        <input type="submit" value="Log In"/>
-    </form>
-    {% for message in messages %}
-        <div class="alert alert-success">
-            <a class="close" href="#" data-dismiss="alert">×</a>
-            {{ message }}
-        </div>
-    {% endfor %}
-</body>
-</html>
+<input type="submit" value="Log In"/>
+</form>
+{% for message in messages %}
+    
+    <div class="alert alert-success">
+        <a class="close" href="#" data-dismiss="alert">×</a>
+           {{ message }}
+    </div>
+
+{% endfor %}
