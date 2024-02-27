@@ -1,12 +1,12 @@
 <h2>User Log In</h2>
-<form action="" method="post" >
+<form action="" method="post">
   {% csrf_token %}
-username:
-<input type="text" name="username" value="{{ username }}" /><br />
-password:
-<input type="password" name="password" value="" /><br />
+  username:
+  <input type="text" name="username" value="{{ username }}" required /><br />
+  password:
+  <input type="password" name="password" required /><br />
 
-<input type="submit" value="Log In"/>
+  <input type="submit" value="Log In"/>
 </form>
 {% for message in messages %}
     
