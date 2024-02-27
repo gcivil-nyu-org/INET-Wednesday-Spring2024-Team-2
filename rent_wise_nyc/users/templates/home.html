@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Django Sign In</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f8f8f8;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        a {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 10px;
+            background-color: #4285F4;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            width: 150px;
+        }
+
+        p {
+            margin-top: 20px;
+            color: #555;
+        }
+
+        a.logout {
+            display: block;
+            margin-top: 10px;
+            color: #c00;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>RENTWISE NYC</h1>
+    {% load socialaccount %}
+    <h2>Login</h2>
+    <!-- <a href="{% provider_login_url 'google' %}?next=/">Login as User</a> -->
+    <a href="{% url 'user_login' %}">Login as User</a>
+    <a href="{% url 'landlord_login' %}">Login as Landlord</a>
+    {% if user.is_authenticated %}
+    <p>You are signed in as {{ user.username }}</p>
+    <a href="logout" class="logout">Logout</a>
+    {% endif %}
+</body>
+</html>
