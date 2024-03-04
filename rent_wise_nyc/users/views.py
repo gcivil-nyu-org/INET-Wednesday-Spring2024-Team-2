@@ -9,86 +9,93 @@ from users.decorators import user_type_required
 from django.views.decorators.cache import never_cache
 
 LOGGING = {
-    'version': 1,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'stream': sys.stdout,
+    "version": 1,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "stream": sys.stdout,
         }
     },
-    'root': {
-        'handlers': ['console'],
-        'level': 'INFO'
-    }
+    "root": {"handlers": ["console"], "level": "INFO"},
 }
 
 logging.config.dictConfig(LOGGING)
 
+
 def custom_404_handler(request, exception):
     if request.user.is_authenticated:
-        if getattr(request.user, 'user_type', None) == 'landlord':
-            return redirect('landlord_homepage')
+        if getattr(request.user, "user_type", None) == "landlord":
+            return redirect("landlord_homepage")
         else:
-            return redirect('user_homepage')
+            return redirect("user_homepage")
     else:
-        return redirect('index')
+        return redirect("index")
+
 
 def login_process(request, user_type, this_page, destination_url_name):
-    if request.method != 'POST':
+    if request.method != "POST":
         return render(request, this_page)
 
-    username = request.POST.get('username')
-    password = request.POST.get('password')
+    username = request.POST.get("username")
+    password = request.POST.get("password")
 
     if not username or not password:
-        messages.error(request, 'Username and password are required!')
+        messages.error(request, "Username and password are required!")
         return render(request, this_page)
 
     logging.info(f"Attempting login for {username}")
     user = authenticate(request, username=username, password=password)
 
     if user is None:
-        messages.error(request, 'Invalid credentials!')
+        messages.error(request, "Invalid credentials!")
         return render(request, this_page)
 
-    if getattr(user, 'user_type', None) != user_type:
-        messages.error(request, f"Please provide correct credentials to login as {user_type.capitalize()}!")
+    if getattr(user, "user_type", None) != user_type:
+        messages.error(
+            request,
+            f"Please provide correct credentials to login as {user_type.capitalize()}!",
+        )
         return render(request, this_page)
 
     login(request, user)
     logging.info(f"Successful login for {user}")
-    
+
     # Redirect to the destination URL
     return redirect(reverse(destination_url_name))
+
 
 def landlord_login(request):
     return login_process(
         request,
-        user_type='landlord',
-        this_page='login/landlord_login.html',
-        destination_url_name='landlord_homepage'  # URL pattern name for landlord's homepage
+        user_type="landlord",
+        this_page="login/landlord_login.html",
+        destination_url_name="landlord_homepage",  # URL pattern name for landlord's homepage
     )
+
 
 def user_login(request):
     return login_process(
         request,
-        user_type='user',
-        this_page='login/user_login.html',
-        destination_url_name='user_homepage'  # URL pattern name for user's homepage
+        user_type="user",
+        this_page="login/user_login.html",
+        destination_url_name="user_homepage",  # URL pattern name for user's homepage
     )
 
+
 def home(request):
-    return render(request,"home.html")
+    return render(request, "home.html")
+
 
 def logout_view(request):
     logout(request)
     return redirect("/")
 
-@user_type_required('user')
+
+@user_type_required("user")
 def user_home(request):
     return render(request, "user_homepage.html")
 
-@user_type_required('landlord')
+
+@user_type_required("landlord")
 def landlord_home(request):
     return render(request, "landlord_homepage.html")
-

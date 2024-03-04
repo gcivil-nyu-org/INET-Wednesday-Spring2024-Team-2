@@ -20,9 +20,9 @@ from django.conf.urls import handler404
 from users.views import custom_404_handler
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
     path("", include("users.urls")),
     path("login/", include("django.contrib.auth.urls")),
 ]
-handler404 = 'users.views.custom_404_handler'
+handler404 = "users.views.custom_404_handler"
