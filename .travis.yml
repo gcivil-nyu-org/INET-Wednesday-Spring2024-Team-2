@@ -11,7 +11,7 @@ before_script:
 script:
 - black --check .
 - flake8 .
-- coverage run --source=mysite,polls rent_wise_nyc/manage.py test
+- coverage run --source=users rent_wise_nyc/manage.py test
 after_success:
 - coveralls
 env:
