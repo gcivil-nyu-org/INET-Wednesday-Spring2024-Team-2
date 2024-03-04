@@ -2,7 +2,7 @@ dist: jammy
 language: python
 matrix:
   include:
-    - python: 3.11
+  - python: 3.11
 install:
 - pip install -r rent_wise_nyc/requirements.txt
 before_script:
@@ -14,15 +14,6 @@ script:
 - coverage run --source=mysite,polls rent_wise_nyc/manage.py test
 after_success:
 - coveralls
-# deploy:
-#   provider: elasticbeanstalk
-#   access_key_id: 
-#     secure: 
-#     secure: 
-#   app: 
-#   env: 
-#   bucket_name: 
-#   on:
-#     repo: 
-#     branch: 
-#   skip_cleanup: 'true'
+env:
+  global:
+    secure: OyUaI4iq2V6aQy8lYhFJNq2uHHSAVTz6jbCzA2c935VbwsilRQwI1J2AhyqtRI52zvcyXq8lYm9rN02UteAVyzc4WP9yrTMtYXCf0y/zB+ctO9sNAYDQL6IR7HeZZgU5W0IT/MFl/aaVi12X6uPmtNkMhkEcavfngSiG5X8XWF7PzFDmrCDR8P0YTB0ckR7ZJepnv5lvt2HbiWZb5tFUR/fKn9r4lmHd/SqWTJePsftgf7C8bRiHk4DMVEkWBJZEWAKgtCb871Vc72kd7qIwckRW2bjd7NVOmezuBqjhapc+0M9++k499LjqUvwdqyRm/uNy4RIY40DSVlG8Ulnqtzar9OTIuXkfjClftzTl70b4NoTcTbRQa7khQYCvv3XBfTItAjIQm5PMdXJFKd0mqIYk7E+n3onU6r6c0+W0e4zmkGuv37Q8wInrU0bOGYxkbHYjWFL2rXgsbQDw2IH/2sVK/lsRgjt0EOCV0ehFFHpzyqIUKUhdS8/iXjK3nXSszXRwXqf33PmjxzIKh/adZCQQgUcuY2QvAuCkK27DbxHTfvQPc/dEQp+/H1hmPPL+oQHfr/hwgen77wpVfTvNKJBYlogeTN012iqd5pz4lSmVaWajmE8iNxTxknoWgtQXQyjt9e0GqiU1UHLeBy4XkByIE/Wydv4ZiCB6zmtZrR4=
