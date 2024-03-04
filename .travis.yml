@@ -2,14 +2,14 @@ language: python
 python:
 - 3.11
 install:
-- pip install -r requirements.txt
+- pip install -r rent_wise_nyc/requirements.txt
 before_script:
-- python manage.py migrate
-- python manage.py collectstatic --noinput
+- python rent_wise_nyc/manage.py migrate
+- python rent_wise_nyc/manage.py collectstatic --noinput
 script:
 - black --check .
 - flake8 .
-- coverage run --source=mysite,polls manage.py test
+- coverage run --source=mysite,polls rent_wise_nyc/manage.py test
 after_success:
 - coveralls
 # deploy:
