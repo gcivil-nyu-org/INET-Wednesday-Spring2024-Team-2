@@ -1,12 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from django.http import HttpResponse
-import logging, logging.config
+import logging
+import logging.config
 import sys
 from django.urls import reverse
 from users.decorators import user_type_required
-from django.views.decorators.cache import never_cache
 
 LOGGING = {
     "version": 1,
@@ -69,7 +68,7 @@ def landlord_login(request):
         request,
         user_type="landlord",
         this_page="login/landlord_login.html",
-        destination_url_name="landlord_homepage",  # URL pattern name for landlord's homepage
+        destination_url_name="landlord_homepage",
     )
 
 
