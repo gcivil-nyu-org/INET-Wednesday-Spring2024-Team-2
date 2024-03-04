@@ -1,6 +1,8 @@
+dist: jammy
 language: python
-python:
-- 3.11-dev
+matrix:
+  include:
+    - python: 3.11
 install:
 - pip install -r rent_wise_nyc/requirements.txt
 before_script:
