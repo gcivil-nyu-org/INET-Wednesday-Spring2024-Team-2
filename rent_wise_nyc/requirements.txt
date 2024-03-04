@@ -1,4 +1,5 @@
 asgiref==3.7.2
+black==23.3.0
 certifi==2024.2.2
 charset-normalizer==3.3.2
 cryptography==42.0.4
@@ -7,6 +8,7 @@ distlib==0.3.8
 Django==4.1
 django-allauth==0.61.1
 filelock==3.13.1
+flake8==5.0.4
 idna==3.6
 oauthlib==3.2.2
 platformdirs==4.2.0
