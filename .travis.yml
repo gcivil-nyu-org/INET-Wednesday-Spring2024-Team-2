@@ -4,14 +4,14 @@ matrix:
   include:
   - python: 3.11
 install:
-- pip install -r rent_wise_nyc/requirements.txt
+- pip install -r requirements.txt
 before_script:
-- python rent_wise_nyc/manage.py migrate
-- python rent_wise_nyc/manage.py collectstatic --noinput
+- python manage.py migrate
+- python manage.py collectstatic --noinput
 script:
 - black --check .
 - flake8 .
-- coverage run --source=users rent_wise_nyc/manage.py test
+- coverage run --source=users manage.py test
 after_success:
 - coveralls
 deploy:
