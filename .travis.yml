@@ -23,8 +23,7 @@ deploy:
   region: us-east-1
   app: rent_wise_nyc
   env: rent-wise-env
-  bucket_name:
-    secure: hEhnNvY4oy8j8eEBC9ldTHk0pZfIwsNNbRWqE2HZqbZuTMdVP974MTSq7BzfoapoytASQFMhv2I6w2yPsfHIXn++539d8DymRlCvwXP1Nz/m1Xu4I3JgFkEjGOb7jvxn52HiMTOBdd3BcSIyHisDgjPSN8QLQoAZTue5Woe1HXqyGS+WnrufoTO/gkgoTXmu/NjY6VnD33n7btyn4+bHYgyOCfrlP6NUgjFRDg7WbVibSO6A/v+xdOysbkiC4AHeXk4nrC/Xymi5xtwTRbiK9m3jdRPEJqvCouUIjTUd4Px7VviRNTdqxfTlarP9l/xiUF4XWLNOU3dPkhN7L7cc25gZXxiFpxwXq+lvBWQN/R/EhuGDbzpLd4VeQXi5dxxdiiQHjrv2AuMqJLhu1iYR3Y8rb94Xih7bfjPybx00N+LQKM5ESRtjoB1YKqvAY9FiD5T8FzRGnitcG5HEyFrjBew+o1KZTm/+/WHLAXGcEB17eQ+D1vl0S1SAKNFNJPWlNjWNxFBfv9FabSVh0fLQfBfalWwPDvi31cYy5cX9lSeHxbR0W3d6+8A37phY3Kze0mR/oZw6Ik7s13Kf9884asLacbFIqKJZEv3HL+47JiORMAGKn9OV2LWAJVTBLwGw3TM4ZLLUwZ0sZuxR0cVDssoWWKB67kClVGUkaVun1UA=
+  bucket_name: $S3_BUCKET_NAME
   on:
     repo: gcivil-nyu-org/INET-Wednesday-Spring2024-Team-2
     branch: develop
