@@ -6,6 +6,7 @@ import logging.config
 import sys
 from django.urls import reverse
 from users.decorators import user_type_required
+from users.models import CustomUser
 
 LOGGING = {
     "version": 1,
@@ -102,12 +103,10 @@ def user_signup(request):
             return render(request, "signup/signup.html")
 
         user = User.objects.create_user(
-            username=username, email=email, password=password,
-            user_type=CustomUser.USER
+            username=username, email=email, password=password, user_type=CustomUser.USER
         )
         user.save()
-        login(request, user,
-              backend="django.contrib.auth.backends.ModelBackend")
+        login(request, user, backend="django.contrib.auth.backends.ModelBackend")
         return redirect("user_homepage")
     else:
         return render(request, "signup/signup.html")
