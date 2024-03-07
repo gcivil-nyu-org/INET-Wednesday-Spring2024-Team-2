@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib import messages
 import logging
 import logging.config
@@ -79,6 +79,34 @@ def user_login(request):
         this_page="login/user_login.html",
         destination_url_name="user_homepage",  # URL pattern name for user's homepage
     )
+
+def user_signup(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+
+        if not all([username, email, password, confirm_password]):
+            messages.error(request, "All fields are required.")
+            return render(request, 'signup/signup.html')
+
+        if password != confirm_password:
+            messages.error(request, "Passwords do not match.")
+            return render(request, 'signup/signup.html')
+
+        User = get_user_model()
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Username already exists.")
+            return render(request, 'signup/signup.html')
+
+        user = User.objects.create_user(username=username, email=email,
+                                        password=password, user_type=CustomUser.USER)
+        user.save()
+        login(request, user,backend='django.contrib.auth.backends.ModelBackend')
+        return redirect('user_homepage')
+    else:
+        return render(request, 'signup/signup.html')
 
 
 def home(request):
