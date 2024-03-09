@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+
 class CustomUser(AbstractUser):
     USER = "user"
     LANDLORD = "landlord"
@@ -13,7 +14,9 @@ class CustomUser(AbstractUser):
     phone_number = models.CharField(max_length=15)
     city = models.CharField(max_length=100)
     verified = models.BooleanField(default=True)
-    s3_doclink = models.CharField(max_length=255, blank=True, null=True)  # Link to S3 document
+    s3_doclink = models.CharField(
+        max_length=255, blank=True, null=True
+    )  # Link to S3 document
 
     def save(self, *args, **kwargs):
         if self.user_type == CustomUser.USER:
