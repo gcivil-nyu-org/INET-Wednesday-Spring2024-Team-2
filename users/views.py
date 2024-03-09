@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout, get_user_model
+from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 import logging
 import logging.config
 import sys
 from django.urls import reverse
 from users.decorators import user_type_required
-from users.models import CustomUser
+from users.forms import UserSignUpForm
 
 LOGGING = {
     "version": 1,
@@ -84,32 +84,21 @@ def user_login(request):
 
 def user_signup(request):
     if request.method == "POST":
-        username = request.POST.get("username")
-        email = request.POST.get("email")
-        password = request.POST.get("password")
-        confirm_password = request.POST.get("confirm_password")
-
-        if not all([username, email, password, confirm_password]):
-            messages.error(request, "All fields are required.")
-            return render(request, "signup/signup.html")
-
-        if password != confirm_password:
-            messages.error(request, "Passwords do not match.")
-            return render(request, "signup/signup.html")
-
-        User = get_user_model()
-        if User.objects.filter(username=username).exists():
-            messages.error(request, "Username already exists.")
-            return render(request, "signup/signup.html")
-
-        user = User.objects.create_user(
-            username=username, email=email, password=password, user_type=CustomUser.USER
-        )
-        user.save()
-        login(request, user, backend="django.contrib.auth.backends.ModelBackend")
-        return redirect("user_homepage")
+        form = UserSignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            if user.user_type == user.USER:
+                user.verified = True
+            else:
+                user.verified = False
+            user.save()
+            login(request, user, backend="django.contrib.auth.backends.ModelBackend")
+            return redirect("user_homepage")
+        else:
+            messages.error(request, form.errors)
     else:
-        return render(request, "signup/signup.html")
+        form = UserSignUpForm()
+    return render(request, "users/signup/signup.html", {"form": form})
 
 
 def home(request):
