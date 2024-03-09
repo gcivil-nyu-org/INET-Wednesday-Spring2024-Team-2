@@ -6,6 +6,7 @@ import logging.config
 import sys
 from django.urls import reverse
 from users.decorators import user_type_required
+from users.forms import UserSignUpForm
 
 LOGGING = {
     "version": 1,
@@ -79,6 +80,25 @@ def user_login(request):
         this_page="login/user_login.html",
         destination_url_name="user_homepage",  # URL pattern name for user's homepage
     )
+
+
+def user_signup(request):
+    if request.method == "POST":
+        form = UserSignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            if user.user_type == user.USER:
+                user.verified = True
+            else:
+                user.verified = False
+            user.save()
+            login(request, user, backend="django.contrib.auth.backends.ModelBackend")
+            return redirect("user_homepage")
+        else:
+            messages.error(request, form.errors)
+    else:
+        form = UserSignUpForm()
+    return render(request, "users/signup/signup.html", {"form": form})
 
 
 def home(request):

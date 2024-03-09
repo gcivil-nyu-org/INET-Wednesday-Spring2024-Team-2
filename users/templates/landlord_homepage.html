@@ -18,19 +18,21 @@
             text-decoration: none;
             transition: background-color 0.2s;
         }
+
         .logout-link:hover {
             background-color: #555b55;
         }
+
         body {
             position: relative;
         }
     </style>
 </head>
 <body>
-    <h2>Landlord Homepage</h2>
-    {% if user.is_authenticated %}
-        <p>Welcome, {{ user.username }}!</p>
-        <a href="{% url 'logout' %}" class="logout-link">Logout</a>
-    {% endif %}
+<h2>Landlord Homepage</h2>
+{% if user.is_authenticated %}
+    <p>Welcome, {{ user.username }}!</p>
+    <a href="{% url 'logout' %}" class="logout-link">Logout</a>
+{% endif %}
 </body>
 </html>
