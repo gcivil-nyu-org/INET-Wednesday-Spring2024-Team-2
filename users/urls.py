@@ -12,4 +12,5 @@ urlpatterns = [
     path("users/", views.user_home, name="user"),
     path("landlord/home/", views.landlord_home, name="landlord_homepage"),
     path("user/home/", views.user_home, name="user_homepage"),
+    path("password_reset", views.password_reset, name="password_reset"),
 ]

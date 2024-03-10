@@ -17,6 +17,7 @@
     <input type="password" name="password" value="" required/><br/>
 
     <input type="submit" value="Log In"/>
+    "<a href="{% url 'password_change' %}">Forgot password?</a>"
 </form>
 {% for message in messages %}
     <div class="alert alert-success">

@@ -118,3 +118,8 @@ def user_home(request):
 @user_type_required("landlord")
 def landlord_home(request):
     return render(request, "landlord_homepage.html")
+
+def password_reset(request):
+    user = request.user
+    form = SetPasswordForm(user)
+    return render(request, 'password_reset_confirm.html', {'form': form})
