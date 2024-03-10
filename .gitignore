@@ -5,3 +5,4 @@ aruEnv/
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+**/sent_emails/**
