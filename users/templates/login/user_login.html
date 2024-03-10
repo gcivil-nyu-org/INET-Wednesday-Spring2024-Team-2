@@ -6,6 +6,13 @@
     <title>User Log In</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'users/common_style.css' %}">
+    <style>
+        .forgot-password {
+            font-size: smaller;
+            display: block;
+            margin-top: 5px; /* Adjust as needed */
+        }
+    </style>
 </head>
 <body>
 <h2>User Log In</h2>
@@ -18,7 +25,9 @@
 
     <input type="submit" value="Log In"/>
 
-    <a href="{% url 'password_reset' %}">Forgot password?</a>
+    <div class="forgot-password">
+        <a href="{% url 'password_reset' %}">Forgot password?</a>
+    </div>
 </form>
 {% for message in messages %}
 

@@ -32,7 +32,6 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
 ]
 
-
 # Application definition
 SITE_ID = 2
 
@@ -176,15 +175,15 @@ ACCOUNT_EMAIL_DOMAIN_WHITELIST = ["nyu.edu"]
 
 AUTH_USER_MODEL = "users.CustomUser"
 
-EMAIL_BACKEND = (
-    "django.core.mail.backends.filebased.EmailBackend"  # to test email locally
-)
-# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend" # to send emails for real
+# EMAIL_BACKEND = (
+#     "django.core.mail.backends.filebased.EmailBackend"  # to test email locally
+# )
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"  # to send emails for real
 EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
 
-# os.environ['SSL_CERT_FILE'] = certifi.where()
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
-# EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
+os.environ["SSL_CERT_FILE"] = certifi.where()
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
+EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
