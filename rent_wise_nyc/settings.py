@@ -11,7 +11,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-import os, certifi
+import os
+import certifi
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -49,8 +50,8 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.google",
     "users",
     "rent_wise_nyc",
-    'crispy_forms',
-    'crispy_bootstrap5'
+    "crispy_forms",
+    "crispy_bootstrap5",
 ]
 
 SOCIALACCOUNT_PROVIDERS = {
@@ -175,8 +176,10 @@ ACCOUNT_EMAIL_DOMAIN_WHITELIST = ["nyu.edu"]
 
 AUTH_USER_MODEL = "users.CustomUser"
 
-EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend" # to test email locally
-# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_BACKEND = (
+    "django.core.mail.backends.filebased.EmailBackend"  # to test email locally
+)
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend" # to send emails for real
 EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
 
 # os.environ['SSL_CERT_FILE'] = certifi.where()
@@ -185,4 +188,3 @@ EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
 # EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
 # EMAIL_PORT = 587
 # EMAIL_USE_TLS = True
-

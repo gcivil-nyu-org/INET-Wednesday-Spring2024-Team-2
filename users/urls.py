@@ -15,7 +15,9 @@ urlpatterns = [
     path(
         "login/password_reset/",
         auth_views.PasswordResetView.as_view(
-            template_name="login/password_reset_form.html"
+            template_name="login/password_reset_form.html",
+            email_template_name="login/password_reset_email.html",
+            subject_template_name="login/password_reset_subject.txt",
         ),
         name="password_reset_form",
     ),
@@ -32,5 +34,12 @@ urlpatterns = [
             template_name="login/password_reset_confirm.html"
         ),
         name="password_reset_confirm",
+    ),
+    path(
+        "login/reset/done/",
+        auth_views.PasswordResetCompleteView.as_view(
+            template_name="login/password_reset_complete.html"
+        ),
+        name="password_reset_complete",
     ),
 ]
