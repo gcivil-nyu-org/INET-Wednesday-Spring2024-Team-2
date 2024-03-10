@@ -12,14 +12,25 @@ urlpatterns = [
     path("users/", views.user_home, name="user"),
     path("landlord/home/", views.landlord_home, name="landlord_homepage"),
     path("user/home/", views.user_home, name="user_homepage"),
-    path("login/password_reset/", 
-        auth_views.PasswordResetView.as_view(template_name="login/password_reset_form.html"),
-        name="password_reset_form"),
-    path("login/password_reset/done/", 
-        auth_views.PasswordResetDoneView.as_view(template_name="login/password_reset_done.html"), 
-        name="password_reset_done"),
-    path("login/reset/<uidb64>/<token>/", 
-        auth_views.PasswordResetConfirmView.as_view(template_name="login/password_reset_confirm.html"),
-        name="password_reset_confirm"),
-    
+    path(
+        "login/password_reset/",
+        auth_views.PasswordResetView.as_view(
+            template_name="login/password_reset_form.html"
+        ),
+        name="password_reset_form",
+    ),
+    path(
+        "login/password_reset/done/",
+        auth_views.PasswordResetDoneView.as_view(
+            template_name="login/password_reset_done.html"
+        ),
+        name="password_reset_done",
+    ),
+    path(
+        "login/reset/<uidb64>/<token>/",
+        auth_views.PasswordResetConfirmView.as_view(
+            template_name="login/password_reset_confirm.html"
+        ),
+        name="password_reset_confirm",
+    ),
 ]
