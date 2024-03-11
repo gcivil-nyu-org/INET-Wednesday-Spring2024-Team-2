@@ -86,7 +86,10 @@ def user_signup(request):
     if request.method == "POST":
         form = UserSignUpForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            email = form.cleaned_data["email"]
+            user = form.save(commit=False)
+            user.username = email
+            user.save()
             if user.user_type == user.USER:
                 user.verified = True
             else:
