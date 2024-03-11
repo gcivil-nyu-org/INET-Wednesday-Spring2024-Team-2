@@ -7,6 +7,7 @@ import sys
 from django.urls import reverse
 from users.decorators import user_type_required
 from users.forms import UserSignUpForm
+from users.models import CustomUser
 
 LOGGING = {
     "version": 1,
@@ -60,8 +61,35 @@ def login_process(request, user_type, this_page, destination_url_name):
     login(request, user)
     logging.info(f"Successful login for {user}")
 
-    # Redirect to the destination URL
     return redirect(reverse(destination_url_name))
+
+
+def login_view(request):
+    this_page = "login/login.html"
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        if not username or not password:
+            messages.error(request, "Username and password are required!")
+            return render(request, this_page)
+
+        logging.info(f"Attempting login for {username}")
+        user = authenticate(request, username=username, password=password)
+
+        if user is None:
+            messages.error(request, "Invalid credentials!")
+            return render(request, this_page)
+
+        login(request, user)
+        logging.info(f"Successful login for {username}")
+
+        if user.user_type == CustomUser.LANDLORD:
+            return redirect(reverse("landlord_homepage"))
+        else:
+            return redirect(reverse("user_homepage"))
+
+    return render(request, this_page)
 
 
 def landlord_login(request):

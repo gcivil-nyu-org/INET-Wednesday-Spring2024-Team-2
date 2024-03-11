@@ -28,6 +28,7 @@ class CustomUserModelTests(TestCase):
         )
         self.assertEqual(superuser.user_type, CustomUser.LANDLORD)
 
+
 class UserSignUpTest(TestCase):
     def test_user_signup_form_display_on_get_request(self):
         response = self.client.get(reverse("user_signup"))
