@@ -7,6 +7,7 @@ import sys
 from django.urls import reverse
 from users.decorators import user_type_required
 from users.forms import UserSignUpForm
+from .forms import CustomLoginForm
 
 LOGGING = {
     "version": 1,
@@ -34,35 +35,31 @@ def custom_404_handler(request, exception):
 
 def login_process(request, user_type, this_page, destination_url_name):
     if request.method != "POST":
-        return render(request, this_page)
+        form = CustomLoginForm()  
+        return render(request, this_page, {'form': form})
 
-    username = request.POST.get("username")
-    password = request.POST.get("password")
+    form = CustomLoginForm(request, request.POST)  # Pass the request to the form
+    if form.is_valid():
+        username = form.cleaned_data['username']
+        password = form.cleaned_data['password']
+        user = authenticate(request, username=username, password=password)
 
-    if not username or not password:
-        messages.error(request, "Username and password are required!")
-        return render(request, this_page)
+        if user is None:
+            messages.error(request, "Invalid credentials!")
+            return render(request, this_page, {'form': form})
 
-    logging.info(f"Attempting login for {username}")
-    user = authenticate(request, username=username, password=password)
+        if getattr(user, "user_type", None) != user_type:
+            messages.error(
+                request,
+                f"Please provide correct credentials to login as {user_type.capitalize()}!", # noqa:<E501>
+            )
+            return render(request, this_page, {'form': form})
 
-    if user is None:
-        messages.error(request, "Invalid credentials!")
-        return render(request, this_page)
+        login(request, user)
+        # Redirect to the destination URL
+        return redirect(reverse(destination_url_name))
 
-    if getattr(user, "user_type", None) != user_type:
-        messages.error(
-            request,
-            f"Please provide correct credentials to login as {user_type.capitalize()}!",
-        )
-        return render(request, this_page)
-
-    login(request, user)
-    logging.info(f"Successful login for {user}")
-
-    # Redirect to the destination URL
-    return redirect(reverse(destination_url_name))
-
+    return render(request, this_page, {'form': form})
 
 def landlord_login(request):
     return login_process(
@@ -72,7 +69,6 @@ def landlord_login(request):
         destination_url_name="landlord_homepage",
     )
 
-
 def user_login(request):
     return login_process(
         request,
@@ -80,6 +76,7 @@ def user_login(request):
         this_page="login/user_login.html",
         destination_url_name="user_homepage",  # URL pattern name for user's homepage
     )
+
 
 
 def user_signup(request):

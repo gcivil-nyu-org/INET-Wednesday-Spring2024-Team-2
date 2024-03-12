@@ -1,38 +1,39 @@
+{% load crispy_forms_tags %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Landlord Log In</title>
+    <title>LandLord Login</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'users/common_style.css' %}">
+    <link rel="stylesheet" href="https://bootswatch.com/5/pulse/bootstrap.min.css">
+    <!-- <link rel="stylesheet" href="{% static 'users/common_style.css' %}"> -->
     <style>
-        .forgot-password {
-            font-size: smaller;
-            display: block;
-            margin-top: 5px; /* Adjust as needed */
+        .custom-form {
+            max-width: 400px; /* Adjust the max-width as needed */
+            margin: auto; /* Center the form */
         }
     </style>
 </head>
 <body>
-<h2>Landlord Log In</h2>
-<form action="" method="post">
-    {% csrf_token %}
-    username:
-    <input type="text" name="username" value="{{ username }}" required/><br/>
-    password:
-    <input type="password" name="password" value="" required/><br/>
-
-    <input type="submit" value="Log In"/>
-    <div class="forgot-password">
+<div class="container mt-5">
+    <h2 class="text-center">LandLord Login</h2>
+    <div class="custom-form">
+        <form action="" method="post" class="mt-4">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <input type="submit" class="btn btn-primary btn-block mt-3" value="Log In"/>
+        </form>
+    </div>
+    <div class="forgot-password text-center mt-3">
         <a href="{% url 'password_reset' %}">Forgot password?</a>
     </div>
-</form>
-{% for message in messages %}
-    <div class="alert alert-success">
-        <a class="close" href="#" data-dismiss="alert">×</a>
-        {{ message }}
-    </div>
-{% endfor %}
+    {% for message in messages %}
+        <div class="alert alert-danger mt-3">
+            <a class="close" href="#" data-dismiss="alert">×</a>
+            {{ message }}
+        </div>
+    {% endfor %}
+</div>
 </body>
 </html>
