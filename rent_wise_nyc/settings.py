@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
-import certifi # noqa: <F401>
+import certifi  # noqa: <F401>
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -178,12 +178,15 @@ AUTH_USER_MODEL = "users.CustomUser"
 # EMAIL_BACKEND = (
 #     "django.core.mail.backends.filebased.EmailBackend"  # to test email locally
 # )
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"  # to send emails for real
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"  # to send emails for real # noqa: <E501>
 EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
+DEFAULT_FROM_EMAIL = "rentwisenyc@gmail.com"
 
-os.environ["SSL_CERT_FILE"] = certifi.where()
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
-EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+EMAIL_BACKEND = "django_ses.SESBackend"
+
+# os.environ["SSL_CERT_FILE"] = certifi.where()
+# EMAIL_HOST = "smtp.gmail.com"
+# EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
+# EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
