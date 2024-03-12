@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
-import certifi # noqa: <F401>
+import certifi  # noqa: <F401>
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -180,9 +180,9 @@ AUTH_USER_MODEL = "users.CustomUser"
 # )
 # EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"  # to send emails for real
 EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
-DEFAULT_FROM_EMAIL = 'rentwisenyc@gmail.com'
+DEFAULT_FROM_EMAIL = "rentwisenyc@gmail.com"
 
-EMAIL_BACKEND = 'django_ses.SESBackend'
+EMAIL_BACKEND = "django_ses.SESBackend"
 
 # os.environ["SSL_CERT_FILE"] = certifi.where()
 # EMAIL_HOST = "smtp.gmail.com"
