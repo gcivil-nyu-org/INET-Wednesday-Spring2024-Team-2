@@ -13,6 +13,13 @@
             max-width: 400px; /* Adjust the max-width as needed */
             margin: auto; /* Center the form */
         }
+        .form-button {
+            width: 100%;
+            padding: 10px; /* Adjust padding to match the login button */
+            margin-top: 10px; /* Space between buttons */
+            display: block; /* Ensure it's displayed as block */
+            text-align: center; /* Center the text for consistency */
+        }
     </style>
 </head>
 <body>
@@ -24,6 +31,7 @@
             {{ form|crispy }}
             <input type="submit" class="btn btn-primary btn-block mt-3" value="Log In"/>
         </form>
+        <a href="{% url 'landlord_signup' %}" class="btn btn-secondary form-button">Signup as Landlord</a>
     </div>
     <div class="text-center mt-2">
         <span class = "text-primary">New Landlord? </span>
