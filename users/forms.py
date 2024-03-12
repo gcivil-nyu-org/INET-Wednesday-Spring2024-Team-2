@@ -32,8 +32,8 @@ class PasswordResetForm(forms.Form):
         email = self.cleaned_data.get('email')
         if not User.objects.filter(email=email).exists():
             raise forms.ValidationError("""This email does not exist in our records.
-                                         Please make sure you entered it correctly, 
-                                        or sign up for a new account 
+                                        Please make sure you entered it correctly,
+                                        or sign up for a new account
                                         if you haven't already.""")
         return email
 
