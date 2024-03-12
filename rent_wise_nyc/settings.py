@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
+import certifi  # noqa: <F401>
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,7 +32,6 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
 ]
 
-
 # Application definition
 SITE_ID = 2
 
@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     "users",
     "rent_wise_nyc",
     "storages",
+    "crispy_forms",
+    "crispy_bootstrap5",
 ]
 
 SOCIALACCOUNT_PROVIDERS = {
@@ -66,6 +68,9 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
 ]
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 ROOT_URLCONF = "rent_wise_nyc.urls"
 
@@ -181,3 +186,18 @@ AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
 
 # Tell Django to use S3 for static/media files storage
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+# EMAIL_BACKEND = (
+#     "django.core.mail.backends.filebased.EmailBackend"  # to test email locally
+# )
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"  # to send emails for real # noqa: <E501>
+EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
+DEFAULT_FROM_EMAIL = "rentwisenyc@gmail.com"
+
+EMAIL_BACKEND = "django_ses.SESBackend"
+
+# os.environ["SSL_CERT_FILE"] = certifi.where()
+# EMAIL_HOST = "smtp.gmail.com"
+# EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
+# EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
