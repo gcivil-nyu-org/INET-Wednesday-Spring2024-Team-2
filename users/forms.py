@@ -33,10 +33,13 @@ class LandlordSignupForm(UserCreationForm):
         model = CustomUser
         fields = (
             "username",
+            "full_name",
             "email",
+            "phone_number",
+            "city",
             "password1",
             "password2",
-            "user_type",
+            # "user_type",
             "pdf_file",
         )
 
