@@ -63,7 +63,7 @@ def login_process(request, user_type, this_page, destination_url_name):
                 f"Please provide correct credentials to login as {user_type.capitalize()}!", # noqa:<E501>
             )
             return render(request, this_page, {'form': form})
-        if user_type == "landlord" and user.verified == False:
+        if user_type == "landlord" and user.verified is False:
             messages.error(
                 request,
                 "Your account has not been verified by the admin yet. Please wait!!",
