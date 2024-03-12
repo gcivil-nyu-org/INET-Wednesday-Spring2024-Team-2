@@ -63,37 +63,14 @@ def login_process(request, user_type, this_page, destination_url_name):
                 f"Please provide correct credentials to login as {user_type.capitalize()}!", # noqa:<E501>
             )
             return render(request, this_page, {'form': form})
-
-
-    if user is None:
-        messages.error(request, "Invalid credentials!")
-        return render(request, this_page)
-
-    if getattr(user, "user_type", None) != user_type:
-        messages.error(
-            request,
-            f"Please provide correct credentials to login as {user_type.capitalize()}!",
-        )
-        return render(request, this_page)
-
-    # Additional check for landlords to ensure they are verified
-    if user_type == "landlord" and user.verified != 1:
-        messages.error(
-            request,
-            "Your account has not been verified by the admin yet. Please wait!!",
-        )
-        return render(request, this_page)
-
-    login(request, user)
-    logging.info(f"Successful login for {user}")
-
-    # Redirect to the destination URL
-    return redirect(reverse(destination_url_name))
-
-#         login(request, user)
-#         # Redirect to the destination URL
-#         return redirect(reverse(destination_url_name))
-
+        if user_type == "landlord" and user.verified is False:
+            messages.error(
+                request,
+                "Your account has not been verified by the admin yet. Please wait!!",
+            )
+            return render(request, this_page, {'form': form})
+        login(request, user)
+        return redirect(reverse(destination_url_name))
 
     return render(request, this_page, {'form': form})
 
