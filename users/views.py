@@ -51,7 +51,7 @@ def login_process(request, user_type, this_page, destination_url_name):
         if getattr(user, "user_type", None) != user_type:
             messages.error(
                 request,
-                f"Please provide correct credentials to login as {user_type.capitalize()}!",
+                f"Please provide correct credentials to login as {user_type.capitalize()}!", # noqa:<E501>
             )
             return render(request, this_page, {'form': form})
 
