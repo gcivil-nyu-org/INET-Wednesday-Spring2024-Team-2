@@ -16,6 +16,7 @@ import boto3
 from django.conf import settings
 from .models import CustomUser
 from io import BytesIO
+from .forms import CustomLoginForm
 
 LOGGING = {
     "version": 1,
@@ -43,17 +44,26 @@ def custom_404_handler(request, exception):
 
 def login_process(request, user_type, this_page, destination_url_name):
     if request.method != "POST":
-        return render(request, this_page)
+        form = CustomLoginForm()  
+        return render(request, this_page, {'form': form})
 
-    username = request.POST.get("username")
-    password = request.POST.get("password")
+    form = CustomLoginForm(request, request.POST)  # Pass the request to the form
+    if form.is_valid():
+        username = form.cleaned_data['username']
+        password = form.cleaned_data['password']
+        user = authenticate(request, username=username, password=password)
 
-    if not username or not password:
-        messages.error(request, "Username and password are required!")
-        return render(request, this_page)
+        if user is None:
+            messages.error(request, "Invalid credentials!")
+            return render(request, this_page, {'form': form})
 
-    logging.info(f"Attempting login for {username}")
-    user = authenticate(request, username=username, password=password)
+        if getattr(user, "user_type", None) != user_type:
+            messages.error(
+                request,
+                f"Please provide correct credentials to login as {user_type.capitalize()}!", # noqa:<E501>
+            )
+            return render(request, this_page, {'form': form})
+
 
     if user is None:
         messages.error(request, "Invalid credentials!")
@@ -80,6 +90,12 @@ def login_process(request, user_type, this_page, destination_url_name):
     # Redirect to the destination URL
     return redirect(reverse(destination_url_name))
 
+#         login(request, user)
+#         # Redirect to the destination URL
+#         return redirect(reverse(destination_url_name))
+
+
+    return render(request, this_page, {'form': form})
 
 def landlord_login(request):
     return login_process(
@@ -88,7 +104,6 @@ def landlord_login(request):
         this_page="login/landlord_login.html",
         destination_url_name="landlord_homepage",
     )
-
 
 def user_login(request):
     return login_process(
@@ -99,11 +114,15 @@ def user_login(request):
     )
 
 
+
 def user_signup(request):
     if request.method == "POST":
         form = UserSignUpForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            email = form.cleaned_data["email"]
+            user = form.save(commit=False)
+            user.username = email
+            user.save()
             if user.user_type == user.USER:
                 user.verified = True
             else:

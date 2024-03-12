@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
 from .models import CustomUser
+from django.contrib.auth.forms import AuthenticationForm
 
 User = get_user_model()
 
@@ -10,17 +11,15 @@ class UserSignUpForm(UserCreationForm):
     full_name = forms.CharField(max_length=255, required=True)
     phone_number = forms.CharField(max_length=15, required=True)
     city = forms.CharField(max_length=100, required=True)
-    s3_doclink = forms.CharField(max_length=255, required=False)
+    email = forms.EmailField(required=True)
 
     class Meta:
         model = User
         fields = (
-            "username",
             "email",
             "full_name",
             "phone_number",
             "city",
-            "s3_doclink",
             "password1",
             "password2",
         )
@@ -63,3 +62,19 @@ class LandlordSignupForm(UserCreationForm):
             self.save_m2m()  # Call save_m2m if there are many-to-many fields that need to be saved.
 
         return user
+class PasswordResetForm(forms.Form):
+    email = forms.EmailField(label="Email", max_length=254)
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if not User.objects.filter(email=email).exists():
+            raise forms.ValidationError("""This email does not exist in our records.
+                                        Please make sure you entered it correctly,
+                                        or sign up for a new account
+                                        if you haven't already.""")
+        return email
+
+
+class CustomLoginForm(AuthenticationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
