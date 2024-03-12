@@ -7,6 +7,7 @@ import sys
 from django.urls import reverse
 from users.decorators import user_type_required
 from users.forms import UserSignUpForm, User
+from .forms import CustomLoginForm
 
 LOGGING = {
     "version": 1,
@@ -87,10 +88,6 @@ def user_signup(request):
         form = UserSignUpForm(request.POST)
         if form.is_valid():
             email = form.cleaned_data["email"]
-            if User.objects.filter(username=email).exists():
-                form.add_error("email", "A user with that email already exists.")
-                return render(request, "users/signup/signup.html", {"form": form})
-
             user = form.save(commit=False)
             user.username = email
             user.save()
