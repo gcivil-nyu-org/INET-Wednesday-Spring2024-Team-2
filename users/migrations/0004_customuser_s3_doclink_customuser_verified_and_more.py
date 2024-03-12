@@ -9,12 +9,12 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
+        migrations.AlterField(
             model_name="customuser",
             name="s3_doclink",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
-        migrations.AddField(
+        migrations.AlterField(
             model_name="customuser",
             name="verified",
             field=models.BooleanField(default=True),

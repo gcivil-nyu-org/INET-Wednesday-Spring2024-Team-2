@@ -24,4 +24,14 @@ class Migration(migrations.Migration):
             name="phone_number",
             field=models.CharField(default="9999999999", max_length=15),
         ),
+        migrations.AddField(
+            model_name="customuser",
+            name="s3_doclink",
+            field=models.URLField(blank=True, max_length=255, null=True),
+        ),
+        migrations.AddField(
+            model_name="customuser",
+            name="verified",
+            field=models.CharField(default="false", max_length=100),
+        ),
     ]

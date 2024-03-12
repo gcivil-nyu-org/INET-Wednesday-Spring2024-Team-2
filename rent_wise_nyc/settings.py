@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.google",
     "users",
     "rent_wise_nyc",
+    "storages",
     "crispy_forms",
     "crispy_bootstrap5",
 ]
@@ -175,6 +176,16 @@ ACCOUNT_EMAIL_DOMAIN_WHITELIST = ["nyu.edu"]
 
 AUTH_USER_MODEL = "users.CustomUser"
 
+# Amazon S3 settings
+AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME")
+AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
+AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
+# AWS_LOCATION = 'your-s3-folder-name'  # Optional, to organize files in a specific folder
+
+# Tell Django to use S3 for static/media files storage
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 # EMAIL_BACKEND = (
 #     "django.core.mail.backends.filebased.EmailBackend"  # to test email locally
 # )
