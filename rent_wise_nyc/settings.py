@@ -178,7 +178,7 @@ AUTH_USER_MODEL = "users.CustomUser"
 # EMAIL_BACKEND = (
 #     "django.core.mail.backends.filebased.EmailBackend"  # to test email locally
 # )
-# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"  # to send emails for real
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"  # to send emails for real # noqa: <E501>
 EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
 DEFAULT_FROM_EMAIL = "rentwisenyc@gmail.com"
 
