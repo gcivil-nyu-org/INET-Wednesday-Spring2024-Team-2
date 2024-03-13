@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
 from .models import CustomUser
 from django.contrib.auth.forms import AuthenticationForm
+from django.core.exceptions import ValidationError
 
 User = get_user_model()
 
@@ -23,6 +24,11 @@ class UserSignUpForm(UserCreationForm):
             "password1",
             "password2",
         )
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if not email.endswith('@nyu.edu'):
+            raise ValidationError("Oops!! Only NYU email addresses are supported.")
+        return email
 
 
 class LandlordSignupForm(UserCreationForm):

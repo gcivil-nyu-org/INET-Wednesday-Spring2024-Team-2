@@ -25,16 +25,19 @@
 </head>
 <body>
 <div class="container mt-5">
-    <h2 class="text-center">User Log In</h2>
+    <h2 class="text-center">User Login</h2>
     <div class="custom-form">
         <form action="" method="post" class="mt-4">
             {% csrf_token %}
             {{ form|crispy }}
             <input type="submit" class="btn btn-primary btn-block mt-3" value="Log In"/>
         </form>
-        <a href="{% url 'user_signup' %}" class="btn btn-secondary form-button">Signup</a>
     </div>
-    <div class="forgot-password text-center mt-3">
+    <div class="text-center mt-2">
+        <span class = "text-primary">New User? </span>
+        <a href="{% url 'user_signup' %}" class="btn btn-light btn-sm">  SignUp</a>
+    </div>
+    <div class="text-center mt-2">
         <a href="{% url 'password_reset' %}">Forgot password?</a>
     </div>
     {% for message in messages %}
