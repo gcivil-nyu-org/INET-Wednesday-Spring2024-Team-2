@@ -1,3 +1,4 @@
+{% load crispy_forms_tags %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,9 +6,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Landlord Sign Up</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'users/common_style.css' %}">
+    <link rel="stylesheet" href="https://bootswatch.com/5/pulse/bootstrap.min.css">
+    <!-- <link rel="stylesheet" href="{% static 'users/common_style.css' %}"> -->
+    <style>
+        .custom-form {
+            max-width: 400px; 
+            margin: auto; 
+            transform: scale(0.85); 
+            transform-origin: top; 
+        }
+        .form-button {
+            width: 100%;
+            padding: 10px; 
+            margin-top: 10px;
+            display: block; 
+            text-align: center; 
+        }
+    </style>
 </head>
 <body>
+<div class="container mt-5">
     {% if messages %}
     <ul class="messages">
         {% for message in messages %}
@@ -15,13 +33,14 @@
         {% endfor %}
     </ul>
     {% endif %}
-
-    <h2>Landlord Sign Up</h2>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Sign Up</button>
-    </form>
-
+    <h2 class="text-center">Landlord Sign Up</h2>
+    <div class="custom-form">
+        <form method="post" enctype="multipart/form-data" class="mt-4">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit" class="btn btn-primary btn-block mt-3">Sign Up</button>
+        </form>
+    </div>
+</div>
 </body>
 </html>
