@@ -1,0 +1,8 @@
+__pycache__
+**/__pycache__/**
+aruEnv/
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+**/sent_emails/**
