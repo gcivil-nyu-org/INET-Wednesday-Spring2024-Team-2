@@ -32,11 +32,11 @@ deploy:
   secret_access_key: $AWS_SECRET_ACCESS_KEY
   region: us-east-1
   app: rent_wise_nyc
-  env: rent-wise-env
+  env: rent-wise-prod
   bucket_name: $S3_BUCKET_NAME
   on:
     repo: gcivil-nyu-org/INET-Wednesday-Spring2024-Team-2
-    branch: develop
+    branch: master
   skip_cleanup: 'true'
 env:
   global:
