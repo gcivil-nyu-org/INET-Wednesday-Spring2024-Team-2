@@ -29,6 +29,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     "rent-wise-env.eba-3qbiyspq.us-east-1.elasticbeanstalk.com",
+    "rent-wise-prod.eba-3qbiyspq.us-east-1.elasticbeanstalk.com",
     "127.0.0.1",
 ]
 
