@@ -3,18 +3,23 @@ language: python
 matrix:
   include:
   - python: 3.11
+
 install:
   - pip install -r requirements.txt
+
 before_script:
   - python manage.py migrate
   - python manage.py collectstatic --noinput
+
 script:
   - black .
   - black --check .
   - flake8 --ignore=E303,E501,W503,F401 --max-line-length=150
   - coverage run --source=users manage.py test
+
 after_success:
   - coveralls
+
 deploy:
   - provider: elasticbeanstalk
     access_key_id: $AWS_ACCESS_KEY_ID
@@ -38,6 +43,7 @@ deploy:
       repo: gcivil-nyu-org/INET-Wednesday-Spring2024-Team-2
       branch: master
   skip_cleanup: 'true'
+
 env:
   global:
   - TEAM_2_DB_NAME: $TEAM_2_DB_NAME
