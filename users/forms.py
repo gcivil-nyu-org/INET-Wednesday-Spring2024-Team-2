@@ -24,9 +24,10 @@ class UserSignUpForm(UserCreationForm):
             "password1",
             "password2",
         )
+
     def clean_email(self):
-        email = self.cleaned_data['email']
-        if not email.endswith('@nyu.edu'):
+        email = self.cleaned_data["email"]
+        if not email.endswith("@nyu.edu"):
             raise ValidationError("Oops!! Only NYU email addresses are supported.")
         return email
 
@@ -68,16 +69,20 @@ class LandlordSignupForm(UserCreationForm):
             self.save_m2m()  # Call save_m2m if there are many-to-many fields that need to be saved.
 
         return user
+
+
 class PasswordResetForm(forms.Form):
     email = forms.EmailField(label="Email", max_length=254)
 
     def clean_email(self):
-        email = self.cleaned_data.get('email')
+        email = self.cleaned_data.get("email")
         if not User.objects.filter(email=email).exists():
-            raise forms.ValidationError("""This email does not exist in our records.
+            raise forms.ValidationError(
+                """This email does not exist in our records.
                                         Please make sure you entered it correctly,
                                         or sign up for a new account
-                                        if you haven't already.""")
+                                        if you haven't already."""
+            )
         return email
 
 
