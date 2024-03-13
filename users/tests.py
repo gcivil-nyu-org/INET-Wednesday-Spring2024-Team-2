@@ -39,7 +39,7 @@ class UserSignUpTest(TestCase):
     def test_user_signup_success_on_valid_post_request(self):
         form_data = {
             "username": "testuser",
-            "email": "testuser@example.com",
+            "email": "testuser@nyu.edu",
             "full_name": "Test User",
             "phone_number": "1234567890",
             "city": "Test City",
