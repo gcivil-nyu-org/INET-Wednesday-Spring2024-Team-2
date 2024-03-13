@@ -37,5 +37,3 @@ EMAIL_BACKEND = (
 )
 EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
 DEFAULT_FROM_EMAIL = "rentwisenyc@gmail.com"
-
-

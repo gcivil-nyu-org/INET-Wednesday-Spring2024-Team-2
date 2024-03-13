@@ -36,5 +36,3 @@ SITE_ID = 5
 
 DEFAULT_FROM_EMAIL = "rentwisenyc@gmail.com"
 EMAIL_BACKEND = "django_ses.SESBackend"
-
-
