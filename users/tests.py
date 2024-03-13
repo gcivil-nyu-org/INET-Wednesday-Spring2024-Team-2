@@ -82,6 +82,7 @@ class LoginProcessTests(TestCase):
     def test_unverified_landlord_login_attempt(self):
         # Make sure this landlord is not verified for this test case.
         unverified_landlord = CustomUser.objects.create_user(username='unverified_landlord', password='testpassword', user_type=CustomUser.LANDLORD, verified=False)
+        self.assertIsNotNone(unverified_landlord.id) 
         response = self.client.post(reverse('landlord_login'), {'username': 'unverified_landlord', 'password': 'testpassword'})
         messages = list(get_messages(response.wsgi_request))
         self.assertTrue(any("Your account has not been verified by the admin yet." in message.message for message in messages))
@@ -95,12 +96,14 @@ class Custom404HandlerTest(TestCase):
     def test_redirect_for_authenticated_landlord(self):
         landlord = CustomUser.objects.create_user(username='landlord404', password='password', user_type=CustomUser.LANDLORD)
         self.client.login(username='landlord404', password='password')
+        self.assertIsNotNone(landlord.id)
         response = self.client.get('/nonexistentpage')
         self.assertRedirects(response, reverse('landlord_homepage'))
 
     def test_redirect_for_authenticated_user(self):
         user = CustomUser.objects.create_user(username='user404', password='password', user_type=CustomUser.USER)
         self.client.login(username='user404', password='password')
+        self.assertIsNotNone(user.id)
         response = self.client.get('/nonexistentpage')
         self.assertRedirects(response, reverse('user_homepage'))
 
