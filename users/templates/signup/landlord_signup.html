@@ -26,13 +26,6 @@
 </head>
 <body>
 <div class="container mt-5">
-    {% if messages %}
-    <ul class="messages">
-        {% for message in messages %}
-        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
     <h2 class="text-center">Landlord Sign Up</h2>
     <div class="custom-form">
         <form method="post" enctype="multipart/form-data" class="mt-4">
