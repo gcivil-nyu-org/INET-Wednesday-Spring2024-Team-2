@@ -4,28 +4,39 @@ matrix:
   include:
   - python: 3.11
 install:
-- pip install -r requirements.txt
+  - pip install -r requirements.txt
 before_script:
-- python manage.py migrate
-- python manage.py collectstatic --noinput
+  - python manage.py migrate
+  - python manage.py collectstatic --noinput
 script:
-- black .
-- black --check .
-- flake8 --ignore=E303,E501,W503,F401 --max-line-length=150
-- coverage run --source=users manage.py test
+  - black .
+  - black --check .
+  - flake8 --ignore=E303,E501,W503,F401 --max-line-length=150
+  - coverage run --source=users manage.py test
 after_success:
-- coveralls
+  - coveralls
 deploy:
-  provider: elasticbeanstalk
-  access_key_id: $AWS_ACCESS_KEY_ID
-  secret_access_key: $AWS_SECRET_ACCESS_KEY
-  region: us-east-1
-  app: rent_wise_nyc
-  env: rent-wise-env
-  bucket_name: $S3_BUCKET_NAME
-  on:
-    repo: gcivil-nyu-org/INET-Wednesday-Spring2024-Team-2
-    branch: develop
+  - provider: elasticbeanstalk
+    access_key_id: $AWS_ACCESS_KEY_ID
+    secret_access_key: $AWS_SECRET_ACCESS_KEY
+    region: us-east-1
+    app: rent_wise_nyc
+    env: rent-wise-env
+    bucket_name: $S3_BUCKET_NAME
+    on:
+      repo: gcivil-nyu-org/INET-Wednesday-Spring2024-Team-2
+      branch: develop
+    skip_cleanup: 'true'
+  - provider: elasticbeanstalk
+    access_key_id: $AWS_ACCESS_KEY_ID
+    secret_access_key: $AWS_SECRET_ACCESS_KEY
+    region: us-east-1
+    app: rent_wise_nyc
+    env: rent-wise-prod
+    bucket_name: $S3_BUCKET_NAME
+    on:
+      repo: gcivil-nyu-org/INET-Wednesday-Spring2024-Team-2
+      branch: master
   skip_cleanup: 'true'
 env:
   global:
