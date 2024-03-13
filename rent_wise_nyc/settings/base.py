@@ -12,29 +12,13 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
-import certifi  # noqa: <F401>
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-0!koe(9n(u$8x3g24sctwu^&=&pv%+m70xa3+gqw7uv32h3ej_"
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = [
-    "rent-wise-env.eba-3qbiyspq.us-east-1.elasticbeanstalk.com",
-    "rent-wise-prod.eba-3qbiyspq.us-east-1.elasticbeanstalk.com",
-    "127.0.0.1",
-]
-
-# Application definition
-SITE_ID = 2
 
 INSTALLED_APPS = [
     "django.contrib.auth",
@@ -93,18 +77,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "rent_wise_nyc.wsgi.application"
 
-
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
-# DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': BASE_DIR / 'db.sqlite3',
-#    }
-# }
-
-# TODO: need to add environ variables to own bash/zsh profile
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -115,7 +87,6 @@ DATABASES = {
         "PORT": os.environ["TEAM_2_DB_PORT"],
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -168,7 +139,6 @@ AUTHENTICATION_BACKENDS = [
 
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
-# SITE_ID = 1
 
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
@@ -187,18 +157,3 @@ AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
 
 # Tell Django to use S3 for static/media files storage
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-# EMAIL_BACKEND = (
-#     "django.core.mail.backends.filebased.EmailBackend"  # to test email locally
-# )
-# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"  # to send emails for real # noqa: <E501>
-EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
-DEFAULT_FROM_EMAIL = "rentwisenyc@gmail.com"
-
-EMAIL_BACKEND = "django_ses.SESBackend"
-
-# os.environ["SSL_CERT_FILE"] = certifi.where()
-# EMAIL_HOST = "smtp.gmail.com"
-# EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
-# EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
