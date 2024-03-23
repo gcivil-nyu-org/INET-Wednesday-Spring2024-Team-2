@@ -183,3 +183,9 @@ def landlord_signup(request):
     else:
         form = LandlordSignupForm()
     return render(request, "signup/landlord_signup.html", {"form": form})
+
+def rentals_page(request):
+    return render(request, 'users/signup/rentalspage.html')
+
+def placeholder_view(request):
+    return render(request, 'users/signup/placeholder.html')
