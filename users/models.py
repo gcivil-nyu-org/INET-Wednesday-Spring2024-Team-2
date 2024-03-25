@@ -32,7 +32,7 @@ class CustomUser(AbstractUser):
         super().save(*args, **kwargs)
 
 
-class RentalListings(models.Model):
+class Rental_Listings(models.Model):
     address = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     link = models.URLField(max_length=2048, blank=True, null=True)
