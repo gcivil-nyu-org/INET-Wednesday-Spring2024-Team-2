@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Homepage</title>
+    {% load static %}
+    <!-- Using the Pulse theme from Bootswatch -->
+    <link rel="stylesheet" href="https://bootswatch.com/5/pulse/bootstrap.css">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+    <h2 class="text-center">User Homepage</h2>
+    {% if user.is_authenticated %}
+        <p class="text-center">Welcome, {{ user.username }}!</p>
+        <div class="d-flex justify-content-end">
+            <a href="{% url 'logout' %}" class="btn btn-secondary">Logout</a>
+        </div>
+        <div class="text-center">
+            <form action="{% url 'rentalspage' %}">
+                <button type="submit" class="btn btn-primary mt-3">Go to Rentals Page</button>
+            </form>
+        </div>
+    {% endif %}
+</div>
+
+</body>
+</html>

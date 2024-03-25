@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Django Sign In</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'users/style.css' %}">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f8f8;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Keep content aligned at the top */
+            height: 100vh;
+        }
+
+        .login-container {
+            text-align: center;
+            margin-top: 50px; /* Adjusted top margin for positioning */
+        }
+
+        .login-section {
+            margin-bottom: 30px;
+        }
+
+        .login-section p, .login-section a {
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff; /* Text color changed to white for contrast */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Added shadow for text */
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .login-section a {
+            padding: 15px 25px;
+            margin-left: 20px;
+            background-color: #909790; /* Updated background color */
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s; /* Smooth transition for hover effect */
+        }
+
+        .login-section a:hover {
+            background-color: #555b55; /* Darker shade on hover */
+        }
+
+        a.logout {
+            display: inline-block;
+            font-size: 18px;
+            font-weight: bold;
+            color: #c00;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+    </style>
+
+</head>
+<body>
+{% load socialaccount %}
+<div class="login-container">
+    <div class="login-section">
+        <p>Moving to NYC? Discover your ideal rental! Explore our listings in
+            NYC</p>
+        <a href="{% url 'user_login' %}">Login as User</a>
+    </div>
+    <div class="login-section">
+        <p>Are you a landlord? Post your listings and reach potential tenants!</p>
+        <a href="{% url 'landlord_login' %}">Login as Landlord</a>
+    </div>
+</div>
+</body>
+</html>

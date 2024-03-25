@@ -1,0 +1,74 @@
+/* Enhanced common_style.css */
+body {
+    background-color: #f5f5f5; /* Lighter cream background for a softer look */
+    color: #333; /* Retained grey text for readability */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern, legible font */
+    line-height: 1.6;
+    margin: 0;
+    padding: 20px;
+}
+
+h2 {
+    color: #333;
+    font-size: 24px; /* Slightly larger for emphasis */
+    text-shadow: 1px 1px 0px #fff; /* Subtle shadow for depth */
+    text-align: center; /* Center-align titles */
+}
+
+form {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px; /* More pronounced rounding */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+    max-width: 400px; /* Fixed width for better control */
+    margin: 20px auto; /* Center form on page */
+    border: 1px solid #ccc; /* Subtle border */
+}
+
+input[type="text"], input[type="password"] {
+    width: 100%; /* Full width to account for padding */
+    padding: 12px; /* Slightly more padding for a better feel */
+    margin: 8px 0; /* Adjust spacing */
+    border: 2px solid #ccc; /* Thicker border for focus */
+    border-radius: 4px; /* Smooth corners */
+    box-sizing: border-box; /* Box-sizing adjusted */
+    transition: border-color 0.3s; /* Smooth transition for interaction */
+}
+
+input[type="text"]:focus, input[type="password"]:focus {
+    border-color: #555; /* Darker border on focus for visibility */
+}
+
+input[type="submit"] {
+    background-color: #909790; /* More vibrant color */ 
+    color: #fff;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s; /* Smooth background transition */
+    font-weight: bold; /* Bold text for emphasis */
+}
+
+input[type="submit"]:hover {
+    background-color: #555b55; /* Darker shade on hover */
+}
+
+.alert {
+    background-color: #f2dede; /* Soft red for alerts */
+    color: #a94442; /* Darker text for contrast */
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #c4bebe; /* Subtle border */
+    border-radius: 4px; /* Rounded corners for alert boxes */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Shadow for depth */
+}
+
+.alert a {
+    color: #843534; /* Darker for readability */
+    text-decoration: underline;
+}
+
+.alert a:hover {
+    color: #761c19; /* Even darker on hover for emphasis */
+}

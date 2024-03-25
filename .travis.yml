@@ -1,0 +1,51 @@
+dist: jammy
+language: python
+matrix:
+  include:
+  - python: 3.11
+install:
+- pip install -r requirements.txt
+before_script:
+- python manage.py migrate
+- python manage.py collectstatic --noinput
+script:
+- black .
+- black --check .
+- flake8 --ignore=E303,E501,W503,F401 --max-line-length=150
+- coverage run --source=users manage.py test
+after_success:
+- coveralls
+deploy:
+- provider: elasticbeanstalk
+  access_key_id: $AWS_ACCESS_KEY_ID
+  secret_access_key: $AWS_SECRET_ACCESS_KEY
+  region: us-east-1
+  app: rent_wise_nyc
+  env: rent-wise-env
+  bucket_name: $S3_BUCKET_NAME
+  on:
+    repo: gcivil-nyu-org/INET-Wednesday-Spring2024-Team-2
+    branch: develop
+  skip_cleanup: 'true'
+- provider: elasticbeanstalk
+  access_key_id: $AWS_ACCESS_KEY_ID
+  secret_access_key: $AWS_SECRET_ACCESS_KEY
+  region: us-east-1
+  app: rent_wise_nyc
+  env: rent-wise-prod
+  bucket_name: $S3_BUCKET_NAME
+  on:
+    repo: gcivil-nyu-org/INET-Wednesday-Spring2024-Team-2
+    branch: master
+  skip_cleanup: 'true'
+env:
+  global:
+  - TEAM_2_DB_NAME: $TEAM_2_DB_NAME
+  - TEAM_2_DB_USER: $TEAM_2_DB_USER
+  - TEAM_2_DB_PW: $TEAM_2_DB_PW
+  - TEAM_2_DB_HOST: $TEAM_2_DB_HOST
+  - TEAM_2_DB_PORT: $TEAM_2_DB_PORT
+  - COVERALLS_REPO_TOKEN: $COVERALLS_REPO_TOKEN
+  - EMAIL_HOST_USER: $EMAIL_HOST_USER
+  - EMAIL_HOST_PASSWORD: $EMAIL_HOST_PASSWORD
+  - ENV_NAME: $ENV_NAME
