@@ -4,6 +4,8 @@ import uuid
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.db import IntegrityError
+from django.core.exceptions import ValidationError
 import logging.config
 import sys
 from django.urls import reverse
@@ -103,13 +105,14 @@ def user_signup(request):
                 user.verified = True
             else:
                 user.verified = False
-            user.save()
             login(request, user, backend="django.contrib.auth.backends.ModelBackend")
             return redirect("user_homepage")
-        else:
-            messages.error(request, form.errors)
     else:
         form = UserSignUpForm()
+    for field, errors in form.errors.items():
+        for error in errors:
+            messages.error(request, f"{error}")
+
     return render(request, "users/signup/signup.html", {"form": form})
 
 
@@ -184,7 +187,9 @@ def landlord_signup(request):
             messages.success(request, "Registration successful. Please log in.")
             return redirect("landlord_login")
         else:
-            messages.error(request, "Registration failed. Please correct the errors below.")
+            messages.error(
+                request, "Registration failed. Please correct the errors below."
+            )
     else:
         form = LandlordSignupForm()
     return render(request, "signup/landlord_signup.html", {"form": form})
