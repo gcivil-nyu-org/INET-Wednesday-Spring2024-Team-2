@@ -33,7 +33,7 @@ class UserSignUpForm(UserCreationForm):
 
 
 class LandlordSignupForm(UserCreationForm):
-    pdf_file = forms.FileField(required=False)
+    pdf_file = forms.FileField(required=False, label="OwnerShip Document")  #
 
     class Meta:
         model = CustomUser
@@ -66,7 +66,7 @@ class LandlordSignupForm(UserCreationForm):
 
         if commit:
             user.save()
-            self.save_m2m()  # Call save_m2m if there are many-to-many fields that need to be saved.
+            self.save_m2m()
 
         return user
 
