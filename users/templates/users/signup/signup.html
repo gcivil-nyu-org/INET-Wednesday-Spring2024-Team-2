@@ -24,6 +24,15 @@
     </style>
 </head>
 <body>
+{% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %}" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
 <div class="container mt-5">
     <h2 class="text-center">User Sign Up</h2>
     <div class="custom-form">
