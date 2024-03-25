@@ -64,7 +64,7 @@ def login_process(request, user_type, this_page, destination_url_name):
         if user_type == "landlord" and user.verified is False:
             messages.error(
                 request,
-                "Your account has not been verified by the admin yet. Please wait!!",
+                "Your account has not been verified by the admin yet. Please wait!",
             )
             return render(request, this_page, {"form": form})
         login(request, user)
@@ -181,18 +181,20 @@ def landlord_signup(request):
                     print(f"Error uploading file to S3: {e}")
             user.save()
 
-            messages.success(request, "Signup successful. Please log in.")
+            messages.success(request, "Sign up successful. Please log in.")
             return redirect("landlord_login")
         else:
-            messages.error(request, "Signup failed. Please correct the errors below.")
+            messages.error(request, "Sign up failed. Please correct the errors below.")
     else:
         form = LandlordSignupForm()
     return render(request, "signup/landlord_signup.html", {"form": form})
 
+
 @user_type_required("user")
 def rentals_page(request):
-    return render(request, 'users/searchRental/rentalspage.html')
+    return render(request, "users/searchRental/rentalspage.html")
+
 
 @user_type_required("user")
 def placeholder_view(request):
-    return render(request, 'users/searchRental/placeholder.html')
+    return render(request, "users/searchRental/placeholder.html")
