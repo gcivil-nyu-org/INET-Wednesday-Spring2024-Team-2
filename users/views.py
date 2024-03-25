@@ -181,10 +181,10 @@ def landlord_signup(request):
                     print(f"Error uploading file to S3: {e}")
             user.save()
 
-            messages.success(request, "Sign up successful. Please log in.")
+            messages.success(request, "Registration successful. Please log in.")
             return redirect("landlord_login")
         else:
-            messages.error(request, "Sign up failed. Please correct the errors below.")
+            messages.error(request, "Registration failed. Please correct the errors below.")
     else:
         form = LandlordSignupForm()
     return render(request, "signup/landlord_signup.html", {"form": form})
