@@ -17,19 +17,29 @@
         <div class="d-flex justify-content-end">
             <a href="{% url 'logout' %}" class="btn btn-secondary">Logout</a>
         </div>
-        <div class="text-center mt-4">
-            <form action="{% url 'rentalspage' %}" method="get">
-                <label for="boroughSelect" class="form-label">Select a Borough:</label>
-                <select class="form-select" id="boroughSelect" name="borough">
-                    <option value="Manhattan">Manhattan</option>
-                    <option value="Brooklyn">Brooklyn</option>
-                    <option value="Queens">Queens</option>
-                    <option value="Bronx">Bronx</option>
-                    <option value="Staten Island">Staten Island</option>
-                </select>
-                <button type="submit" class="btn btn-primary mt-3">Search Rentals</button>
-            </form>
+        <div class="container">
+            <div class="row justify-content-center mt-4">
+                <div class="col-md-6">
+                    <form action="{% url 'rentalspage' %}" method="get">
+                        <div class="text-center">
+                            <label for="boroughSelect" class="form-label">Select Borough for Available rentals</label>
+                        </div>
+                        <select class="form-select" id="boroughSelect" name="borough">
+                            <option value="Manhattan">Manhattan</option>
+                            <option value="Brooklyn">Brooklyn</option>
+                            <option value="Queens">Queens</option>
+                            <option value="Bronx">Bronx</option>
+                            <option value="Staten Island">Staten Island</option>
+                        </select>
+                        <div class="text-center mt-3">
+                            <button type="submit" class="btn btn-primary">Search Rentals</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
+        
+        
     {% endif %}
 </div>
 
