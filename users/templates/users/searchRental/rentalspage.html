@@ -60,8 +60,8 @@
 
 <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
   <div class="container-fluid">
-    <a class="navbar-brand" href="{% url 'placeholder' %}">
-        RentWiseNyc <!-- Here's the simple text replacement -->
+    <a class="navbar-brand" href="{% url 'user_homepage' %}">
+        RentWiseNYC <!-- Here's the simple text replacement -->
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -182,43 +182,43 @@
         var staticBasePath = "{% static 'users/images/' %}";
     </script>    
     <script>
-      // Sample data for listings
-      const listings = [
-        { image: 'home1.jpg', address: '123 Main St, New York, NY', bathrooms: '1', price: '2500', neighborhood: 'Manhattan', squareFootage: '500', postedBy: 'Agent A' },
-        { image: 'home2.jpg', address: '456 Park Ave, New York, NY', bathrooms: '2', price: '3000', neighborhood: 'Brooklyn', squareFootage: '650', postedBy: 'Agent B' },
-        { image: 'home3.jpg', address: '789 Broadway, New York, NY', bathrooms: '2', price: '3500', neighborhood: 'Queens', squareFootage: '700', postedBy: 'Agent C' },
-        { image: 'home4.jpg', address: '1011 4th St, New York, NY', bathrooms: '1', price: '2000', neighborhood: 'Bronx', squareFootage: '550', postedBy: 'Agent D' },
-        { image: 'home5.jpg', address: '1213 5th Ave, New York, NY', bathrooms: '3', price: '4000', neighborhood: 'Staten Island', squareFootage: '750', postedBy: 'Agent E' },
-      ];
-
+      const listings = JSON.parse('{{ listings_json|safe }}');
+    
       // Function to toggle the favorite state
       function toggleFavorite(event, index) {
         const icon = event.currentTarget;
         icon.classList.toggle('active');
         // Here you would normally update the favorite status in your database or state
       }
-
-      // For loop to generate the listings
-      for (let i = 0; i < listings.length; i++) {
-        const listing = listings[i];
-        document.write(`
-          <div class="listing">
-            <div class="listing-image">
-              <img src="${staticBasePath}${listing.image}" alt="Listing Image">
-              <div class="favorite-icon" onclick="toggleFavorite(event, ${i})">♥</div>
+    
+      if (listings.length === 0) {
+        // Display an error message if no listings are found
+        document.write("<p><strong> Sorry!! No available rentals for the search please check your spelling </p>");
+      } else {
+        // Loop through the listings and display them
+        for (let i = 0; i < listings.length; i++) {
+          const listing = listings[i];
+          document.write(`
+            <div class="listing">
+              <div class="listing-image">
+                <img src="${staticBasePath}${'home1.jpg'}" alt="Listing Image">
+                <div class="favorite-icon" onclick="toggleFavorite(event, ${i})">♥</div>
+              </div>
+              <div class="listing-details">
+                <h3>${listing.fields.address}</h3>
+                <p><strong>Bedrooms:</strong> ${listing.fields.beds}</p>
+                <p><strong>Bath:</strong> ${listing.fields.baths}</p>
+                <p><strong>Price:</strong> $${listing.fields.price}/month</p>
+                <p><strong>Neighbourhood:</strong> ${listing.fields.neighborhood}</p>
+                <p><strong>Square Footage:</strong> ${listing.fields.sq_ft} sq ft</p>
+                <p><strong>Posted by:</strong> ${listing.fields.postedBy}</p>
+              </div>
             </div>
-            <div class="listing-details">
-              <h3>${listing.address}</h3>
-              <p><strong>Bathrooms:</strong> ${listing.bathrooms}</p>
-              <p><strong>Price:</strong> $${listing.price}/month</p>
-              <p><strong>Neighbourhood:</strong> ${listing.neighborhood}</p>
-              <p><strong>Square Footage:</strong> ${listing.squareFootage} sq ft</p>
-              <p><strong>Posted by:</strong> ${listing.postedBy}</p>
-            </div>
-          </div>
-        `);
+          `);
+        }
       }
     </script>
+  
   </div>
   
 <!-- Optional JavaScript -->

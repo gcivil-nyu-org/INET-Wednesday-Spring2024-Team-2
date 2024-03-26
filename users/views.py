@@ -14,9 +14,15 @@ from django.contrib.auth.models import Group
 from .forms import LandlordSignupForm
 import boto3
 from django.conf import settings
-from .models import CustomUser
+from .models import CustomUser, Rental_Listings
 from io import BytesIO
 from .forms import CustomLoginForm
+from django.shortcuts import render
+from .models import Rental_Listings
+import json
+from django.core import serializers
+from django.shortcuts import render
+from .models import Rental_Listings
 
 LOGGING = {
     "version": 1,
@@ -186,8 +192,18 @@ def landlord_signup(request):
 
 @user_type_required("user")
 def rentals_page(request):
-    return render(request, 'users/searchRental/rentalspage.html')
+    borough = request.GET.get('borough', None)
+    listings = Rental_Listings.objects.filter(borough=borough) if borough else Rental_Listings.objects.all()
+
+    # Serialize the queryset directly to JSON
+    listings_json = serializers.serialize('json', listings)
+
+    context = {'listings_json': listings_json}
+    return render(request, 'users/searchRental/rentalspage.html', context)
+
 
 @user_type_required("user")
 def placeholder_view(request):
     return render(request, 'users/searchRental/placeholder.html')
+
+
