@@ -268,7 +268,7 @@ def rentals_page(request):
         listings = listings.order_by("price")
     elif sort_by == "price_desc":
         listings = listings.order_by("-price")
-    # Add more sorting options as needed
+    # Add more sorting options as neededed
 
     # Serialize the queryset directly to JSON
     listings_json = serializers.serialize("json", listings)
