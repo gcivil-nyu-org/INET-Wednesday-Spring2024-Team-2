@@ -24,15 +24,18 @@ class UserSignUpForm(UserCreationForm):
             "password1",
             "password2",
         )
+
     def clean_email(self):
-        email = self.cleaned_data['email']
-        if not email.endswith('@nyu.edu'):
-            raise ValidationError("Oops!! Only NYU email addresses are supported.")
+        email = self.cleaned_data["email"]
+        if not email.endswith("@nyu.edu"):
+            raise ValidationError("Oops! Only NYU email addresses are supported.")
+        if User.objects.filter(username=self.cleaned_data["email"]).exists():
+            raise ValidationError("Email already exists. Please use a different one.")
         return email
 
 
 class LandlordSignupForm(UserCreationForm):
-    pdf_file = forms.FileField(required=False)
+    pdf_file = forms.FileField(required=False, label="OwnerShip Document")  #
 
     class Meta:
         model = CustomUser
@@ -65,20 +68,9 @@ class LandlordSignupForm(UserCreationForm):
 
         if commit:
             user.save()
-            self.save_m2m()  # Call save_m2m if there are many-to-many fields that need to be saved.
+            self.save_m2m()
 
         return user
-class PasswordResetForm(forms.Form):
-    email = forms.EmailField(label="Email", max_length=254)
-
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        if not User.objects.filter(email=email).exists():
-            raise forms.ValidationError("""This email does not exist in our records.
-                                        Please make sure you entered it correctly,
-                                        or sign up for a new account
-                                        if you haven't already.""")
-        return email
 
 
 class CustomLoginForm(AuthenticationForm):
