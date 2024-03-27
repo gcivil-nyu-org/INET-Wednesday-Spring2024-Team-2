@@ -99,18 +99,18 @@
           Filter
         </button>
         <div class="dropdown-menu p-4" style="width: 300px;">
-          <form id="filterForm">
+          <form id="filterForm" method="GET">
             <div class="mb-3">
               <label for="bedrooms" class="form-label">Bedrooms</label>
-              <select class="form-select" id="bedrooms">
-                <option value="1">1 bedroom</option>
+              <select class="form-select" id="bedrooms" name="bedrooms">
+                <option value="1">1 bedroom</odption>
                 <option value="2">2 bedrooms</option>
                 <option value="3">3 bedrooms</option>
               </select>
             </div>
             <div class="mb-3">
               <label for="bathrooms" class="form-label">Bathrooms</label>
-              <select class="form-select" id="bathrooms">
+              <select class="form-select" id="bathrooms" name = "bathrooms">
                 <option value="1">1 bath</option>
                 <option value="1.5">1.5 bath</option>
                 <option value="2">2 bath</option>
@@ -119,33 +119,33 @@
             </div>
             <div class="mb-3">
               <label for="minPrice" class="form-label">Min Price</label>
-              <input type="number" class="form-control" id="minPrice" placeholder="0">
+              <input type="number" class="form-control" id="minPrice" name = "min_price" placeholder="000000000">
             </div>
             <div class="mb-3">
               <label for="maxPrice" class="form-label">Max Price</label>
-              <input type="number" class="form-control" id="maxPrice" placeholder="0">
+              <input type="number" class="form-control" id="maxPrice" name = "max_price" placeholder="9999999999">
             </div>
             <div class="mb-3 form-check">
-              <input type="checkbox" class="form-check-input" id="elevator">
+              <input type="checkbox" class="form-check-input" id="elevator" name = "elevator">
               <label class="form-check-label" for="elevator">Elevator</label>
             </div>
             <div class="mb-3 form-check">
-              <input type="checkbox" class="form-check-input" id="laundry">
+              <input type="checkbox" class="form-check-input" id="laundry" name = "laundry">
               <label class="form-check-label" for="laundry">Laundry</label>
             </div>
             <div class="mb-3 form-check">
-              <input type="checkbox" class="form-check-input" id="brokerFee">
+              <input type="checkbox" class="form-check-input" id="brokerFee" name = "broker_fee">
               <label class="form-check-label" for="brokerFee">Broker Fee</label>
             </div>
             <div class="mb-3">
                 <label for="buildingType" class="form-label">Building Type</label>
-                <select class="form-select" id="buildingType">
+                <select class="form-select" id="buildingType" name = "">
                   <option value="Apartment">Apartment</option>
                   <option value="Hostel">Hostel</option>
                 </select>
             </div>  
             <div class="mb-3 form-check">
-              <input type="checkbox" class="form-check-input" id="parking">
+              <input type="checkbox" class="form-check-input" id="parking" name="parking">
               <label class="form-check-label" for="parking">Parking</label>
             </div>
             <button type="submit" class="btn btn-primary">Apply</button>
@@ -209,6 +209,7 @@
                 <p><strong>Bedrooms:</strong> ${listing.fields.beds}</p>
                 <p><strong>Bath:</strong> ${listing.fields.baths}</p>
                 <p><strong>Price:</strong> $${listing.fields.price}/month</p>
+                <p><strong>Borough:</strong> ${listing.fields.borough}</p>
                 <p><strong>Neighbourhood:</strong> ${listing.fields.neighborhood}</p>
                 <p><strong>Square Footage:</strong> ${listing.fields.sq_ft} sq ft</p>
                 <p><strong>Posted by:</strong> ${listing.fields.postedBy}</p>

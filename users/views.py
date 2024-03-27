@@ -190,10 +190,59 @@ def landlord_signup(request):
         form = LandlordSignupForm()
     return render(request, "signup/landlord_signup.html", {"form": form})
 
+from django.db.models import Q
+
 @user_type_required("user")
 def rentals_page(request):
-    borough = request.GET.get('borough', None)
-    listings = Rental_Listings.objects.filter(borough=borough) if borough else Rental_Listings.objects.all()
+    print(request)
+    # Filter parameters
+    borough = request.GET.get('borough')
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+    bedrooms = request.GET.get('bedrooms')
+    bathrooms = request.GET.get('bathrooms')
+    elevator = request.GET.get('elevator') == 'True'
+    laundry = request.GET.get('laundry') == 'True'
+    broker_fee = request.GET.get('broker_fee') == 'True'
+    building_type = request.GET.get('building_type')
+    parking = request.GET.get('parking') == 'True'
+    print("Borough=" , borough, "MinPrice=", min_price, "MaxPrice=",max_price, "Bedrooms=", 
+          bedrooms, "Baths=",bathrooms, "elevator=" , elevator, 
+          "laundry=", laundry, "BrokerFee=", broker_fee, "Buildingtype=", building_type, "parking=", parking)
+    # Start with all listings
+    listings = Rental_Listings.objects.all()
+
+    # Apply filters
+    if borough:
+        listings = listings.filter(borough=borough)
+    if min_price:
+        min_price = int(min_price)
+        listings = listings.filter(price__gte=min_price)
+    if max_price:
+        max_price = int(max_price)
+        listings = listings.filter(price__lte=max_price)
+    if bedrooms:
+        listings = listings.filter(beds=bedrooms)
+    if bathrooms:
+        listings = listings.filter(baths=bathrooms)
+    if elevator:
+        listings = listings.filter(elevator=True)
+    if laundry:
+        listings = listings.filter(washer_dryer_in_unit=True)
+    if broker_fee:
+        listings = listings.filter(broker_fee=True)
+    if building_type:
+        listings = listings.filter(unit_type=building_type)
+    if parking:
+        listings = listings.filter(parking_available=True)
+
+    # Sorting
+    sort_by = request.GET.get('sort_by')
+    if sort_by == 'price_asc':
+        listings = listings.order_by('price')
+    elif sort_by == 'price_desc':
+        listings = listings.order_by('-price')
+    # Add more sorting options as needed
 
     # Serialize the queryset directly to JSON
     listings_json = serializers.serialize('json', listings)
