@@ -17,11 +17,72 @@
         <div class="d-flex justify-content-end">
             <a href="{% url 'logout' %}" class="btn btn-secondary">Logout</a>
         </div>
-        <div class="text-center">
-            <form action="{% url 'rentalspage' %}">
-                <button type="submit" class="btn btn-primary mt-3">Go to Rentals Page</button>
-            </form>
+        <div class="container">
+            <div class="row justify-content-center mt-4">
+                <div class="col-md-6">
+                    <form action="{% url 'rentalspage' %}" method="get" >
+                        <div class="text-center">
+                            <label for="boroughSearch" class="form-label">Search for Borough for Available rentals</label>
+                        </div>
+                        <input type="search" placeholder="Search" class="form-control form-control me-sm-2" id="boroughSearch" name="borough" autocomplete="off">
+                        <div class="text-center mt-3">
+                            <button type="submit" class="btn btn-primary">Search Rentals</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
+        <script>
+            const boroughs = ['Manhattan', 'Brooklyn', 'Queens', 'Bronx', 'Staten Island'];
+        
+            const searchInput = document.getElementById('boroughSearch');
+            const searchResults = document.createElement('div');
+            searchResults.classList.add('search-results');
+            searchInput.parentNode.appendChild(searchResults);
+        
+            function renderResults(results) {
+                searchResults.innerHTML = '';
+                results.forEach(result => {
+                    const option = document.createElement('div');
+                    option.classList.add('search-option');
+                    option.textContent = result;
+                    option.addEventListener('click', function() {
+                        searchInput.value = result;
+                        searchResults.innerHTML = '';
+                    });
+                    searchResults.appendChild(option);
+                });
+            }
+        
+            function showAllOptions() {
+                renderResults(boroughs);
+            }
+        
+            function filterOptions(inputValue) {
+                const matchingBoroughs = boroughs.filter(borough =>
+                    borough.toLowerCase().startsWith(inputValue.toLowerCase())
+                );
+                renderResults(matchingBoroughs);
+            }
+        
+            searchInput.addEventListener('focus', showAllOptions);
+        
+            searchInput.addEventListener('input', function() {
+                const inputValue = this.value.trim();
+                if (inputValue === '') {
+                    showAllOptions();
+                } else {
+                    filterOptions(inputValue);
+                }
+            });
+        
+            // Hide results if user clicks outside the search input or results
+            document.addEventListener('click', function(event) {
+                if (!searchResults.contains(event.target) && event.target !== searchInput) {
+                    searchResults.innerHTML = '';
+                }
+            });
+        </script>
     {% endif %}
 </div>
 
