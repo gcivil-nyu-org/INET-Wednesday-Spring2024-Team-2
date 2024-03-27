@@ -4,6 +4,8 @@ import uuid
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.db import IntegrityError
+from django.core.exceptions import ValidationError
 import logging.config
 import sys
 from django.urls import reverse
@@ -64,7 +66,7 @@ def login_process(request, user_type, this_page, destination_url_name):
         if user_type == "landlord" and user.verified is False:
             messages.error(
                 request,
-                "Your account has not been verified by the admin yet. Please wait!!",
+                "Your account has not been verified by the admin yet. Please wait!",
             )
             return render(request, this_page, {"form": form})
         login(request, user)
@@ -103,13 +105,14 @@ def user_signup(request):
                 user.verified = True
             else:
                 user.verified = False
-            user.save()
             login(request, user, backend="django.contrib.auth.backends.ModelBackend")
             return redirect("user_homepage")
-        else:
-            messages.error(request, form.errors)
     else:
         form = UserSignUpForm()
+    for field, errors in form.errors.items():
+        for error in errors:
+            messages.error(request, f"{error}")
+
     return render(request, "users/signup/signup.html", {"form": form})
 
 
@@ -181,18 +184,22 @@ def landlord_signup(request):
                     print(f"Error uploading file to S3: {e}")
             user.save()
 
-            messages.success(request, "Signup successful. Please log in.")
+            messages.success(request, "Registration successful. Please log in.")
             return redirect("landlord_login")
         else:
-            messages.error(request, "Signup failed. Please correct the errors below.")
+            messages.error(
+                request, "Registration failed. Please correct the errors below."
+            )
     else:
         form = LandlordSignupForm()
     return render(request, "signup/landlord_signup.html", {"form": form})
 
+
 @user_type_required("user")
 def rentals_page(request):
-    return render(request, 'users/searchRental/rentalspage.html')
+    return render(request, "users/searchRental/rentalspage.html")
+
 
 @user_type_required("user")
 def placeholder_view(request):
-    return render(request, 'users/searchRental/placeholder.html')
+    return render(request, "users/searchRental/placeholder.html")
