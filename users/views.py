@@ -146,7 +146,7 @@ def landlord_signup(request):
             print(request.FILES)
             user = form.save(commit=False)
 
-            # Upload file to S3 if present
+            # Upload file to S3 if present check
             pdf_file = request.FILES.get("pdf_file")
             print(pdf_file)
             if pdf_file:
