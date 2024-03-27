@@ -156,7 +156,8 @@ class LandlordSignUpTest(TestCase):
             "city": "Landlord City",
             "password1": "landlordpassword123",
             "password2": "landlordpassword123",
-            # Assume "pdf_file" is optional for simplicity; otherwise, use SimpleUploadedFile for tests
+            # Assume "pdf_file" is optional for simplicity; otherwise,
+            # use SimpleUploadedFile for tests
         }
         response = self.client.post(reverse("landlord_signup"), form_data)
         self.assertEqual(

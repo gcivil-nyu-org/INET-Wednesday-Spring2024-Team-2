@@ -1,7 +1,11 @@
+import os
+import uuid
+
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-import logging
+from django.db import IntegrityError
+from django.core.exceptions import ValidationError
 import logging.config
 import sys
 from django.urls import reverse
@@ -66,7 +70,7 @@ def login_process(request, user_type, this_page, destination_url_name):
         if user_type == "landlord" and user.verified is False:
             messages.error(
                 request,
-                "Your account has not been verified by the admin yet. Please wait!!",
+                "Your account has not been verified by the admin yet. Please wait!",
             )
             return render(request, this_page, {"form": form})
         login(request, user)
@@ -105,13 +109,14 @@ def user_signup(request):
                 user.verified = True
             else:
                 user.verified = False
-            user.save()
             login(request, user, backend="django.contrib.auth.backends.ModelBackend")
             return redirect("user_homepage")
-        else:
-            messages.error(request, form.errors)
     else:
         form = UserSignUpForm()
+    for field, errors in form.errors.items():
+        for error in errors:
+            messages.error(request, f"{error}")
+
     return render(request, "users/signup/signup.html", {"form": form})
 
 
@@ -145,9 +150,10 @@ def landlord_signup(request):
             pdf_file = request.FILES.get("pdf_file")
             print(pdf_file)
             if pdf_file:
+                file_name, file_extension = os.path.splitext(pdf_file.name)
                 print(f"Received file: {pdf_file.name}")  # Debug print
-                file_name = f"pdfs/{pdf_file.name}"  # Customize the path as needed
-                # s3_client = boto3.client('s3')
+                file_name = f"pdfs/{file_name}_{uuid.uuid4()}{file_extension}"
+                print(file_name)
                 try:
                     s3_client = boto3.client(
                         "s3",
@@ -159,10 +165,12 @@ def landlord_signup(request):
                     existing_files = s3_client.list_objects_v2(
                         Bucket=settings.AWS_STORAGE_BUCKET_NAME, Prefix=file_name
                     )
+
                     if "Contents" in existing_files:
                         messages.error(
                             request,
-                            "A file with the same name already exists. Please rename your file and try again.",
+                            "A file with the same name already exists."
+                            " Please rename your file and try again.",
                         )
                         return render(
                             request, "signup/landlord_signup.html", {"form": form}
@@ -171,16 +179,21 @@ def landlord_signup(request):
                     s3_client.upload_fileobj(
                         pdf_file, "landlord-verification-files", file_name
                     )
-                    user.s3_doclink = f"https://landlord-verification-files.s3.amazonaws.com/{file_name}"
+                    user.s3_doclink = (
+                        f"https://landlord-verification-files."
+                        f"s3.amazonaws.com/{file_name}"
+                    )
                     print("File uploaded successfully")
                 except Exception as e:
                     print(f"Error uploading file to S3: {e}")
             user.save()
 
-            messages.success(request, "Signup successful. Please log in.")
+            messages.success(request, "Registration successful. Please log in.")
             return redirect("landlord_login")
         else:
-            messages.error(request, "Signup failed. Please correct the errors below.")
+            messages.error(
+                request, "Registration failed. Please correct the errors below."
+            )
     else:
         form = LandlordSignupForm()
     return render(request, "signup/landlord_signup.html", {"form": form})
