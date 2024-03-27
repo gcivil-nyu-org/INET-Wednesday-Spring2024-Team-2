@@ -9,20 +9,14 @@ from users.decorators import user_type_required
 from users.forms import UserSignUpForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import Group
-
-# from .forms import CustomUserCreationForm
+from django.db.models import Q
 from .forms import LandlordSignupForm
 import boto3
 from django.conf import settings
-from .models import CustomUser, Rental_Listings
-from io import BytesIO
+from .models import CustomUser
 from .forms import CustomLoginForm
-from django.shortcuts import render
 from .models import Rental_Listings
-import json
 from django.core import serializers
-from django.shortcuts import render
-from .models import Rental_Listings
 
 LOGGING = {
     "version": 1,
@@ -50,35 +44,36 @@ def custom_404_handler(request, exception):
 
 def login_process(request, user_type, this_page, destination_url_name):
     if request.method != "POST":
-        form = CustomLoginForm()  
-        return render(request, this_page, {'form': form})
+        form = CustomLoginForm()
+        return render(request, this_page, {"form": form})
 
     form = CustomLoginForm(request, request.POST)  # Pass the request to the form
     if form.is_valid():
-        username = form.cleaned_data['username']
-        password = form.cleaned_data['password']
+        username = form.cleaned_data["username"]
+        password = form.cleaned_data["password"]
         user = authenticate(request, username=username, password=password)
 
         if user is None:
             messages.error(request, "Invalid credentials!")
-            return render(request, this_page, {'form': form})
+            return render(request, this_page, {"form": form})
 
         if getattr(user, "user_type", None) != user_type:
             messages.error(
                 request,
-                f"Please provide correct credentials to login as {user_type.capitalize()}!", # noqa:<E501>
+                f"Please provide correct credentials to login as {user_type.capitalize()}!",  # noqa:<E501>
             )
-            return render(request, this_page, {'form': form})
+            return render(request, this_page, {"form": form})
         if user_type == "landlord" and user.verified is False:
             messages.error(
                 request,
                 "Your account has not been verified by the admin yet. Please wait!!",
             )
-            return render(request, this_page, {'form': form})
+            return render(request, this_page, {"form": form})
         login(request, user)
         return redirect(reverse(destination_url_name))
 
-    return render(request, this_page, {'form': form})
+    return render(request, this_page, {"form": form})
+
 
 def landlord_login(request):
     return login_process(
@@ -88,6 +83,7 @@ def landlord_login(request):
         destination_url_name="landlord_homepage",
     )
 
+
 def user_login(request):
     return login_process(
         request,
@@ -95,7 +91,6 @@ def user_login(request):
         this_page="login/user_login.html",
         destination_url_name="user_homepage",  # URL pattern name for user's homepage
     )
-
 
 
 def user_signup(request):
@@ -190,25 +185,43 @@ def landlord_signup(request):
         form = LandlordSignupForm()
     return render(request, "signup/landlord_signup.html", {"form": form})
 
-from django.db.models import Q
 
 @user_type_required("user")
 def rentals_page(request):
     print(request)
     # Filter parameters
-    borough = request.GET.get('borough')
-    min_price = request.GET.get('min_price')
-    max_price = request.GET.get('max_price')
-    bedrooms = request.GET.get('bedrooms')
-    bathrooms = request.GET.get('bathrooms')
-    elevator = request.GET.get('elevator') == 'True'
-    laundry = request.GET.get('laundry') == 'True'
-    broker_fee = request.GET.get('broker_fee') == 'True'
-    building_type = request.GET.get('building_type')
-    parking = request.GET.get('parking') == 'True'
-    print("Borough=" , borough, "MinPrice=", min_price, "MaxPrice=",max_price, "Bedrooms=", 
-          bedrooms, "Baths=",bathrooms, "elevator=" , elevator, 
-          "laundry=", laundry, "BrokerFee=", broker_fee, "Buildingtype=", building_type, "parking=", parking)
+    borough = request.GET.get("borough")
+    min_price = request.GET.get("min_price")
+    max_price = request.GET.get("max_price")
+    bedrooms = request.GET.get("bedrooms")
+    bathrooms = request.GET.get("bathrooms")
+    elevator = request.GET.get("elevator") == "True"
+    laundry = request.GET.get("laundry") == "True"
+    broker_fee = request.GET.get("broker_fee") == "True"
+    building_type = request.GET.get("building_type")
+    parking = request.GET.get("parking") == "True"
+    print(
+        "Borough=",
+        borough,
+        "MinPrice=",
+        min_price,
+        "MaxPrice=",
+        max_price,
+        "Bedrooms=",
+        bedrooms,
+        "Baths=",
+        bathrooms,
+        "elevator=",
+        elevator,
+        "laundry=",
+        laundry,
+        "BrokerFee=",
+        broker_fee,
+        "Buildingtype=",
+        building_type,
+        "parking=",
+        parking,
+    )
     # Start with all listings
     listings = Rental_Listings.objects.all()
 
@@ -237,22 +250,20 @@ def rentals_page(request):
         listings = listings.filter(parking_available=True)
 
     # Sorting
-    sort_by = request.GET.get('sort_by')
-    if sort_by == 'price_asc':
-        listings = listings.order_by('price')
-    elif sort_by == 'price_desc':
-        listings = listings.order_by('-price')
+    sort_by = request.GET.get("sort_by")
+    if sort_by == "price_asc":
+        listings = listings.order_by("price")
+    elif sort_by == "price_desc":
+        listings = listings.order_by("-price")
     # Add more sorting options as needed
 
     # Serialize the queryset directly to JSON
-    listings_json = serializers.serialize('json', listings)
+    listings_json = serializers.serialize("json", listings)
 
-    context = {'listings_json': listings_json}
-    return render(request, 'users/searchRental/rentalspage.html', context)
+    context = {"listings_json": listings_json}
+    return render(request, "users/searchRental/rentalspage.html", context)
 
 
 @user_type_required("user")
 def placeholder_view(request):
-    return render(request, 'users/searchRental/placeholder.html')
-
-
+    return render(request, "users/searchRental/placeholder.html")
