@@ -77,8 +77,13 @@ class Rental_Listings(models.Model):
     broker_fee = models.DecimalField(
         max_digits=10, decimal_places=2, blank=True, null=True
     )
-    Landlord = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='rental_listings', null=True,
-                                 blank=True)
+    Landlord = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name="rental_listings",
+        null=True,
+        blank=True,
+    )
     Submitted_date = models.DateField(blank=True, default="2024-01-03")
     Availability_Date = models.DateField(blank=True, null=True)
 
@@ -105,7 +110,9 @@ class ExampleTable(models.Model):
 
 
 class RentalImages(models.Model):
-    rental_listing = models.ForeignKey(Rental_Listings, on_delete=models.CASCADE, related_name='images')
+    rental_listing = models.ForeignKey(
+        Rental_Listings, on_delete=models.CASCADE, related_name="images"
+    )
     image_url = models.URLField(max_length=2048)
 
     def __str__(self):

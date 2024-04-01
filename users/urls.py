@@ -46,5 +46,5 @@ urlpatterns = [
     ),
     path("rentalspage/", views.rentals_page, name="rentalspage"),
     path("placeholder/", placeholder_view, name="placeholder"),
-    path('listings/<int:listing_id>/', views.listing_detail, name='listing_detail'),
+    path("listings/<int:listing_id>/", views.listing_detail, name="listing_detail"),
 ]

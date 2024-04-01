@@ -243,7 +243,7 @@ def rentals_page(request):
         listings = listings.filter(parking_available=True)
 
     # Annotate each listing with the URL of its first image
-    listings = listings.annotate(first_image=Min('images__image_url'))
+    listings = listings.annotate(first_image=Min("images__image_url"))
 
     # Sorting
     sort_by = request.GET.get("sort_by")
@@ -255,7 +255,7 @@ def rentals_page(request):
 
     # Pagination
     paginator = Paginator(listings, 5)  # Show 5 listings per page
-    page_number = request.GET.get('page')
+    page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
     context = {"page_obj": page_obj}
@@ -266,6 +266,7 @@ def rentals_page(request):
 def placeholder_view(request):
     return render(request, "users/searchRental/placeholder.html")
 
+
 def listing_detail(request, listing_id):
     listing = get_object_or_404(Listing, pk=listing_id)
-    return render(request, 'listing_detail.html', {'listing': listing})
+    return render(request, "listing_detail.html", {"listing": listing})
