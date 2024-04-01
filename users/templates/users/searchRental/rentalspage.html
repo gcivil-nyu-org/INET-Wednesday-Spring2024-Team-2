@@ -60,8 +60,8 @@
 
 <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
   <div class="container-fluid">
-    <a class="navbar-brand" href="{% url 'placeholder' %}">
-        RentWiseNyc <!-- Here's the simple text replacement -->
+    <a class="navbar-brand" href="{% url 'user_homepage' %}">
+        RentWiseNYC <!-- Here's the simple text replacement -->
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -99,18 +99,18 @@
           Filter
         </button>
         <div class="dropdown-menu p-4" style="width: 300px;">
-          <form id="filterForm">
+          <form id="filterForm" method="GET">
             <div class="mb-3">
               <label for="bedrooms" class="form-label">Bedrooms</label>
-              <select class="form-select" id="bedrooms">
-                <option value="1">1 bedroom</option>
+              <select class="form-select" id="bedrooms" name="bedrooms">
+                <option value="1">1 bedroom</odption>
                 <option value="2">2 bedrooms</option>
                 <option value="3">3 bedrooms</option>
               </select>
             </div>
             <div class="mb-3">
               <label for="bathrooms" class="form-label">Bathrooms</label>
-              <select class="form-select" id="bathrooms">
+              <select class="form-select" id="bathrooms" name = "bathrooms">
                 <option value="1">1 bath</option>
                 <option value="1.5">1.5 bath</option>
                 <option value="2">2 bath</option>
@@ -119,33 +119,33 @@
             </div>
             <div class="mb-3">
               <label for="minPrice" class="form-label">Min Price</label>
-              <input type="number" class="form-control" id="minPrice" placeholder="0">
+              <input type="number" class="form-control" id="minPrice" name = "min_price" placeholder="000000000">
             </div>
             <div class="mb-3">
               <label for="maxPrice" class="form-label">Max Price</label>
-              <input type="number" class="form-control" id="maxPrice" placeholder="0">
+              <input type="number" class="form-control" id="maxPrice" name = "max_price" placeholder="9999999999">
             </div>
             <div class="mb-3 form-check">
-              <input type="checkbox" class="form-check-input" id="elevator">
+              <input type="checkbox" class="form-check-input" id="elevator" name = "elevator">
               <label class="form-check-label" for="elevator">Elevator</label>
             </div>
             <div class="mb-3 form-check">
-              <input type="checkbox" class="form-check-input" id="laundry">
+              <input type="checkbox" class="form-check-input" id="laundry" name = "laundry">
               <label class="form-check-label" for="laundry">Laundry</label>
             </div>
             <div class="mb-3 form-check">
-              <input type="checkbox" class="form-check-input" id="brokerFee">
+              <input type="checkbox" class="form-check-input" id="brokerFee" name = "broker_fee">
               <label class="form-check-label" for="brokerFee">Broker Fee</label>
             </div>
             <div class="mb-3">
                 <label for="buildingType" class="form-label">Building Type</label>
-                <select class="form-select" id="buildingType">
+                <select class="form-select" id="buildingType" name = "">
                   <option value="Apartment">Apartment</option>
                   <option value="Hostel">Hostel</option>
                 </select>
             </div>  
             <div class="mb-3 form-check">
-              <input type="checkbox" class="form-check-input" id="parking">
+              <input type="checkbox" class="form-check-input" id="parking" name="parking">
               <label class="form-check-label" for="parking">Parking</label>
             </div>
             <button type="submit" class="btn btn-primary">Apply</button>
@@ -182,43 +182,44 @@
         var staticBasePath = "{% static 'users/images/' %}";
     </script>    
     <script>
-      // Sample data for listings
-      const listings = [
-        { image: 'home1.jpg', address: '123 Main St, New York, NY', bathrooms: '1', price: '2500', neighborhood: 'Manhattan', squareFootage: '500', postedBy: 'Agent A' },
-        { image: 'home2.jpg', address: '456 Park Ave, New York, NY', bathrooms: '2', price: '3000', neighborhood: 'Brooklyn', squareFootage: '650', postedBy: 'Agent B' },
-        { image: 'home3.jpg', address: '789 Broadway, New York, NY', bathrooms: '2', price: '3500', neighborhood: 'Queens', squareFootage: '700', postedBy: 'Agent C' },
-        { image: 'home4.jpg', address: '1011 4th St, New York, NY', bathrooms: '1', price: '2000', neighborhood: 'Bronx', squareFootage: '550', postedBy: 'Agent D' },
-        { image: 'home5.jpg', address: '1213 5th Ave, New York, NY', bathrooms: '3', price: '4000', neighborhood: 'Staten Island', squareFootage: '750', postedBy: 'Agent E' },
-      ];
-
+      const listings = JSON.parse('{{ listings_json|safe }}');
+    
       // Function to toggle the favorite state
       function toggleFavorite(event, index) {
         const icon = event.currentTarget;
         icon.classList.toggle('active');
         // Here you would normally update the favorite status in your database or state
       }
-
-      // For loop to generate the listings
-      for (let i = 0; i < listings.length; i++) {
-        const listing = listings[i];
-        document.write(`
-          <div class="listing">
-            <div class="listing-image">
-              <img src="${staticBasePath}${listing.image}" alt="Listing Image">
-              <div class="favorite-icon" onclick="toggleFavorite(event, ${i})">♥</div>
+    
+      if (listings.length === 0) {
+        // Display an error message if no listings are found
+        document.write("<p><strong> Sorry!! No available rentals for the search please check your spelling </p>");
+      } else {
+        // Loop through the listings and display them
+        for (let i = 0; i < listings.length; i++) {
+          const listing = listings[i];
+          document.write(`
+            <div class="listing">
+              <div class="listing-image">
+                <img src="${staticBasePath}${'home1.jpg'}" alt="Listing Image">
+                <div class="favorite-icon" onclick="toggleFavorite(event, ${i})">♥</div>
+              </div>
+              <div class="listing-details">
+                <h3>${listing.fields.address}</h3>
+                <p><strong>Bedrooms:</strong> ${listing.fields.beds}</p>
+                <p><strong>Bath:</strong> ${listing.fields.baths}</p>
+                <p><strong>Price:</strong> $${listing.fields.price}/month</p>
+                <p><strong>Borough:</strong> ${listing.fields.borough}</p>
+                <p><strong>Neighbourhood:</strong> ${listing.fields.neighborhood}</p>
+                <p><strong>Square Footage:</strong> ${listing.fields.sq_ft} sq ft</p>
+                <p><strong>Posted by:</strong> ${listing.fields.postedBy}</p>
+              </div>
             </div>
-            <div class="listing-details">
-              <h3>${listing.address}</h3>
-              <p><strong>Bathrooms:</strong> ${listing.bathrooms}</p>
-              <p><strong>Price:</strong> $${listing.price}/month</p>
-              <p><strong>Neighbourhood:</strong> ${listing.neighborhood}</p>
-              <p><strong>Square Footage:</strong> ${listing.squareFootage} sq ft</p>
-              <p><strong>Posted by:</strong> ${listing.postedBy}</p>
-            </div>
-          </div>
-        `);
+          `);
+        }
       }
     </script>
+  
   </div>
   
 <!-- Optional JavaScript -->

@@ -25,14 +25,16 @@
     </style>
 </head>
 <body>
-<div class="container mt-5">
-    {% if messages %}
-    <ul class="messages">
+{% if messages %}
+    <div class="container mt-3">
         {% for message in messages %}
-        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %}" role="alert">
+                {{ message }}
+            </div>
         {% endfor %}
-    </ul>
-    {% endif %}
+    </div>
+{% endif %}
+<div class="container mt-5">
     <h2 class="text-center">Landlord Sign Up</h2>
     <div class="custom-form">
         <form method="post" enctype="multipart/form-data" class="mt-4">
