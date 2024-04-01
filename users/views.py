@@ -1,7 +1,7 @@
 import os
 import uuid
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.db import IntegrityError
@@ -268,5 +268,9 @@ def placeholder_view(request):
 
 
 def listing_detail(request, listing_id):
-    listing = get_object_or_404(Listing, pk=listing_id)
-    return render(request, "listing_detail.html", {"listing": listing})
+    # Retrieve the specific listing based on the ID provided in the URL parameter
+    listing = get_object_or_404(Rental_Listings, id=listing_id)
+
+    # Pass the listing data to a template for rendering
+    context = {"listing": listing}
+    return render(request, "users/searchRental/listing_detail.html", context)
