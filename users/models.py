@@ -102,3 +102,11 @@ class ExampleTable(models.Model):
 
     def __str__(self):
         return self.example_column
+
+
+class RentalImages(models.Model):
+    rental_listing = models.ForeignKey(Rental_Listings, on_delete=models.CASCADE, related_name='images')
+    image_url = models.URLField(max_length=2048)
+
+    def __str__(self):
+        return self.image_url
