@@ -19,7 +19,6 @@ import boto3
 from django.conf import settings
 from .models import CustomUser
 from .forms import CustomLoginForm
-from .models import Rental_Listings
 from django.core import serializers
 from .models import Favorite, Rental_Listings
 from django.views.decorators.http import require_POST
@@ -354,4 +353,5 @@ def toggle_favorite(request):
         except Rental_Listings.DoesNotExist:
             return JsonResponse({'error': 'Listing not found'}, status=404)
         except Exception as e:
+            logger.error(f'Internal server error: {e}', exc_info=True)
             return JsonResponse({'error': 'Internal server error'}, status=500)
