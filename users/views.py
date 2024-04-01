@@ -21,6 +21,8 @@ from .models import CustomUser, Rental_Listings
 from .forms import CustomLoginForm
 from django.core import serializers
 from django.forms.models import model_to_dict
+from django.core.paginator import Paginator, Page, EmptyPage, PageNotAnInteger
+
 
 LOGGING = {
     "version": 1,
@@ -213,28 +215,6 @@ def rentals_page(request):
     broker_fee = request.GET.get("broker_fee") == "True"
     building_type = request.GET.get("building_type")
     parking = request.GET.get("parking") == "True"
-    print(
-        "Borough=",
-        borough,
-        "MinPrice=",
-        min_price,
-        "MaxPrice=",
-        max_price,
-        "Bedrooms=",
-        bedrooms,
-        "Baths=",
-        bathrooms,
-        "elevator=",
-        elevator,
-        "laundry=",
-        laundry,
-        "BrokerFee=",
-        broker_fee,
-        "Buildingtype=",
-        building_type,
-        "parking=",
-        parking,
-    )
     # Start with all listings
     listings = Rental_Listings.objects.all()
 
@@ -268,11 +248,14 @@ def rentals_page(request):
         listings = listings.order_by("price")
     elif sort_by == "price_desc":
         listings = listings.order_by("-price")
-    # Add more sorting options as neededed
+    # Add more sorting options as needed
 
-    listings_data = [model_to_dict(listing) for listing in listings]
+    # Pagination
+    paginator = Paginator(listings, 5)  # Show 5 listings per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
-    context = {"listings_json": listings_data}
+    context = {"page_obj": page_obj}
     return render(request, "users/searchRental/rentalspage.html", context)
 
 
