@@ -45,5 +45,6 @@ urlpatterns = [
         name="password_reset_complete",
     ),
     path("rentalspage/", views.rentals_page, name="rentalspage"),
+    path("post_new_listings/", views.add_rental_listing, name="post_new_listings"),
     path("placeholder/", placeholder_view, name="placeholder"),
 ]

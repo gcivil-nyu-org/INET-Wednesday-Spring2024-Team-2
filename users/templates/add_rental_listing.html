@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rentals Page - RentWiseNyc</title>
+    <!-- Bootstrap CSS from Bootswatch Pulse -->
+    <link href="https://bootswatch.com/5/pulse/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .custom-form {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            display: block;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-5">
+    <h2 class="text-center">Add Rental Listing</h2>
+    <div class="custom-form">
+        <form method="post" enctype="multipart/form-data" class="mt-4">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="mb-3">
+                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <div id="{{ field.id_for_label }}Help" class="form-text">{{ field.help_text }}</div>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <div class="invalid-feedback" style="display: block;">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary form-button">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

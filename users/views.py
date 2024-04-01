@@ -10,7 +10,7 @@ import logging.config
 import sys
 from django.urls import reverse
 from users.decorators import user_type_required
-from users.forms import UserSignUpForm
+from users.forms import UserSignUpForm, RentalListingForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import Group
 from django.db.models import Q
@@ -67,12 +67,12 @@ def login_process(request, user_type, this_page, destination_url_name):
                 f"Please provide correct credentials to login as {user_type.capitalize()}!",  # noqa:<E501>
             )
             return render(request, this_page, {"form": form})
-        if user_type == "landlord" and user.verified is False:
-            messages.error(
-                request,
-                "Your account has not been verified by the admin yet. Please wait!",
-            )
-            return render(request, this_page, {"form": form})
+        # if user_type == "landlord" and user.verified is False:
+        #     messages.error(
+        #         request,
+        #         "Your account has not been verified by the admin yet. Please wait!",
+        #     )
+        #     return render(request, this_page, {"form": form})
         login(request, user)
         return redirect(reverse(destination_url_name))
 
@@ -136,7 +136,8 @@ def user_home(request):
 
 @user_type_required("landlord")
 def landlord_home(request):
-    return render(request, "landlord_homepage.html")
+    listings = Rental_Listings.objects.filter(Landlord=request.user)
+    return render(request, 'landlord_homepage.html', {'listings': listings})
 
 
 def landlord_signup(request):
@@ -276,6 +277,18 @@ def rentals_page(request):
     context = {"listings_json": listings_json}
     return render(request, "users/searchRental/rentalspage.html", context)
 
+@user_type_required("landlord")
+def add_rental_listing(request):
+    if request.method == 'POST':
+        form = RentalListingForm(request.POST, request.FILES)
+        if form.is_valid():
+            rental_listing = form.save(commit=False)
+            rental_listing.Landlord = request.user
+            rental_listing.save()
+            return redirect('landlord_homepage')
+    else:
+        form = RentalListingForm()
+    return render(request, 'add_rental_listing.html', {'form': form})
 
 @user_type_required("user")
 def placeholder_view(request):

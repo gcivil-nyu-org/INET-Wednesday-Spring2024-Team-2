@@ -4,35 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Landlord Homepage</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'users/common_style.css' %}">
+    <!-- Using the Pulse theme from Bootswatch for consistency with User Homepage -->
+    <link rel="stylesheet" href="https://bootswatch.com/5/pulse/bootstrap.css">
     <style>
-        .logout-link {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 8px 15px;
-            background-color: #909790;
-            color: white;
-            border-radius: 4px;
-            text-decoration: none;
-            transition: background-color 0.2s;
+        .custom-button {
+            margin-top: 20px;
+            margin-bottom: 20px;
         }
-
-        .logout-link:hover {
-            background-color: #555b55;
+        .listings-container {
+            margin-top: 30px;
         }
-
-        body {
-            position: relative;
+        .listing-item {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
         }
     </style>
 </head>
-<body>
-<h2>Landlord Homepage</h2>
-{% if user.is_authenticated %}
-    <p>Welcome, {{ user.username }}!</p>
-    <a href="{% url 'logout' %}" class="logout-link">Logout</a>
-{% endif %}
+<body class="bg-light">
+
+<div class="container mt-5">
+    <h2 class="text-center">Landlord Homepage</h2>
+    {% if user.is_authenticated %}
+        <p class="text-center">Welcome, {{ user.username }}!</p>
+        <div class="d-flex justify-content-between align-items-center">
+            <a href="{% url 'post_new_listings' %}" class="btn btn-primary custom-button">Create New Listing</a>
+            <a href="{% url 'logout' %}" class="btn btn-secondary">Logout</a>
+        </div>
+        <div class="listings-container">
+            <h3>Your Listings</h3>
+            {% for listing in listings %}
+                <div class="listing-item">
+                    <h5>{{ listing.address }}</h5>
+                    <p>{{ listing.price }}</p>
+                </div>
+            {% empty %}
+                <p>You have not posted any listings yet.</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+
 </body>
 </html>
