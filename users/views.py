@@ -17,10 +17,10 @@ from django.db.models import Q
 from .forms import LandlordSignupForm
 import boto3
 from django.conf import settings
-from .models import CustomUser
+from .models import CustomUser, Rental_Listings
 from .forms import CustomLoginForm
-from .models import Rental_Listings
 from django.core import serializers
+from django.forms.models import model_to_dict
 
 LOGGING = {
     "version": 1,
@@ -270,13 +270,16 @@ def rentals_page(request):
         listings = listings.order_by("-price")
     # Add more sorting options as neededed
 
-    # Serialize the queryset directly to JSON
-    listings_json = serializers.serialize("json", listings)
+    listings_data = [model_to_dict(listing) for listing in listings]
 
-    context = {"listings_json": listings_json}
+    context = {"listings_json": listings_data}
     return render(request, "users/searchRental/rentalspage.html", context)
 
 
 @user_type_required("user")
 def placeholder_view(request):
     return render(request, "users/searchRental/placeholder.html")
+
+def listing_detail(request, listing_id):
+    listing = get_object_or_404(Listing, pk=listing_id)
+    return render(request, 'listing_detail.html', {'listing': listing})
