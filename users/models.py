@@ -82,3 +82,11 @@ class Rental_Listings(models.Model):
 
     def _str_(self):
         return self.address
+
+
+class RentalImage(models.Model):
+    rental_listing = models.ForeignKey(Rental_Listings, on_delete=models.CASCADE, related_name='images')
+    image_url = models.URLField(max_length=2048)
+
+    def __str__(self):
+        return self.image_url
