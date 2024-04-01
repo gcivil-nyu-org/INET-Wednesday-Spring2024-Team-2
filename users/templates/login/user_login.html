@@ -24,6 +24,15 @@
     </style>
 </head>
 <body>
+{% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %}" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
 <div class="container mt-5">
     <h2 class="text-center">User Login</h2>
     <div class="custom-form">
@@ -35,17 +44,11 @@
     </div>
     <div class="text-center mt-2">
         <span class = "text-primary">New User? </span>
-        <a href="{% url 'user_signup' %}" class="btn btn-light btn-sm">  SignUp</a>
+        <a href="{% url 'user_signup' %}" class="btn btn-light btn-sm">  Sign Up</a>
     </div>
     <div class="text-center mt-2">
         <a href="{% url 'password_reset' %}">Forgot password?</a>
     </div>
-    {% for message in messages %}
-        <div class="alert alert-danger mt-3">
-            <a class="close" href="#" data-dismiss="alert">×</a>
-            {{ message }}
-        </div>
-    {% endfor %}
 </div>
 </body>
 </html>

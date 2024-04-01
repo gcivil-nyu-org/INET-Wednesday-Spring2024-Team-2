@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
+from .views import placeholder_view
 
 urlpatterns = [
     path("", views.home, name="index"),
@@ -43,4 +44,6 @@ urlpatterns = [
         ),
         name="password_reset_complete",
     ),
+    path("rentalspage/", views.rentals_page, name="rentalspage"),
+    path("placeholder/", placeholder_view, name="placeholder"),
 ]

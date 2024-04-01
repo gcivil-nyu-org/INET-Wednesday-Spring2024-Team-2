@@ -5,34 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Homepage</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'users/common_style.css' %}">
-    <style>
-        .logout-link {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 8px 15px;
-            background-color: #909790;
-            color: white;
-            border-radius: 4px;
-            text-decoration: none;
-            transition: background-color 0.2s;
-        }
-
-        .logout-link:hover {
-            background-color: #555b55;
-        }
-
-        body {
-            position: relative;
-        }
-    </style>
+    <!-- Using the Pulse theme from Bootswatch -->
+    <link rel="stylesheet" href="https://bootswatch.com/5/pulse/bootstrap.css">
 </head>
-<body>
-<h2>User Homepage</h2>
-{% if user.is_authenticated %}
-    <p>Welcome, {{ user.username }}!</p>
-    <a href="{% url 'logout' %}" class="logout-link">Logout</a>
-{% endif %}
+<body class="bg-light">
+
+<div class="container mt-5">
+    <h2 class="text-center">User Homepage</h2>
+    {% if user.is_authenticated %}
+        <p class="text-center">Welcome, {{ user.username }}!</p>
+        <div class="d-flex justify-content-end">
+            <a href="{% url 'logout' %}" class="btn btn-secondary">Logout</a>
+        </div>
+        <div class="container">
+            <div class="row justify-content-center mt-4">
+                <div class="col-md-6">
+                    <form action="{% url 'rentalspage' %}" method="get" >
+                        <div class="text-center">
+                            <label for="boroughSearch" class="form-label">Search for Borough for Available rentals</label>
+                        </div>
+                        <input type="search" placeholder="Search" class="form-control form-control me-sm-2" id="boroughSearch" name="borough" autocomplete="off">
+                        <div class="text-center mt-3">
+                            <button type="submit" class="btn btn-primary">Search Rentals</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <script>
+            const boroughs = ['Manhattan', 'Brooklyn', 'Queens', 'Bronx', 'Staten Island'];
+        
+            const searchInput = document.getElementById('boroughSearch');
+            const searchResults = document.createElement('div');
+            searchResults.classList.add('search-results');
+            searchInput.parentNode.appendChild(searchResults);
+        
+            function renderResults(results) {
+                searchResults.innerHTML = '';
+                results.forEach(result => {
+                    const option = document.createElement('div');
+                    option.classList.add('search-option');
+                    option.textContent = result;
+                    option.addEventListener('click', function() {
+                        searchInput.value = result;
+                        searchResults.innerHTML = '';
+                    });
+                    searchResults.appendChild(option);
+                });
+            }
+        
+            function showAllOptions() {
+                renderResults(boroughs);
+            }
+        
+            function filterOptions(inputValue) {
+                const matchingBoroughs = boroughs.filter(borough =>
+                    borough.toLowerCase().startsWith(inputValue.toLowerCase())
+                );
+                renderResults(matchingBoroughs);
+            }
+        
+            searchInput.addEventListener('focus', showAllOptions);
+        
+            searchInput.addEventListener('input', function() {
+                const inputValue = this.value.trim();
+                if (inputValue === '') {
+                    showAllOptions();
+                } else {
+                    filterOptions(inputValue);
+                }
+            });
+        
+            // Hide results if user clicks outside the search input or results
+            document.addEventListener('click', function(event) {
+                if (!searchResults.contains(event.target) && event.target !== searchInput) {
+                    searchResults.innerHTML = '';
+                }
+            });
+        </script>
+    {% endif %}
+</div>
+
 </body>
 </html>

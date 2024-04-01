@@ -1,0 +1,250 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rentals Page - RentWiseNyc</title>
+    <!-- Bootstrap CSS from Bootswatch Pulse -->
+    <link href="https://bootswatch.com/5/pulse/bootstrap.css" rel="stylesheet">
+    <style>
+        .filter-sort-section {
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+        .filter-sort-container {
+            display: flex;
+            justify-content: flex-end;
+        }
+        .listing {
+        display: flex;
+        border: 1px solid #ddd;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        overflow: hidden;
+        }
+        .listing-image {
+        width: 50%;
+        position: relative;
+        }
+        .listing-image img {
+        width: 100%;
+        height: auto;
+        display: block;
+        }
+        .favorite-icon {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+        font-size: 24px; /* Adjust size as needed */
+        color: #ccc; /* Default non-favorite color */
+        /* Add more styling for the favorite icon */
+        }
+        .favorite-icon.favorited {
+            color: red; /* Favorited state color */
+        }
+        .favorite-icon.active {
+        color: red;
+        }
+        .listing-details {
+        padding: 20px;
+        width: 50%;
+        }
+        .listing-details h3 {
+        margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{% url 'user_homepage' %}">
+        RentWiseNYC <!-- Here's the simple text replacement -->
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link active" href="{% url 'placeholder' %}">All rentals</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'placeholder' %}">Favourites</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'placeholder' %}">My account</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'placeholder' %}">Links</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'logout' %}" >Logout</a>
+        </li>
+      </ul>
+      <form class="d-flex">
+        <input class="form-control me-sm-2" type="search" placeholder="Search">
+        <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+      </form>
+    </div>
+  </div>
+</nav>
+
+<div class="container-fluid filter-sort-section">
+    <div class="filter-sort-container">
+      <div class="btn-group">
+        <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+          Filter
+        </button>
+        <div class="dropdown-menu p-4" style="width: 300px;">
+          <form id="filterForm" method="GET">
+            <div class="mb-3">
+              <label for="bedrooms" class="form-label">Bedrooms</label>
+              <select class="form-select" id="bedrooms" name="bedrooms">
+                <option value="1">1 bedroom</odption>
+                <option value="2">2 bedrooms</option>
+                <option value="3">3 bedrooms</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="bathrooms" class="form-label">Bathrooms</label>
+              <select class="form-select" id="bathrooms" name = "bathrooms">
+                <option value="1">1 bath</option>
+                <option value="1.5">1.5 bath</option>
+                <option value="2">2 bath</option>
+                <option value="3">3 bath</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="minPrice" class="form-label">Min Price</label>
+              <input type="number" class="form-control" id="minPrice" name = "min_price" placeholder="000000000">
+            </div>
+            <div class="mb-3">
+              <label for="maxPrice" class="form-label">Max Price</label>
+              <input type="number" class="form-control" id="maxPrice" name = "max_price" placeholder="9999999999">
+            </div>
+            <div class="mb-3 form-check">
+              <input type="checkbox" class="form-check-input" id="elevator" name = "elevator">
+              <label class="form-check-label" for="elevator">Elevator</label>
+            </div>
+            <div class="mb-3 form-check">
+              <input type="checkbox" class="form-check-input" id="laundry" name = "laundry">
+              <label class="form-check-label" for="laundry">Laundry</label>
+            </div>
+            <div class="mb-3 form-check">
+              <input type="checkbox" class="form-check-input" id="brokerFee" name = "broker_fee">
+              <label class="form-check-label" for="brokerFee">Broker Fee</label>
+            </div>
+            <div class="mb-3">
+                <label for="buildingType" class="form-label">Building Type</label>
+                <select class="form-select" id="buildingType" name = "">
+                  <option value="Apartment">Apartment</option>
+                  <option value="Hostel">Hostel</option>
+                </select>
+            </div>  
+            <div class="mb-3 form-check">
+              <input type="checkbox" class="form-check-input" id="parking" name="parking">
+              <label class="form-check-label" for="parking">Parking</label>
+            </div>
+            <button type="submit" class="btn btn-primary">Apply</button>
+          </form>
+        </div>
+      </div>
+  
+      <!-- Sort Button -->
+      <div class="btn-group ms-2">
+        <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+          Sort
+        </button>
+        <ul class="dropdown-menu">
+          <!-- Add sort options here -->
+          <li><a class="dropdown-item" href="#">Recent Listing</a></li>
+          <li><a class="dropdown-item" href="#">Lowest to Highest</a></li>
+          <li><a class="dropdown-item" href="#">Highest to Lowest</a></li>
+        </ul>
+      </div>
+      <div class="container-fluid">
+        <div class="row">
+            <div class="text-center fixed-bottom mb-3">
+                <a href="{% url 'placeholder' %}" class="btn btn-primary">Map</a>
+            </div>
+        </div>
+    </div>
+    
+    </div>
+  </div>
+
+  <div class="container my-4">
+    <!-- Listings generated by a for-loop -->
+    <script>
+        var staticBasePath = "{% static 'users/images/' %}";
+    </script>    
+    <script>
+      const listings = JSON.parse('{{ listings_json|safe }}');
+    
+      // Function to toggle the favorite state
+      function toggleFavorite(event, index) {
+        const icon = event.currentTarget;
+        icon.classList.toggle('active');
+        // Here you would normally update the favorite status in your database or state
+      }
+    
+      if (listings.length === 0) {
+        // Display an error message if no listings are found
+        document.write("<p><strong> Sorry!! No available rentals for the search please check your spelling </p>");
+      } else {
+        // Loop through the listings and display them
+        for (let i = 0; i < listings.length; i++) {
+          const listing = listings[i];
+          document.write(`
+            <div class="listing">
+              <div class="listing-image">
+                <img src="${staticBasePath}${'home1.jpg'}" alt="Listing Image">
+                <div class="favorite-icon" onclick="toggleFavorite(event, ${i})">♥</div>
+              </div>
+              <div class="listing-details">
+                <h3>${listing.fields.address}</h3>
+                <p><strong>Bedrooms:</strong> ${listing.fields.beds}</p>
+                <p><strong>Bath:</strong> ${listing.fields.baths}</p>
+                <p><strong>Price:</strong> $${listing.fields.price}/month</p>
+                <p><strong>Borough:</strong> ${listing.fields.borough}</p>
+                <p><strong>Neighbourhood:</strong> ${listing.fields.neighborhood}</p>
+                <p><strong>Square Footage:</strong> ${listing.fields.sq_ft} sq ft</p>
+                <p><strong>Posted by:</strong> ${listing.fields.postedBy}</p>
+              </div>
+            </div>
+          `);
+        }
+      }
+    </script>
+  
+  </div>
+  
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<script>
+// Add the JavaScript for validating min and max price here
+$(document).ready(function() {
+    $('#filterForm').on('submit', function(e) {
+        var minPrice = parseInt($('#minPrice').val(), 10);
+        var maxPrice = parseInt($('#maxPrice').val(), 10);
+        
+        if (minPrice > maxPrice) {
+            alert('Minimum price cannot be greater than maximum price.');
+            e.preventDefault(); // Prevent form submission
+        }
+    });
+});
+</script>
+
+
+</body>
+</html>
