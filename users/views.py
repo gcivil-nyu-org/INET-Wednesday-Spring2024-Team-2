@@ -13,11 +13,11 @@ from users.decorators import user_type_required
 from users.forms import UserSignUpForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import Group
-from django.db.models import Q
+from django.db.models import Q, Min
 from .forms import LandlordSignupForm
 import boto3
 from django.conf import settings
-from .models import CustomUser, Rental_Listings
+from .models import CustomUser, Rental_Listings, RentalImages
 from .forms import CustomLoginForm
 from django.core import serializers
 from django.forms.models import model_to_dict
@@ -241,6 +241,9 @@ def rentals_page(request):
         listings = listings.filter(unit_type=building_type)
     if parking:
         listings = listings.filter(parking_available=True)
+
+    # Annotate each listing with the URL of its first image
+    listings = listings.annotate(first_image=Min('images__image_url'))
 
     # Sorting
     sort_by = request.GET.get("sort_by")
