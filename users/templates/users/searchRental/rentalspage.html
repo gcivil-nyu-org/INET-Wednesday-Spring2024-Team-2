@@ -38,7 +38,7 @@
         right: 10px;
         cursor: pointer;
         font-size: 24px; /* Adjust size as needed */
-        color: #ccc; /* Default non-favorite color */
+        color: #ffffff; /* Default non-favorite color */
         /* Add more styling for the favorite icon */
         }
         .favorite-icon.favorited {
@@ -103,7 +103,8 @@
             <div class="mb-3">
               <label for="bedrooms" class="form-label">Bedrooms</label>
               <select class="form-select" id="bedrooms" name="bedrooms">
-                <option value="1">1 bedroom</odption>
+                <option value="Any">Any</option>
+                <option value="1">1 bedroom</option>
                 <option value="2">2 bedrooms</option>
                 <option value="3">3 bedrooms</option>
               </select>
@@ -111,6 +112,7 @@
             <div class="mb-3">
               <label for="bathrooms" class="form-label">Bathrooms</label>
               <select class="form-select" id="bathrooms" name = "bathrooms">
+                <option value="Any">Any</option>
                 <option value="1">1 bath</option>
                 <option value="1.5">1.5 bath</option>
                 <option value="2">2 bath</option>
@@ -140,6 +142,7 @@
             <div class="mb-3">
                 <label for="buildingType" class="form-label">Building Type</label>
                 <select class="form-select" id="buildingType" name = "">
+                  <option value="Any">Any</option>
                   <option value="Apartment">Apartment</option>
                   <option value="Hostel">Hostel</option>
                 </select>
@@ -202,7 +205,7 @@
             <div class="listing">
               <div class="listing-image">
                 <img src="${staticBasePath}${'home1.jpg'}" alt="Listing Image">
-                <div class="favorite-icon" onclick="toggleFavorite(event, ${i})">♥</div>
+                <div class="favorite-icon" onclick="toggleFavorite(event, ${listing.pk})">♥</div>
               </div>
               <div class="listing-details">
                 <h3>${listing.fields.address}</h3>
@@ -245,6 +248,49 @@ $(document).ready(function() {
 });
 </script>
 
+<script>
+  // Function to get the CSRF token from cookies
+  function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+              const cookie = cookies[i].trim();
+              // Does this cookie string begin with the name we want?
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
+  }
+
+  // Updated function for toggling favorite status
+function toggleFavorite(event, listingId) {
+  const icon = event.currentTarget;
+  $.ajax({
+      type: "POST",
+      url: '/toggle_favorite/',
+      data: {
+          'listing_id': listingId,
+          'csrfmiddlewaretoken': getCookie('csrftoken'),
+      },
+      success: function(response) {
+          if (response.status === 'added') {
+              icon.classList.add('active');
+          } else if (response.status === 'removed') {
+              icon.classList.remove('active');
+          }
+      },
+      error: function(xhr, status, error) {
+          console.error("Error toggling favorite:", status, error);
+          alert('An error occurred while processing your request.');
+      }
+  });
+}
+
+  </script>
 
 </body>
 </html>
