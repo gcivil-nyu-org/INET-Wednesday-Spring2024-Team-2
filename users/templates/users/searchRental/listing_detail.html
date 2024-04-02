@@ -102,16 +102,16 @@
             <h1>{{ listing.address }}</h1>
         </div>
         <div class="listing-details-container">
-        <div class="image-container">
-            <!-- Display the first image prominently -->
-            {% if listing.images.all %}
-            <div id="mainImageContainer">
-                <img id="mainImage" src="{{ listing.images.first.image_url }}" alt="Listing Image">
-            </div>
-        {% endif %}
-        
-            <!-- Display other images as small thumbnails -->
-            {% if listing.images.all %}
+            <div class="image-container">
+                <!-- Display the first image prominently -->
+                {% if listing.images.all %}
+                <div id="mainImageContainer">
+                    <img id="mainImage" src="{{ listing.images.first.image_url }}" alt="Listing Image">
+                </div>
+                {% endif %}
+
+                <!-- Display other images as small thumbnails -->
+                {% if listing.images.all %}
                 <div id="thumbnails">
                     {% for image in listing.images.all %}
                         {% if forloop.first %}
@@ -121,20 +121,20 @@
                         {% endif %}
                     {% endfor %}
                 </div>
-            {% endif %}
-        </div>
-    
-        <!-- Listing details container -->
-        <div class="listing-details">
-            <h2>Listing Details</h2>
-            <p><strong>Bedrooms:</strong> {{ listing.beds }}</p>
-            <p><strong>Bath:</strong> {{ listing.baths }}</p>
-            <p><strong>Price:</strong> ${{ listing.price }}/month</p>
-            <p><strong>Borough:</strong> {{ listing.borough }}</p>
-            <p><strong>Neighbourhood:</strong> {{ listing.neighborhood }}</p>
-            <p><strong>Square Footage:</strong> {{ listing.sq_ft }} sq ft</p>
-            <!-- Add other listing details as needed -->
-        </div>
+                {% endif %}
+            </div>
+
+            <!-- Listing details container -->
+            <div class="listing-details">
+                <h2>Listing Details</h2>
+                <p><strong>Bedrooms:</strong> {{ listing.beds }}</p>
+                <p><strong>Bath:</strong> {{ listing.baths }}</p>
+                <p><strong>Price:</strong> ${{ listing.price }}/month</p>
+                <p><strong>Borough:</strong> {{ listing.borough }}</p>
+                <p><strong>Neighbourhood:</strong> {{ listing.neighborhood }}</p>
+                <p><strong>Square Footage:</strong> {{ listing.sq_ft }} sq ft</p>
+                <!-- Add other listing details as needed -->
+            </div>
         </div>
     </div>
 
