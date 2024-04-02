@@ -205,7 +205,7 @@
             <div class="listing">
               <div class="listing-image">
                 <img src="${staticBasePath}${'home1.jpg'}" alt="Listing Image">
-                <div class="favorite-icon" onclick="toggleFavorite(event, ${listing.pk})">♥</div>
+                <div class="favorite-icon" data-listing-id="${listing.pk}" onclick="toggleFavorite(event, ${listing.pk})">♥</div>
               </div>
               <div class="listing-details">
                 <h3>${listing.fields.address}</h3>
@@ -291,6 +291,29 @@ function toggleFavorite(event, listingId) {
 }
 
   </script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Parse the favorite listings IDs from a JSON string to an array
+      const favoriteListingsIds = JSON.parse('{{ favorite_listings_ids|safe }}');
+
+      // Wait for the existing listings to be generated
+      setTimeout(function() {
+        // Select all favorite icons
+        const favoriteIcons = document.querySelectorAll('.favorite-icon');
+
+        favoriteIcons.forEach(function(icon) {
+          // Extract listing ID stored in a data attribute (e.g., data-listing-id)
+          const listingId = parseInt(icon.getAttribute('data-listing-id'), 10);
+
+          // Check if the listing ID is in the list of favorites
+          if (favoriteListingsIds.includes(listingId)) {
+            // Add the 'active' class to mark it as favorited
+            icon.classList.add('active');
+          }
+        });
+      }, 100); // Adjust timeout as needed to ensure it runs after listings are generated
+    });
+    </script>
 
 </body>
 </html>
