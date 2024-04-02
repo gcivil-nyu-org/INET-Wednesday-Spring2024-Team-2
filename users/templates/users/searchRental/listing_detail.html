@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+{% load env_extras %}
+<input id="GOOGLE_MAPS_API_KEY" value="{% get_env_var 'GOOGLE_MAPS_API_KEY' %}" type="hidden" />
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,11 +16,11 @@
             align-items: center;
         }
         .address-container {
-            background-color: #f8f9fa; /* Set background color */
-            border: 1px solid #dee2e6; /* Set border */
-            border-radius: 5px; /* Set border radius */
-            padding: 15px; /* Add padding */
-            margin-bottom: 20px; /* Add margin */
+            background-color: #f8f9fa; 
+            border: 1px solid #dee2e6; 
+            border-radius: 5px; 
+            padding: 15px; 
+            margin-bottom: 20px; 
             width: 100%;
         }
         .listing-details-container{
@@ -32,7 +35,7 @@
         }
         #mainImageContainer {
             width: 100%;
-            height: 500px; /* Set desired height */
+            height: 500px; 
             overflow: hidden;
         }
         #mainImage {
@@ -56,8 +59,38 @@
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            background-color: #f8f9fa; /* Set background color */
-            border: 1px solid #dee2e6; /* Set border */
+            background-color: #f8f9fa; 
+            border: 1px solid #dee2e6; 
+        }
+        .info-container  {
+            width: 100%;
+            display:flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+        .description-container {
+            width: 68%;
+            display: flex;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6; 
+            flex-direction: column;
+            padding-right: 10px;
+        }
+        .description-container p {
+            margin-left: 15px; /* Add margin bottom to paragraphs */
+            margin-right: 5px; /* Add margin bottom to paragraphs */
+
+        }
+        .description-container h4 {
+            margin: 15px; /* Add margin bottom to paragraphs */
+        }
+        .clickable-map {
+            width: 30%; 
+            height: 300px;
+            border-radius: 5px;
+            background-color: #f8f9fa; 
+            border: 1px solid #dee2e6; 
+            padding: 10px 0; /* Add padding between the clickable map and description container */
         }
     </style>
 </head>
@@ -65,7 +98,7 @@
 <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
     <div class="container-fluid">
       <a class="navbar-brand" href="{% url 'user_homepage' %}">
-          RentWiseNYC <!-- Here's the simple text replacement -->
+          RentWiseNYC 
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -96,7 +129,7 @@
     </div>
   </nav>
 
-  <body>
+<body>
     <div class="container my-4">
         <div class="address-container">
             <h1>{{ listing.address }}</h1>
@@ -136,9 +169,32 @@
                 <!-- Add other listing details as needed -->
             </div>
         </div>
+        <div class="info-container">
+            <div class="description-container">
+                <h4>Description:</h4>
+                <p>{{listing.address}} is a 
+                    {{ listing.sq_ft }} square foot 
+                    {{ listing.beds|floatformat:0 }} bed, 
+                    {{ listing.baths|floatformat:0 }} bath 
+                    {{ listing.unit_type|lower }} located in the
+                    {{ listing.neighborhood }} neighborhood in {{ listing.borough }}. 
+                </p>
+            </div>
+            <div class="clickable-map">
+                <div id="map" style="width: 100%; height: 400px;"></div>
+
+            </div>
+        </div>
     </div>
 
     <script>
+        let hiddenInput = document.getElementById("GOOGLE_MAPS_API_KEY");
+        let apiKey = hiddenInput.value;
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap`;
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
         function displayImage(imageUrl, thumbIndex) {
             // Replace the main image with the clicked image
             document.getElementById('mainImage').src = imageUrl;
@@ -152,6 +208,27 @@
             // Add 'selected-thumbnail' class to the clicked thumbnail
             document.getElementById('thumb' + thumbIndex).classList.add('selected-thumbnail');
         }
+
+         // Initialize and display the map
+         function initMap() {
+            // Get latitude and longitude from your Django model
+            var latitude = {{ listing.latitude }};
+            var longitude = {{ listing.longitude }};
+
+            // Create a map centered at the specified coordinates
+            var map = new google.maps.Map(document.getElementById('map'), {
+                center: {lat: latitude, lng: longitude},
+                zoom: 15 // Adjust the zoom level as needed
+            });
+
+            // Add a marker to the map
+            var marker = new google.maps.Marker({
+                position: {lat: latitude, lng: longitude},
+                map: map,
+                title: '{{ listing.address }}' // Add the address as marker title
+            });
+        }
     </script>
+
 </body>
 </html>
