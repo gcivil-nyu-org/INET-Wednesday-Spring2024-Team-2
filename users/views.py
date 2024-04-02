@@ -236,9 +236,15 @@ def rentals_page(request):
         max_price = int(max_price)
         listings = listings.filter(price__lte=max_price)
     if bedrooms:
-        listings = listings.filter(beds=bedrooms)
+        if bedrooms == 'Any':
+            listings = listings
+        else:
+            listings = listings.filter(beds=bedrooms)
     if bathrooms:
-        listings = listings.filter(baths=bathrooms)
+        if bathrooms == "Any":
+            listings = listings
+        else:
+            listings = listings.filter(baths=bathrooms)
     if elevator:
         listings = listings.filter(elevator=True)
     if laundry:
@@ -246,7 +252,10 @@ def rentals_page(request):
     if broker_fee:
         listings = listings.filter(broker_fee=True)
     if building_type:
-        listings = listings.filter(unit_type=building_type)
+        if building_type == "Any":
+            listings = listings
+        else:
+            listings = listings.filter(unit_type=building_type)
     if parking:
         listings = listings.filter(parking_available=True)
 
