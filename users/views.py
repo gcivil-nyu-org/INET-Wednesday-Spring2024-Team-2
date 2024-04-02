@@ -236,7 +236,7 @@ def rentals_page(request):
         max_price = int(max_price)
         listings = listings.filter(price__lte=max_price)
     if bedrooms:
-        if bedrooms == 'Any':
+        if bedrooms == "Any":
             listings = listings
         else:
             listings = listings.filter(beds=bedrooms)
