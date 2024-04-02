@@ -355,3 +355,20 @@ def toggle_favorite(request):
         except Exception as e:
             logger.error(f'Internal server error: {e}', exc_info=True)
             return JsonResponse({'error': 'Internal server error'}, status=500)
+
+
+@user_type_required("user")
+@login_required
+def favorites_page(request):
+    # Fetch only the listings that the user has marked as favorite
+    favorite_listings = Favorite.objects.filter(user=request.user).select_related('listing')
+    listings = [fav.listing for fav in favorite_listings]
+
+    listings_json = serializers.serialize('json', listings)
+    favorite_listings_ids = [listing.id for listing in listings]
+
+    context = {
+        'listings_json': listings_json,
+        'favorite_listings_ids': favorite_listings_ids,
+    }
+    return render(request, 'users/searchRental/favorites.html', context)
