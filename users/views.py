@@ -17,12 +17,20 @@ from django.db.models import Q, Min
 from .forms import LandlordSignupForm
 import boto3
 from django.conf import settings
-from .models import CustomUser, Rental_Listings, RentalImages
+from .models import CustomUser, RentalImages
 from .forms import CustomLoginForm
 from django.core import serializers
 from django.forms.models import model_to_dict
 from django.core.paginator import Paginator, Page, EmptyPage, PageNotAnInteger
 
+from .models import Favorite, Rental_Listings
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse, HttpResponseBadRequest
+import logging
+from django.views.decorators.csrf import csrf_exempt
+
+logger = logging.getLogger(__name__)
 
 LOGGING = {
     "version": 1,
@@ -258,7 +266,16 @@ def rentals_page(request):
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
-    context = {"page_obj": page_obj}
+    # Query to get the IDs of listings that are favorited by the current user
+    favorite_listings_ids = Favorite.objects.filter(user=request.user).values_list('listing__id', flat=True)
+
+    # Pass listings_json and favorite_listings_ids to the template
+    context = {
+        "page_obj": page_obj,
+        "favorite_listings_ids": list(favorite_listings_ids),  # Ensure it's converted to a list
+    }
+
+    # context = {"listings_json": listings_json}
     return render(request, "users/searchRental/rentalspage.html", context)
 
 
@@ -274,3 +291,60 @@ def listing_detail(request, listing_id):
     # Pass the listing data to a template for rendering
     context = {"listing": listing}
     return render(request, "users/searchRental/listing_detail.html", context)
+# @user_type_required("user")
+# def add_to_favorites(request):
+#     listing_id = request.POST.get('listing_id')
+#     if not listing_id:
+#         return JsonResponse({'error': 'Listing ID is required'}, status=400)
+#     try:
+#         listing = Rental_Listings.objects.get(id=listing_id)
+#         Favorite.objects.get_or_create(user=request.user, listing=listing)
+#         return JsonResponse({'success': True})
+#     except Rental_Listings.DoesNotExist:
+#         return JsonResponse({'error': 'Listing not found'}, status=404)
+#     except Exception as e:
+#         # Log the error for debugging purposes
+#         print(f"Error adding to favorites: {e}")
+#         return JsonResponse({'error': 'Internal server error'}, status=500)
+
+# @user_type_required("user")
+# def remove_from_favorites(request):
+#     if request.method == "POST" and request.is_ajax():
+#         user = request.user
+#         listing_id = request.POST.get("listing_id")
+#         try:
+#             listing = Rental_Listings.objects.get(id=listing_id)
+#             favorite, deleted = Favorite.objects.filter(user=user, listing=listing).delete()
+#             if deleted:
+#                 return JsonResponse({"success": True})
+#             else:
+#                 return JsonResponse({'error': 'Favorite not found'}, status=404)
+#         except Rental_Listings.DoesNotExist:
+#             return JsonResponse({'error': 'Listing not found'}, status=404)
+#         except Exception as e:
+#             logger.error(f"Error removing from favorites: {e}")
+#             return JsonResponse({'error': 'Internal server error'}, status=500)
+#     else:
+# return HttpResponseBadRequest("Invalid request")
+
+@csrf_exempt
+@login_required
+@user_type_required("user")
+def toggle_favorite(request):
+    if request.method == "POST":
+        listing_id = request.POST.get("listing_id")
+        if not listing_id:
+            return JsonResponse({'error': 'Listing ID is required'}, status=400)
+
+        try:
+            listing = Rental_Listings.objects.get(id=listing_id)
+            favorite, created = Favorite.objects.get_or_create(user=request.user, listing=listing)
+            if not created:
+                favorite.delete()
+                return JsonResponse({'status': 'removed'})
+            return JsonResponse({'status': 'added'})
+        except Rental_Listings.DoesNotExist:
+            return JsonResponse({'error': 'Listing not found'}, status=404)
+        except Exception as e:
+            logger.error(f'Internal server error: {e}', exc_info=True)
+            return JsonResponse({'error': 'Internal server error'}, status=500)

@@ -117,3 +117,14 @@ class RentalImages(models.Model):
 
     def __str__(self):
         return self.image_url
+
+class Favorite(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='favorites')
+    listing = models.ForeignKey(Rental_Listings, on_delete=models.CASCADE, related_name='favorited_by')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'listing')
+
+    def _str_(self):
+        return f"{self.user.username} - {self.listing.address}"

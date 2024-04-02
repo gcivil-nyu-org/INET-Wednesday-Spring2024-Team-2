@@ -114,7 +114,8 @@
             <div class="mb-3">
               <label for="bedrooms" class="form-label">Bedrooms</label>
               <select class="form-select" id="bedrooms" name="bedrooms">
-                <option value="1">1 bedroom</odption>
+                <option value="Any">Any</option>
+                <option value="1">1 bedroom</option>
                 <option value="2">2 bedrooms</option>
                 <option value="3">3 bedrooms</option>
               </select>
@@ -122,6 +123,7 @@
             <div class="mb-3">
               <label for="bathrooms" class="form-label">Bathrooms</label>
               <select class="form-select" id="bathrooms" name = "bathrooms">
+                <option value="Any">Any</option>
                 <option value="1">1 bath</option>
                 <option value="1.5">1.5 bath</option>
                 <option value="2">2 bath</option>
@@ -151,6 +153,7 @@
             <div class="mb-3">
                 <label for="buildingType" class="form-label">Building Type</label>
                 <select class="form-select" id="buildingType" name = "">
+                  <option value="Any">Any</option>
                   <option value="Apartment">Apartment</option>
                   <option value="Hostel">Hostel</option>
                 </select>
@@ -217,6 +220,50 @@
     <p><strong> Sorry! No available rentals match your search. Please adjust your parameters and try again. </strong></p>
 {% endif %}
 </div>
+    <!-- <script>
+        var staticBasePath = "{% static 'users/images/' %}";
+    </script>    
+    <script>
+      const listings = JSON.parse('{{ listings_json|safe }}');
+    
+      // Function to toggle the favorite state
+      function toggleFavorite(event, index) {
+        const icon = event.currentTarget;
+        icon.classList.toggle('active');
+        // Here you would normally update the favorite status in your database or state
+      }
+    
+      if (listings.length === 0) {
+        // Display an error message if no listings are found
+        document.write("<p><strong> Sorry!! No available rentals for the search please check your spelling </p>");
+      } else {
+        // Loop through the listings and display them
+        for (let i = 0; i < listings.length; i++) {
+          const listing = listings[i];
+          document.write(`
+            <div class="listing">
+              <div class="listing-image">
+                <img src="${staticBasePath}${'home1.jpg'}" alt="Listing Image">
+                <div class="favorite-icon" onclick="toggleFavorite(event, ${listing.pk})">♥</div>
+              </div>
+              <div class="listing-details">
+                <h3>${listing.fields.address}</h3>
+                <p><strong>Bedrooms:</strong> ${listing.fields.beds}</p>
+                <p><strong>Bath:</strong> ${listing.fields.baths}</p>
+                <p><strong>Price:</strong> $${listing.fields.price}/month</p>
+                <p><strong>Borough:</strong> ${listing.fields.borough}</p>
+                <p><strong>Neighbourhood:</strong> ${listing.fields.neighborhood}</p>
+                <p><strong>Square Footage:</strong> ${listing.fields.sq_ft} sq ft</p>
+                <p><strong>Posted by:</strong> ${listing.fields.postedBy}</p>
+              </div>
+            </div>
+          `);
+        }
+      }
+    </script>
+  
+  </div> -->
+  
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -272,6 +319,49 @@ function toggleFavorite(event, listingId) {
 }
 </script>
 
+<script>
+  // Function to get the CSRF token from cookies
+  function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+              const cookie = cookies[i].trim();
+              // Does this cookie string begin with the name we want?
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
+  }
+
+  // Updated function for toggling favorite status
+function toggleFavorite(event, listingId) {
+  const icon = event.currentTarget;
+  $.ajax({
+      type: "POST",
+      url: '/toggle_favorite/',
+      data: {
+          'listing_id': listingId,
+          'csrfmiddlewaretoken': getCookie('csrftoken'),
+      },
+      success: function(response) {
+          if (response.status === 'added') {
+              icon.classList.add('active');
+          } else if (response.status === 'removed') {
+              icon.classList.remove('active');
+          }
+      },
+      error: function(xhr, status, error) {
+          console.error("Error toggling favorite:", status, error);
+          alert('An error occurred while processing your request.');
+      }
+  });
+}
+
+  </script>
 
 <div class="pagination">
   <span class="step-links">
