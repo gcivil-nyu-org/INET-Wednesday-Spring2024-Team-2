@@ -208,43 +208,21 @@ def landlord_signup(request):
 
 @user_type_required("user")
 def rentals_page(request):
-    print(request)
     # Filter parameters
     borough = request.GET.get("borough")
     min_price = request.GET.get("min_price")
     max_price = request.GET.get("max_price")
     bedrooms = request.GET.get("bedrooms")
     bathrooms = request.GET.get("bathrooms")
-    elevator = request.GET.get("elevator") == "True"
-    laundry = request.GET.get("laundry") == "True"
-    broker_fee = request.GET.get("broker_fee") == "True"
+    elevator = request.GET.get("elevator") == "on"
+    laundry = request.GET.get("laundry") == "on"
+    no_fee = request.GET.get("no_fee") == "on"
     building_type = request.GET.get("building_type")
-    parking = request.GET.get("parking") == "True"
-    print(
-        "Borough=",
-        borough,
-        "MinPrice=",
-        min_price,
-        "MaxPrice=",
-        max_price,
-        "Bedrooms=",
-        bedrooms,
-        "Baths=",
-        bathrooms,
-        "elevator=",
-        elevator,
-        "laundry=",
-        laundry,
-        "BrokerFee=",
-        broker_fee,
-        "Buildingtype=",
-        building_type,
-        "parking=",
-        parking,
-    )
+    parking = request.GET.get("parking") == "on"
+    
     # Start with all listings
     listings = Rental_Listings.objects.all()
-
+    
     # Apply filters
     if borough:
         listings = listings.filter(borough=borough)
@@ -262,34 +240,48 @@ def rentals_page(request):
         listings = listings.filter(elevator=True)
     if laundry:
         listings = listings.filter(washer_dryer_in_unit=True)
-    if broker_fee:
-        listings = listings.filter(broker_fee=True)
+    if no_fee:
+        listings = listings.filter(broker_fee=0)
     if building_type:
         listings = listings.filter(unit_type=building_type)
     if parking:
         listings = listings.filter(parking_available=True)
 
     # Sorting
-    sort_by = request.GET.get("sort_by")
-    if sort_by == "price_asc":
-        listings = listings.order_by("price")
-    elif sort_by == "price_desc":
-        listings = listings.order_by("-price")
-    # Add more sorting options as neededed
+    sort_option = request.GET.get('sort')
+    if sort_option == 'recent':
+        listings = listings.order_by('-Submitted_date')  # Assuming you have a created_at field
+    elif sort_option == 'high_to_low':
+        listings = listings.order_by('-price')
+    else :
+        listings = listings.order_by('price')
 
     # Serialize the queryset directly to JSON
     listings_json = serializers.serialize("json", listings)
+    
+    # Build filter parameters for maintaining filter state in URL
+    filter_params = {
+        "borough": borough,
+        "min_price": min_price,
+        "max_price": max_price,
+        "bedrooms": bedrooms,
+        "bathrooms": bathrooms,
+        "elevator": request.GET.get("elevator"),
+        "laundry": request.GET.get("laundry"),
+        "no_fee": request.GET.get("no_fee"),
+        "building_type": building_type,
+        "parking": request.GET.get("parking"),
+    }
 
     # Query to get the IDs of listings that are favorited by the current user
     favorite_listings_ids = Favorite.objects.filter(user=request.user).values_list('listing__id', flat=True)
-
-    # Pass listings_json and favorite_listings_ids to the template
+    filter_params = {k: v for k, v in filter_params.items() if v is not None}
     context = {
         "listings_json": listings_json,
         "favorite_listings_ids": list(favorite_listings_ids),  # Ensure it's converted to a list
+        "filter_params": filter_params
     }
-
-    # context = {"listings_json": listings_json}
+  
     return render(request, "users/searchRental/rentalspage.html", context)
 
 

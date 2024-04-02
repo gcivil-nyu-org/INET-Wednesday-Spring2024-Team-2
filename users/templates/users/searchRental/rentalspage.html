@@ -136,8 +136,8 @@
               <label class="form-check-label" for="laundry">Laundry</label>
             </div>
             <div class="mb-3 form-check">
-              <input type="checkbox" class="form-check-input" id="brokerFee" name = "broker_fee">
-              <label class="form-check-label" for="brokerFee">Broker Fee</label>
+              <input type="checkbox" class="form-check-input" id="no_fee" name = "no_fee">
+              <label class="form-check-label" for="no_fee">No Broker Fee</label>
             </div>
             <div class="mb-3">
                 <label for="buildingType" class="form-label">Building Type</label>
@@ -162,10 +162,10 @@
           Sort
         </button>
         <ul class="dropdown-menu">
-          <!-- Add sort options here -->
-          <li><a class="dropdown-item" href="#">Recent Listing</a></li>
-          <li><a class="dropdown-item" href="#">Lowest to Highest</a></li>
-          <li><a class="dropdown-item" href="#">Highest to Lowest</a></li>
+          <!-- Add dynamic sort options here with current filter parameters -->
+          <li><a class="dropdown-item" href="?sort=recent{% if filter_params.borough %}&borough={{ filter_params.borough }}{% endif %}{% if filter_params.min_price %}&min_price={{ filter_params.min_price }}{% endif %}{% if filter_params.max_price %}&max_price={{ filter_params.max_price }}{% endif %}{% if filter_params.bedrooms %}&bedrooms={{ filter_params.bedrooms }}{% endif %}{% if filter_params.bathrooms %}&bathrooms={{ filter_params.bathrooms }}{% endif %}{% if filter_params.elevator %}&elevator={{ filter_params.elevator }}{% endif %}{% if filter_params.laundry %}&laundry={{ filter_params.laundry }}{% endif %}{% if filter_params.no_fee %}&no_fee={{ filter_params.no_fee }}{% endif %}{% if filter_params.building_type %}&building_type={{ filter_params.building_type }}{% endif %}{% if filter_params.parking %}&parking={{ filter_params.parking }}{% endif %}">Recent Listing</a></li>
+          <li><a class="dropdown-item" href="?sort=low_to_high{% if filter_params.borough %}&borough={{ filter_params.borough }}{% endif %}{% if filter_params.min_price %}&min_price={{ filter_params.min_price }}{% endif %}{% if filter_params.max_price %}&max_price={{ filter_params.max_price }}{% endif %}{% if filter_params.bedrooms %}&bedrooms={{ filter_params.bedrooms }}{% endif %}{% if filter_params.bathrooms %}&bathrooms={{ filter_params.bathrooms }}{% endif %}{% if filter_params.elevator %}&elevator={{ filter_params.elevator }}{% endif %}{% if filter_params.laundry %}&laundry={{ filter_params.laundry }}{% endif %}{% if filter_params.no_fee %}&no_fee={{ filter_params.no_fee }}{% endif %}{% if filter_params.building_type %}&building_type={{ filter_params.building_type }}{% endif %}{% if filter_params.parking %}&parking={{ filter_params.parking }}{% endif %}">Lowest to Highest</a></li>
+          <li><a class="dropdown-item" href="?sort=high_to_low{% if filter_params.borough %}&borough={{ filter_params.borough }}{% endif %}{% if filter_params.min_price %}&min_price={{ filter_params.min_price }}{% endif %}{% if filter_params.max_price %}&max_price={{ filter_params.max_price }}{% endif %}{% if filter_params.bedrooms %}&bedrooms={{ filter_params.bedrooms }}{% endif %}{% if filter_params.bathrooms %}&bathrooms={{ filter_params.bathrooms }}{% endif %}{% if filter_params.elevator %}&elevator={{ filter_params.elevator }}{% endif %}{% if filter_params.laundry %}&laundry={{ filter_params.laundry }}{% endif %}{% if filter_params.no_fee %}&no_fee={{ filter_params.no_fee }}{% endif %}{% if filter_params.building_type %}&building_type={{ filter_params.building_type }}{% endif %}{% if filter_params.parking %}&parking={{ filter_params.parking }}{% endif %}">Highest to Lowest</a></li>
         </ul>
       </div>
       <div class="container-fluid">
@@ -215,7 +215,11 @@
                 <p><strong>Borough:</strong> ${listing.fields.borough}</p>
                 <p><strong>Neighbourhood:</strong> ${listing.fields.neighborhood}</p>
                 <p><strong>Square Footage:</strong> ${listing.fields.sq_ft} sq ft</p>
-                <p><strong>Posted by:</strong> ${listing.fields.postedBy}</p>
+                <p><strong>Broker Fee:</strong> $${listing.fields.broker_fee}</p>
+                <p><strong>Unit Type: </strong> ${listing.fields.unit_type}</p>
+                <p><strong>Elevator: </strong> ${listing.fields.elevator}</p>
+                <p><strong>Parking: </strong> ${listing.fields.parking_available}</p>
+
               </div>
             </div>
           `);
