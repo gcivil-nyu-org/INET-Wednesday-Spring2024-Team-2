@@ -23,7 +23,7 @@
             margin-bottom: 20px; 
             width: 100%;
         }
-        .listing-details-container{
+        .image-and-details-container{
             display:flex;
             flex-direction: row;
         }
@@ -44,7 +44,7 @@
             object-fit: cover; 
         }
         .thumbnail {
-            width: 10%; /* Set the desired width for the thumbnails */
+            width: 15%; /* Set the desired width for the thumbnails */
             height: auto;
             margin: 5px;
             cursor: pointer;
@@ -53,10 +53,28 @@
         .selected-thumbnail {
             border-color: #6610f2; /* Set border color for selected thumbnail */
         }
+        .listing-details-container {
+            width: 40%;
+            display: flex;
+            flex-direction: column;
+            margin-bottom:10px;
+        }
         .listing-details {
-            width: 40%; /* Set the desired width for the listing details container */
+            width: 100%; /* Set the desired width for the listing details container */
             height: 500px;
             padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f8f9fa; 
+            border: 1px solid #dee2e6; 
+            margin-bottom: 10px;
+        }
+        .date-available {
+            display: flex;
+            width: 100%; /* Set the desired width for the listing details container */
+            justify-content: center;
+            align-items: center;
+            height: 80px;
             border: 1px solid #ccc;
             border-radius: 5px;
             background-color: #f8f9fa; 
@@ -69,28 +87,27 @@
             justify-content: space-between;
         }
         .description-container {
-            width: 68%;
+            width: 60%;
             display: flex;
             background-color: #f8f9fa;
             border: 1px solid #dee2e6; 
             flex-direction: column;
             padding-right: 10px;
+            margin-right: 10px;
+            height: 500px;
         }
         .description-container p {
-            margin-left: 15px; /* Add margin bottom to paragraphs */
-            margin-right: 5px; /* Add margin bottom to paragraphs */
-
+            margin-left: 15px; 
+            margin-right: 5px; 
         }
         .description-container h4 {
             margin: 15px; /* Add margin bottom to paragraphs */
         }
         .clickable-map {
-            width: 30%; 
-            height: 300px;
+            width: 40%; 
             border-radius: 5px;
             background-color: #f8f9fa; 
             border: 1px solid #dee2e6; 
-            padding: 10px 0; /* Add padding between the clickable map and description container */
         }
     </style>
 </head>
@@ -134,7 +151,7 @@
         <div class="address-container">
             <h1>{{ listing.address }}</h1>
         </div>
-        <div class="listing-details-container">
+        <div class="image-and-details-container">
             <div class="image-container">
                 <!-- Display the first image prominently -->
                 {% if listing.images.all %}
@@ -157,9 +174,9 @@
                 {% endif %}
             </div>
 
-            <!-- Listing details container -->
+            <div class="listing-details-container">
             <div class="listing-details">
-                <h2>Listing Details</h2>
+                <h4>Listing Details</h4>
                 <p><strong>Bedrooms:</strong> {{ listing.beds }}</p>
                 <p><strong>Bath:</strong> {{ listing.baths }}</p>
                 <p><strong>Price:</strong> ${{ listing.price }}/month</p>
@@ -168,6 +185,10 @@
                 <p><strong>Square Footage:</strong> {{ listing.sq_ft }} sq ft</p>
                 <!-- Add other listing details as needed -->
             </div>
+            <div class="date-available">
+                <h4>Date available: {{ listing.Availability_Date }}</h4>
+            </div>
+        </div>
         </div>
         <div class="info-container">
             <div class="description-container">
@@ -181,8 +202,7 @@
                 </p>
             </div>
             <div class="clickable-map">
-                <div id="map" style="width: 100%; height: 400px;"></div>
-
+                <div id="map" style="width: 100%; height: 500px;"></div>
             </div>
         </div>
     </div>
