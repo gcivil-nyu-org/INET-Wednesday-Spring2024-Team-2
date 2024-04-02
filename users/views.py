@@ -267,12 +267,16 @@ def rentals_page(request):
     page_obj = paginator.get_page(page_number)
 
     # Query to get the IDs of listings that are favorited by the current user
-    favorite_listings_ids = Favorite.objects.filter(user=request.user).values_list('listing__id', flat=True)
+    favorite_listings_ids = Favorite.objects.filter(user=request.user).values_list(
+        "listing__id", flat=True
+    )
 
     # Pass listings_json and favorite_listings_ids to the template
     context = {
         "page_obj": page_obj,
-        "favorite_listings_ids": list(favorite_listings_ids),  # Ensure it's converted to a list
+        "favorite_listings_ids": list(
+            favorite_listings_ids
+        ),  # Ensure it's converted to a list
     }
 
     # context = {"listings_json": listings_json}
@@ -291,6 +295,8 @@ def listing_detail(request, listing_id):
     # Pass the listing data to a template for rendering
     context = {"listing": listing}
     return render(request, "users/searchRental/listing_detail.html", context)
+
+
 # @user_type_required("user")
 # def add_to_favorites(request):
 #     listing_id = request.POST.get('listing_id')
@@ -327,6 +333,7 @@ def listing_detail(request, listing_id):
 #     else:
 # return HttpResponseBadRequest("Invalid request")
 
+
 @csrf_exempt
 @login_required
 @user_type_required("user")
@@ -334,17 +341,19 @@ def toggle_favorite(request):
     if request.method == "POST":
         listing_id = request.POST.get("listing_id")
         if not listing_id:
-            return JsonResponse({'error': 'Listing ID is required'}, status=400)
+            return JsonResponse({"error": "Listing ID is required"}, status=400)
 
         try:
             listing = Rental_Listings.objects.get(id=listing_id)
-            favorite, created = Favorite.objects.get_or_create(user=request.user, listing=listing)
+            favorite, created = Favorite.objects.get_or_create(
+                user=request.user, listing=listing
+            )
             if not created:
                 favorite.delete()
-                return JsonResponse({'status': 'removed'})
-            return JsonResponse({'status': 'added'})
+                return JsonResponse({"status": "removed"})
+            return JsonResponse({"status": "added"})
         except Rental_Listings.DoesNotExist:
-            return JsonResponse({'error': 'Listing not found'}, status=404)
+            return JsonResponse({"error": "Listing not found"}, status=404)
         except Exception as e:
-            logger.error(f'Internal server error: {e}', exc_info=True)
-            return JsonResponse({'error': 'Internal server error'}, status=500)
+            logger.error(f"Internal server error: {e}", exc_info=True)
+            return JsonResponse({"error": "Internal server error"}, status=500)
