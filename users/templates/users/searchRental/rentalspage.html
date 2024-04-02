@@ -60,7 +60,7 @@
           font-size: 24px; /* Adjust size as needed */
           color: rgb(255, 253, 253); /* Default non-favorite color */
         }
-        .favorite-icon.favorited {
+        .favorite-icon.active {
             color: red; /* Favorited state color */
         }
 
@@ -220,49 +220,6 @@
     <p><strong> Sorry! No available rentals match your search. Please adjust your parameters and try again. </strong></p>
 {% endif %}
 </div>
-    <!-- <script>
-        var staticBasePath = "{% static 'users/images/' %}";
-    </script>    
-    <script>
-      const listings = JSON.parse('{{ listings_json|safe }}');
-    
-      // Function to toggle the favorite state
-      function toggleFavorite(event, index) {
-        const icon = event.currentTarget;
-        icon.classList.toggle('active');
-        // Here you would normally update the favorite status in your database or state
-      }
-    
-      if (listings.length === 0) {
-        // Display an error message if no listings are found
-        document.write("<p><strong> Sorry!! No available rentals for the search please check your spelling </p>");
-      } else {
-        // Loop through the listings and display them
-        for (let i = 0; i < listings.length; i++) {
-          const listing = listings[i];
-          document.write(`
-            <div class="listing">
-              <div class="listing-image">
-                <img src="${staticBasePath}${'home1.jpg'}" alt="Listing Image">
-                <div class="favorite-icon" onclick="toggleFavorite(event, ${listing.pk})">♥</div>
-              </div>
-              <div class="listing-details">
-                <h3>${listing.fields.address}</h3>
-                <p><strong>Bedrooms:</strong> ${listing.fields.beds}</p>
-                <p><strong>Bath:</strong> ${listing.fields.baths}</p>
-                <p><strong>Price:</strong> $${listing.fields.price}/month</p>
-                <p><strong>Borough:</strong> ${listing.fields.borough}</p>
-                <p><strong>Neighbourhood:</strong> ${listing.fields.neighborhood}</p>
-                <p><strong>Square Footage:</strong> ${listing.fields.sq_ft} sq ft</p>
-                <p><strong>Posted by:</strong> ${listing.fields.postedBy}</p>
-              </div>
-            </div>
-          `);
-        }
-      }
-    </script>
-  
-  </div> -->
   
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -286,40 +243,6 @@ $(document).ready(function() {
     });
 });
 
-function toggleFavorite(event, listingId) {
-    event.stopPropagation(); // Prevent the event from bubbling up to the parent elements
-    event.preventDefault(); // Prevent the default action (navigating to the next page)
-
-    
-    // Toggle favorite icon color
-    const favoriteIcon = event.target;
-    favoriteIcon.classList.toggle('favorited');
-    
-    // Make an AJAX request to your Django backend to save the favorite status
-    const isFavorited = favoriteIcon.classList.contains('favorited');
-    const url = '/toggle_favorite/'; // Replace this with the actual URL to your Django view
-    const data = {
-        listing_id: listingId,
-        is_favorited: isFavorited
-    };
-
-    // Make the AJAX request
-    $.ajax({
-        type: 'POST',
-        url: url,
-        data: data,
-        success: function(response) {
-            // Handle success response if needed
-        },
-        error: function(xhr, status, error) {
-            // Handle error response if needed
-            console.error(error);
-        }
-    });
-}
-</script>
-
-<script>
   // Function to get the CSRF token from cookies
   function getCookie(name) {
       let cookieValue = null;
@@ -339,6 +262,11 @@ function toggleFavorite(event, listingId) {
 
   // Updated function for toggling favorite status
 function toggleFavorite(event, listingId) {
+  console.log("Toggle favorite function called for listing ID:", listingId);
+
+  event.stopPropagation(); // Prevent the event from bubbling up to the parent elements
+  event.preventDefault(); // Prevent the default action (navigating to the next page)
+
   const icon = event.currentTarget;
   $.ajax({
       type: "POST",
@@ -361,7 +289,7 @@ function toggleFavorite(event, listingId) {
   });
 }
 
-  </script>
+</script>
 
 <div class="pagination">
   <span class="step-links">
