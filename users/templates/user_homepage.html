@@ -23,7 +23,7 @@
                 <a class="nav-link active" href="{% url 'placeholder' %}">All rentals</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'placeholder' %}">Favourites</a>
+                <a class="nav-link" href="{% url 'favorites_page' %}">Favourites</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'placeholder' %}">My account</a>
@@ -47,9 +47,6 @@
     <h2 class="text-center">User Homepage</h2>
     {% if user.is_authenticated %}
         <p class="text-center">Welcome, {{ user.username }}!</p>
-        <div class="d-flex justify-content-end">
-            <a href="{% url 'logout' %}" class="btn btn-secondary">Logout</a>
-        </div>
         <div class="container">
             <div class="row justify-content-center mt-4">
                 <div class="col-md-6">
