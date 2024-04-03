@@ -532,7 +532,7 @@ class ListingDetailViewTest(TestCase):
     def setUp(self):
         self.client = Client()
         # Create a sample listing for testing
-        self.listing = Listing.objects.create(
+        self.listing = Rental_Listings.objects.create(
             address="123 Main St",
             beds=2,
             baths=2,
