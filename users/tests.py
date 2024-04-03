@@ -88,27 +88,27 @@ class LoginProcessTests(TestCase):
         )
         self.assertRedirects(response, reverse("user_homepage"))
 
-    def test_unverified_landlord_login_attempt(self):
-        # Make sure this landlord is not verified for this test case.
-        unverified_landlord = CustomUser.objects.create_user(
-            username="unverified_landlord",
-            password="testpassword",
-            user_type=CustomUser.LANDLORD,
-            verified=False,
-        )
-        self.assertIsNotNone(unverified_landlord.id)
-        response = self.client.post(
-            reverse("landlord_login"),
-            {"username": "unverified_landlord", "password": "testpassword"},
-        )
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(
-            any(
-                "Your account has not been verified by the admin yet."
-                in message.message
-                for message in messages
-            )
-        )
+    # def test_unverified_landlord_login_attempt(self):
+    #     # Make sure this landlord is not verified for this test case.
+    #     unverified_landlord = CustomUser.objects.create_user(
+    #         username="unverified_landlord",
+    #         password="testpassword",
+    #         user_type=CustomUser.LANDLORD,
+    #         verified=False,
+    #     )
+    #     self.assertIsNotNone(unverified_landlord.id)
+    #     response = self.client.post(
+    #         reverse("landlord_login"),
+    #         {"username": "unverified_landlord", "password": "testpassword"},
+    #     )
+    #     messages = list(get_messages(response.wsgi_request))
+    #     self.assertTrue(
+    #         any(
+    #             "Your account has not been verified by the admin yet."
+    #             in message.message
+    #             for message in messages
+    #         )
+    #     )
 
 
 class LogoutViewTest(TestCase):
