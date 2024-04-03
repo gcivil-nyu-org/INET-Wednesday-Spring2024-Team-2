@@ -553,6 +553,7 @@ class ListingDetailViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.listing.address)
         self.assertContains(response, self.listing.beds)
+        self.assertContains(response, self.listing.baths)
 
     def test_toggle_favorite_ajax(self):
         response = self.client.post(
