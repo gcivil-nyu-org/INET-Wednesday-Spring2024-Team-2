@@ -1,7 +1,7 @@
 import os
 import uuid
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.db import IntegrityError
@@ -13,14 +13,24 @@ from users.decorators import user_type_required
 from users.forms import UserSignUpForm, RentalListingForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import Group
-from django.db.models import Q
+from django.db.models import Q, Min
 from .forms import LandlordSignupForm
 import boto3
 from django.conf import settings
-from .models import CustomUser
+from .models import CustomUser, RentalImages
 from .forms import CustomLoginForm
-from .models import Rental_Listings
 from django.core import serializers
+from django.forms.models import model_to_dict
+from django.core.paginator import Paginator, Page, EmptyPage, PageNotAnInteger
+
+from .models import Favorite, Rental_Listings
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse, HttpResponseBadRequest
+import logging
+from django.views.decorators.csrf import csrf_exempt
+
+logger = logging.getLogger(__name__)
 
 LOGGING = {
     "version": 1,
@@ -202,40 +212,18 @@ def landlord_signup(request):
 
 @user_type_required("user")
 def rentals_page(request):
-    print(request)
     # Filter parameters
     borough = request.GET.get("borough")
     min_price = request.GET.get("min_price")
     max_price = request.GET.get("max_price")
     bedrooms = request.GET.get("bedrooms")
     bathrooms = request.GET.get("bathrooms")
-    elevator = request.GET.get("elevator") == "True"
-    laundry = request.GET.get("laundry") == "True"
-    broker_fee = request.GET.get("broker_fee") == "True"
+    elevator = request.GET.get("elevator") == "on"
+    laundry = request.GET.get("laundry") == "on"
+    no_fee = request.GET.get("no_fee") == "on"
     building_type = request.GET.get("building_type")
-    parking = request.GET.get("parking") == "True"
-    print(
-        "Borough=",
-        borough,
-        "MinPrice=",
-        min_price,
-        "MaxPrice=",
-        max_price,
-        "Bedrooms=",
-        bedrooms,
-        "Baths=",
-        bathrooms,
-        "elevator=",
-        elevator,
-        "laundry=",
-        laundry,
-        "BrokerFee=",
-        broker_fee,
-        "Buildingtype=",
-        building_type,
-        "parking=",
-        parking,
-    )
+    parking = request.GET.get("parking") == "on"
+
     # Start with all listings
     listings = Rental_Listings.objects.all()
 
@@ -249,32 +237,80 @@ def rentals_page(request):
         max_price = int(max_price)
         listings = listings.filter(price__lte=max_price)
     if bedrooms:
-        listings = listings.filter(beds=bedrooms)
+        if bedrooms == "Any":
+            listings = listings
+        else:
+            listings = listings.filter(beds=bedrooms)
     if bathrooms:
-        listings = listings.filter(baths=bathrooms)
+        if bathrooms == "Any":
+            listings = listings
+        else:
+            listings = listings.filter(baths=bathrooms)
     if elevator:
         listings = listings.filter(elevator=True)
     if laundry:
         listings = listings.filter(washer_dryer_in_unit=True)
-    if broker_fee:
-        listings = listings.filter(broker_fee=True)
+    if no_fee:
+        listings = listings.filter(broker_fee=0)
     if building_type:
-        listings = listings.filter(unit_type=building_type)
+        if building_type == "Any":
+            listings = listings
+        else:
+            listings = listings.filter(unit_type=building_type)
     if parking:
         listings = listings.filter(parking_available=True)
 
+    # Annotate each listing with the URL of its first image
+    listings = listings.annotate(first_image=Min("images__image_url"))
+
     # Sorting
-    sort_by = request.GET.get("sort_by")
-    if sort_by == "price_asc":
-        listings = listings.order_by("price")
-    elif sort_by == "price_desc":
+    sort_option = request.GET.get("sort")
+    if sort_option == "recent":
+        listings = listings.order_by(
+            "-Submitted_date"
+        )  # Assuming you have a created_at field
+    elif sort_option == "high_to_low":
         listings = listings.order_by("-price")
-    # Add more sorting options as neededed
+    else:
+        listings = listings.order_by("price")
 
-    # Serialize the queryset directly to JSON
-    listings_json = serializers.serialize("json", listings)
+    # Build filter parameters for maintaining filter state in URL
+    filter_params = {
+        "borough": borough,
+        "min_price": min_price,
+        "max_price": max_price,
+        "bedrooms": bedrooms,
+        "bathrooms": bathrooms,
+        "elevator": request.GET.get("elevator"),
+        "laundry": request.GET.get("laundry"),
+        "no_fee": request.GET.get("no_fee"),
+        "building_type": building_type,
+        "parking": request.GET.get("parking"),
+    }
 
-    context = {"listings_json": listings_json}
+    # Query to get the IDs of listings that are favorited by the current user
+    favorite_listings_ids = Favorite.objects.filter(user=request.user).values_list(
+        "listing__id", flat=True
+    )
+    filter_params = {k: v for k, v in filter_params.items() if v is not None}
+
+    # Pagination
+    paginator = Paginator(listings, 5)  # Show 5 listings per page
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    # Query to get the IDs of listings that are favorited by the current user
+    favorite_listings_ids = Favorite.objects.filter(user=request.user).values_list(
+        "listing__id", flat=True
+    )
+
+    # Pass listings_json and favorite_listings_ids to the template
+    context = {
+        "page_obj": page_obj,
+        "favorite_listings_ids": list(favorite_listings_ids),
+        "filter_params": filter_params,  # Ensure it's converted to a list
+    }
+
     return render(request, "users/searchRental/rentalspage.html", context)
 
 @user_type_required("landlord")
@@ -293,3 +329,93 @@ def add_rental_listing(request):
 @user_type_required("user")
 def placeholder_view(request):
     return render(request, "users/searchRental/placeholder.html")
+
+
+def listing_detail(request, listing_id):
+    # Retrieve the specific listing based on the ID provided in the URL parameter
+    listing = get_object_or_404(Rental_Listings, id=listing_id)
+
+    # Pass the listing data to a template for rendering
+    context = {"listing": listing}
+    return render(request, "users/searchRental/listing_detail.html", context)
+
+
+# @user_type_required("user")
+# def add_to_favorites(request):
+#     listing_id = request.POST.get('listing_id')
+#     if not listing_id:
+#         return JsonResponse({'error': 'Listing ID is required'}, status=400)
+#     try:
+#         listing = Rental_Listings.objects.get(id=listing_id)
+#         Favorite.objects.get_or_create(user=request.user, listing=listing)
+#         return JsonResponse({'success': True})
+#     except Rental_Listings.DoesNotExist:
+#         return JsonResponse({'error': 'Listing not found'}, status=404)
+#     except Exception as e:
+#         # Log the error for debugging purposes
+#         print(f"Error adding to favorites: {e}")
+#         return JsonResponse({'error': 'Internal server error'}, status=500)
+
+# @user_type_required("user")
+# def remove_from_favorites(request):
+#     if request.method == "POST" and request.is_ajax():
+#         user = request.user
+#         listing_id = request.POST.get("listing_id")
+#         try:
+#             listing = Rental_Listings.objects.get(id=listing_id)
+#             favorite, deleted = Favorite.objects.filter(user=user, listing=listing).delete()
+#             if deleted:
+#                 return JsonResponse({"success": True})
+#             else:
+#                 return JsonResponse({'error': 'Favorite not found'}, status=404)
+#         except Rental_Listings.DoesNotExist:
+#             return JsonResponse({'error': 'Listing not found'}, status=404)
+#         except Exception as e:
+#             logger.error(f"Error removing from favorites: {e}")
+#             return JsonResponse({'error': 'Internal server error'}, status=500)
+#     else:
+# return HttpResponseBadRequest("Invalid request")
+
+
+@csrf_exempt
+@login_required
+@user_type_required("user")
+def toggle_favorite(request):
+    if request.method == "POST":
+        listing_id = request.POST.get("listing_id")
+        if not listing_id:
+            return JsonResponse({"error": "Listing ID is required"}, status=400)
+
+        try:
+            listing = Rental_Listings.objects.get(id=listing_id)
+            favorite, created = Favorite.objects.get_or_create(
+                user=request.user, listing=listing
+            )
+            if not created:
+                favorite.delete()
+                return JsonResponse({"status": "removed"})
+            return JsonResponse({"status": "added"})
+        except Rental_Listings.DoesNotExist:
+            return JsonResponse({"error": "Listing not found"}, status=404)
+        except Exception as e:
+            logger.error(f"Internal server error: {e}", exc_info=True)
+            return JsonResponse({"error": "Internal server error"}, status=500)
+
+
+@user_type_required("user")
+@login_required
+def favorites_page(request):
+    # Fetch only the listings that the user has marked as favorite
+    favorite_listings = Favorite.objects.filter(user=request.user).select_related(
+        "listing"
+    )
+    listings = [fav.listing for fav in favorite_listings]
+
+    listings_json = serializers.serialize("json", listings)
+    favorite_listings_ids = [listing.id for listing in listings]
+
+    context = {
+        "listings_json": listings_json,
+        "favorite_listings_ids": favorite_listings_ids,
+    }
+    return render(request, "users/searchRental/favorites.html", context)
