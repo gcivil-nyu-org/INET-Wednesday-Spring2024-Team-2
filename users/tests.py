@@ -454,3 +454,39 @@ class LandlordUserPageAccessTest(TestCase):
         self.client.login(username='normaluser', password='testpass123')
         response = self.client.get(reverse('landlord_homepage'))
         self.assertNotEqual(response.status_code, 200)
+
+
+class ListingDetailViewTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        # Create a sample listing for testing
+        self.listing = Listing.objects.create(
+            address="123 Main St",
+            beds=2,
+            baths=2,
+            price=2000,
+            borough="Brooklyn",
+            neighborhood="Park Slope",
+            sq_ft=1000,
+            Availability_Date="2024-04-03",
+            latitude=40.1234,
+            longitude=-73.5678
+        )
+
+    def test_listing_detail_view(self):
+        # Assuming your detail view URL is named 'listing_detail'
+        response = self.client.get(reverse('listing_detail', kwargs={'pk': self.listing.pk}))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.listing.address)
+        self.assertContains(response, self.listing.beds)
+        # Add more assertions for other fields you expect to be rendered
+
+    def test_toggle_favorite_ajax(self):
+        # Assuming your toggle favorite URL is named 'toggle_favorite'
+        response = self.client.post(reverse('toggle_favorite'), {'listing_id': self.listing.pk})
+        self.assertEqual(response.status_code, 200)
+
+class ListingDetailTemplateTest(SimpleTestCase):
+    def test_listing_detail_template(self):
+        response = self.client.get(reverse('listing_detail', kwargs={'pk': 1}))
+        self.assertTemplateUsed(response, 'your_template_name.html')
