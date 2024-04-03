@@ -560,8 +560,3 @@ class ListingDetailViewTest(TestCase):
         )
         self.assertEqual(response.status_code, 200)
 
-
-class ListingDetailTemplateTest(SimpleTestCase):
-    def test_listing_detail_template(self):
-        response = self.client.get(reverse('listing_detail', kwargs={'listing_id': self.listing.pk}))
-        self.assertTemplateUsed(response, "your_template_name.html")
