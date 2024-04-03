@@ -546,17 +546,13 @@ class ListingDetailViewTest(TestCase):
         )
 
     def test_listing_detail_view(self):
-        # Assuming your detail view URL is named 'listing_detail'
-        response = self.client.get(
-            reverse("listing_detail", kwargs={"pk": self.listing.pk})
-        )
+        # Assuming your view name is 'listing_detail'
+        response = self.client.get(reverse('listing_detail', kwargs={'listing_id': self.listing.pk}))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.listing.address)
         self.assertContains(response, self.listing.beds)
-        # Add more assertions for other fields you expect to be rendered
 
     def test_toggle_favorite_ajax(self):
-        # Assuming your toggle favorite URL is named 'toggle_favorite'
         response = self.client.post(
             reverse("toggle_favorite"), {"listing_id": self.listing.pk}
         )
