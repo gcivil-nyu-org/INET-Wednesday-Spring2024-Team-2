@@ -564,7 +564,7 @@ class ListingDetailViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_listing_detail_not_found(self):
-        non_existent_listing_id = -1  # Assuming this ID does not exist
+        non_existent_listing_id = 99999  # Assuming this ID does not exist
         response = self.client.get(
             reverse("listing_detail", kwargs={"listing_id": non_existent_listing_id})
         )
