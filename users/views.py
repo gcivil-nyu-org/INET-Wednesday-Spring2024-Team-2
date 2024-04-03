@@ -171,8 +171,6 @@ def landlord_signup(request):
                         aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
                         aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
                     )
-
-                    # Check if file already exists in S3 bucket
                     existing_files = s3_client.list_objects_v2(
                         Bucket=settings.AWS_STORAGE_BUCKET_NAME, Prefix=file_name
                     )
@@ -317,10 +315,31 @@ def rentals_page(request):
 def add_rental_listing(request):
     if request.method == 'POST':
         form = RentalListingForm(request.POST, request.FILES)
+        images = request.FILES.getlist('photo')  # 假设你有一个字段名为'image'来上传图片
         if form.is_valid():
             rental_listing = form.save(commit=False)
             rental_listing.Landlord = request.user
             rental_listing.save()
+            AWS_STORAGE_BUCKET_NAME="landlord-verification-files"
+            for image in images:
+                file_name, file_extension = os.path.splitext(image.name)
+                unique_file_name = f"pdfs/{uuid.uuid4()}{file_extension}"
+                s3_client = boto3.client(
+                    "s3",
+                    aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                    aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+                )
+
+                s3_client.upload_fileobj(
+                    image,
+                    AWS_STORAGE_BUCKET_NAME,
+                    unique_file_name,
+                )
+
+                image_url = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{unique_file_name}"
+                RentalImages.objects.create(rental_listing=rental_listing,
+                                            image_url=image_url)
+
             return redirect('landlord_homepage')
     else:
         form = RentalListingForm()
