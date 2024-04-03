@@ -1,34 +1,28 @@
+import logging
+import logging.config
 import os
+import sys
 import uuid
 
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import authenticate, login, logout
-from django.contrib import messages
-from django.db import IntegrityError
-from django.core.exceptions import ValidationError
-import logging.config
-import sys
-from django.urls import reverse
-from users.decorators import user_type_required
-from users.forms import UserSignUpForm, RentalListingForm
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import Group
-from django.db.models import Q, Min
-from .forms import LandlordSignupForm
 import boto3
 from django.conf import settings
-from .models import CustomUser, RentalImages
-from .forms import CustomLoginForm
-from django.core import serializers
-from django.forms.models import model_to_dict
-from django.core.paginator import Paginator, Page, EmptyPage, PageNotAnInteger
-
-from .models import Favorite, Rental_Listings
-from django.views.decorators.http import require_POST
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse, HttpResponseBadRequest
-import logging
+from django.core import serializers
+from django.core.paginator import Paginator
+from django.db.models import Min
+from django.http import JsonResponse
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
+
+from users.decorators import user_type_required
+from users.forms import UserSignUpForm, RentalListingForm
+from .forms import CustomLoginForm
+from .forms import LandlordSignupForm
+from .models import Favorite, Rental_Listings
+from .models import RentalImages
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +55,8 @@ def login_process(request, user_type, this_page, destination_url_name):
         form = CustomLoginForm()
         return render(request, this_page, {"form": form})
 
-    form = CustomLoginForm(request, request.POST)  # Pass the request to the form
+    form = CustomLoginForm(request,
+                           request.POST)  # Pass the request to the form
     if form.is_valid():
         username = form.cleaned_data["username"]
         password = form.cleaned_data["password"]
@@ -74,7 +69,9 @@ def login_process(request, user_type, this_page, destination_url_name):
         if getattr(user, "user_type", None) != user_type:
             messages.error(
                 request,
-                f"Please provide correct credentials to login as {user_type.capitalize()}!",  # noqa:<E501>
+                f"Please provide correct credentials to login as "
+                f"{user_type.capitalize()}!",
+                # noqa:<E501>
             )
             return render(request, this_page, {"form": form})
         # if user_type == "landlord" and user.verified is False:
@@ -103,7 +100,8 @@ def user_login(request):
         request,
         user_type="user",
         this_page="login/user_login.html",
-        destination_url_name="user_homepage",  # URL pattern name for user's homepage
+        destination_url_name="user_homepage",
+        # URL pattern name for user's homepage
     )
 
 
@@ -119,7 +117,8 @@ def user_signup(request):
                 user.verified = True
             else:
                 user.verified = False
-            login(request, user, backend="django.contrib.auth.backends.ModelBackend")
+            login(request, user,
+                  backend="django.contrib.auth.backends.ModelBackend")
             return redirect("user_homepage")
     else:
         form = UserSignUpForm()
@@ -147,7 +146,7 @@ def user_home(request):
 @user_type_required("landlord")
 def landlord_home(request):
     listings = Rental_Listings.objects.filter(Landlord=request.user)
-    return render(request, 'landlord_homepage.html', {'listings': listings})
+    return render(request, "landlord_homepage.html", {"listings": listings})
 
 
 def landlord_signup(request):
@@ -172,7 +171,8 @@ def landlord_signup(request):
                         aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
                     )
                     existing_files = s3_client.list_objects_v2(
-                        Bucket=settings.AWS_STORAGE_BUCKET_NAME, Prefix=file_name
+                        Bucket=settings.AWS_STORAGE_BUCKET_NAME,
+                        Prefix=file_name
                     )
 
                     if "Contents" in existing_files:
@@ -182,7 +182,8 @@ def landlord_signup(request):
                             " Please rename your file and try again.",
                         )
                         return render(
-                            request, "signup/landlord_signup.html", {"form": form}
+                            request, "signup/landlord_signup.html",
+                            {"form": form}
                         )
 
                     s3_client.upload_fileobj(
@@ -287,7 +288,8 @@ def rentals_page(request):
     }
 
     # Query to get the IDs of listings that are favorited by the current user
-    favorite_listings_ids = Favorite.objects.filter(user=request.user).values_list(
+    favorite_listings_ids = Favorite.objects.filter(
+        user=request.user).values_list(
         "listing__id", flat=True
     )
     filter_params = {k: v for k, v in filter_params.items() if v is not None}
@@ -298,7 +300,8 @@ def rentals_page(request):
     page_obj = paginator.get_page(page_number)
 
     # Query to get the IDs of listings that are favorited by the current user
-    favorite_listings_ids = Favorite.objects.filter(user=request.user).values_list(
+    favorite_listings_ids = Favorite.objects.filter(
+        user=request.user).values_list(
         "listing__id", flat=True
     )
 
@@ -311,16 +314,17 @@ def rentals_page(request):
 
     return render(request, "users/searchRental/rentalspage.html", context)
 
+
 @user_type_required("landlord")
 def add_rental_listing(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = RentalListingForm(request.POST, request.FILES)
-        images = request.FILES.getlist('photo')  # 假设你有一个字段名为'image'来上传图片
+        images = request.FILES.getlist("photo")  # 假设你有一个字段名为'image'来上传图片
         if form.is_valid():
             rental_listing = form.save(commit=False)
             rental_listing.Landlord = request.user
             rental_listing.save()
-            AWS_STORAGE_BUCKET_NAME="landlord-verification-files"
+            AWS_STORAGE_BUCKET_NAME = "landlord-verification-files"
             for image in images:
                 file_name, file_extension = os.path.splitext(image.name)
                 unique_file_name = f"pdfs/{uuid.uuid4()}{file_extension}"
@@ -335,15 +339,17 @@ def add_rental_listing(request):
                     AWS_STORAGE_BUCKET_NAME,
                     unique_file_name,
                 )
+                image_url = f"https://{AWS_STORAGE_BUCKET_NAME}." \
+                            f"s3.amazonaws.com/{unique_file_name}"
+                RentalImages.objects.create(
+                    rental_listing=rental_listing, image_url=image_url
+                )
 
-                image_url = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{unique_file_name}"
-                RentalImages.objects.create(rental_listing=rental_listing,
-                                            image_url=image_url)
-
-            return redirect('landlord_homepage')
+            return redirect("landlord_homepage")
     else:
         form = RentalListingForm()
-    return render(request, 'add_rental_listing.html', {'form': form})
+    return render(request, "add_rental_listing.html", {"form": form})
+
 
 @user_type_required("user")
 def placeholder_view(request):
@@ -382,7 +388,8 @@ def listing_detail(request, listing_id):
 #         listing_id = request.POST.get("listing_id")
 #         try:
 #             listing = Rental_Listings.objects.get(id=listing_id)
-#             favorite, deleted = Favorite.objects.filter(user=user, listing=listing).delete()
+#             favorite, deleted = Favorite.objects.filter(user=user,
+#             listing=listing).delete()
 #             if deleted:
 #                 return JsonResponse({"success": True})
 #             else:
@@ -425,7 +432,8 @@ def toggle_favorite(request):
 @login_required
 def favorites_page(request):
     # Fetch only the listings that the user has marked as favorite
-    favorite_listings = Favorite.objects.filter(user=request.user).select_related(
+    favorite_listings = Favorite.objects.filter(
+        user=request.user).select_related(
         "listing"
     )
     listings = [fav.listing for fav in favorite_listings]

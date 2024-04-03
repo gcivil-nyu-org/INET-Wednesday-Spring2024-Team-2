@@ -74,24 +74,42 @@ class LandlordSignupForm(UserCreationForm):
 
 
 class RentalListingForm(forms.ModelForm):
-
     photo = forms.ImageField(required=False)  # 根据需要设置required为True或False
+
     class Meta:
         model = Rental_Listings
-        fields = ['address', 'price', 'link', 'sq_ft', 'rooms', 'beds', 'baths', 'unit_type',
-                  'neighborhood', 'central_air_conditioning', 'dishwasher', 'doorman', 'elevator',
-                  'furnished', 'parking_available', 'washer_dryer_in_unit',
-                  'Submitted_date', 'Availability_Date','photo']
+        fields = [
+            "address",
+            "price",
+            "link",
+            "sq_ft",
+            "rooms",
+            "beds",
+            "baths",
+            "unit_type",
+            "neighborhood",
+            "central_air_conditioning",
+            "dishwasher",
+            "doorman",
+            "elevator",
+            "furnished",
+            "parking_available",
+            "washer_dryer_in_unit",
+            "Submitted_date",
+            "Availability_Date",
+            "photo",
+        ]
         widgets = {
-            'Submitted_date': forms.DateInput(attrs={'type': 'date'}),
-            'Availability_Date': forms.DateInput(attrs={'type': 'date'}),
+            "Submitted_date": forms.DateInput(attrs={"type": "date"}),
+            "Availability_Date": forms.DateInput(attrs={"type": "date"}),
         }
 
     def clean_price(self):
-        price = self.cleaned_data['price']
+        price = self.cleaned_data["price"]
         if price < 0:
             raise forms.ValidationError("Price cannot be negative.")
         return price
+
 
 class CustomLoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
