@@ -531,7 +531,9 @@ class LandlordUserPageAccessTest(TestCase):
 class ListingDetailViewTest(TestCase):
     def setUp(self):
         self.client = Client()
-        # Create a sample listing for testing
+        self.user = User.objects.create_user(username='testuser', password='password')
+        self.client.login(username='testuser', password='password')
+
         self.listing = Rental_Listings.objects.create(
             address="123 Main St",
             beds=2,
@@ -561,5 +563,5 @@ class ListingDetailViewTest(TestCase):
 
 class ListingDetailTemplateTest(SimpleTestCase):
     def test_listing_detail_template(self):
-        response = self.client.get(reverse("listing_detail", kwargs={"pk": 1}))
+        response = self.client.get(reverse('listing_detail', kwargs={'listing_id': self.listing.pk}))
         self.assertTemplateUsed(response, "your_template_name.html")
