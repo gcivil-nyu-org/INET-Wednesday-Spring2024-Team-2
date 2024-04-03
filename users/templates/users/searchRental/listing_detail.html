@@ -10,136 +10,203 @@
     <!-- Bootstrap CSS from Bootswatch Pulse -->
     <link href="https://bootswatch.com/5/pulse/bootstrap.css" rel="stylesheet">
     <style>
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .address-container {
-            background-color: #f8f9fa; 
-            border: 1px solid #dee2e6; 
-            border-radius: 5px; 
-            padding: 15px; 
-            margin-bottom: 20px; 
-            width: 100%;
-        }
-        .listing-details-container{
-            display:flex;
-            flex-direction: row;
-        }
-        .image-container {
-            max-width: 60%;
-            display: flex;
-            flex-direction: column;
-            padding-right: 10px;
-        }
-        #mainImageContainer {
-            width: 100%;
-            height: 500px; 
-            overflow: hidden;
-        }
-        #mainImage {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; 
-        }
-        .thumbnail {
-            width: 10%; /* Set the desired width for the thumbnails */
-            height: auto;
-            margin: 5px;
-            cursor: pointer;
-            border: 2px solid transparent; /* Set initial border style */
-        }
-        .selected-thumbnail {
-            border-color: #6610f2; /* Set border color for selected thumbnail */
-        }
-        .listing-details {
-            width: 40%; /* Set the desired width for the listing details container */
-            height: 500px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #f8f9fa; 
-            border: 1px solid #dee2e6; 
-        }
-        .info-container  {
-            width: 100%;
-            display:flex;
-            flex-direction: row;
-            justify-content: space-between;
-        }
-        .description-container {
-            width: 68%;
-            display: flex;
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6; 
-            flex-direction: column;
-            padding-right: 10px;
-        }
-        .description-container p {
-            margin-left: 15px; /* Add margin bottom to paragraphs */
-            margin-right: 5px; /* Add margin bottom to paragraphs */
-
-        }
-        .description-container h4 {
-            margin: 15px; /* Add margin bottom to paragraphs */
-        }
-        .clickable-map {
-            width: 30%; 
-            height: 300px;
-            border-radius: 5px;
-            background-color: #f8f9fa; 
-            border: 1px solid #dee2e6; 
-            padding: 10px 0; /* Add padding between the clickable map and description container */
-        }
+                .container {
+                    display: flex;
+                    flex-direction: column;
+                }
+        
+                .address-container {
+                    background-color: #f8f9fa;
+                    border: 1px solid #dee2e6;
+                    /* border-radius: 5px; */
+                    padding: 15px;
+                    margin-bottom: 10px;
+                    width: 100%;
+                }
+        
+                .image-and-details-container {
+                    display: flex;
+                    flex-direction: row;
+                }
+        
+                .image-container {
+                    max-width: 60%;
+                    display: flex;
+                    flex-direction: column;
+                    padding-right: 10px;
+                }
+        
+                #mainImageContainer {
+                    width: 100%;
+                    height: 500px;
+                    overflow: hidden;
+                    z-index: 10;
+                    position: relative;
+                }
+        
+                #mainImage {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+        
+                .thumbnail {
+                    width: 15%;
+                    /* Set the desired width for the thumbnails */
+                    height: auto;
+                    margin: 5px;
+                    cursor: pointer;
+                    border: 2px solid transparent;
+                    /* Set initial border style */
+                }
+        
+                .selected-thumbnail {
+                    border-color: #6610f2;
+                    /* Set border color for selected thumbnail */
+                }
+        
+                .listing-details-container {
+                    width: 40%;
+                    display: flex;
+                    flex-direction: column;
+                    margin-bottom: 10px;
+                }
+        
+                .listing-details {
+                    width: 100%;
+                    /* Set the desired width for the listing details container */
+                    height: 500px;
+                    padding: 10px;
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                    background-color: #f8f9fa;
+                    border: 1px solid #dee2e6;
+                    margin-bottom: 10px;
+                }
+        
+                .date-available {
+                    display: flex;
+                    width: 100%;
+                    /* Set the desired width for the listing details container */
+                    justify-content: center;
+                    align-items: center;
+                    height: 80px;
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                    background-color: #f8f9fa;
+                    border: 1px solid #dee2e6;
+                }
+        
+                .info-container {
+                    width: 100%;
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                }
+        
+                .description-container {
+                    width: 60%;
+                    display: flex;
+                    background-color: #f8f9fa;
+                    border: 1px solid #dee2e6;
+                    flex-direction: column;
+                    padding-right: 10px;
+                    margin-right: 10px;
+                    height: 500px;
+                }
+        
+                .description-container p {
+                    margin-left: 15px;
+                    margin-right: 5px;
+                }
+        
+                .description-container h4 {
+                    margin: 15px;
+                    /* Add margin bottom to paragraphs */
+                }
+        
+                .clickable-map {
+                    width: 40%;
+                    border-radius: 5px;
+                    background-color: #f8f9fa;
+                    border: 1px solid #dee2e6;
+                }
+        
+                .favorite-icon {
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    cursor: pointer;
+                    font-size: 24px;
+                    /* Adjust size as needed */
+                    color: rgb(255, 253, 253);
+                    /* Default non-favorite color */
+                    z-index: 20;
+                }
+        
+                .favorite-icon.active {
+                    color: red;
+                    /* Favorited state color */
+                }
     </style>
 </head>
 
 <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
     <div class="container-fluid">
-      <a class="navbar-brand" href="{% url 'user_homepage' %}">
-          RentWiseNYC 
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarContent">
-        <ul class="navbar-nav me-auto">
-          <li class="nav-item">
-            <a class="nav-link active" href="{% url 'placeholder' %}">All rentals</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'favorites_page' %}">Favourites</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'placeholder' %}">My account</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'placeholder' %}">Links</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'logout' %}" >Logout</a>
-          </li>
-        </ul>
-        <form class="d-flex">
-          <input class="form-control me-sm-2" type="search" placeholder="Search">
-          <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
-        </form>
-      </div>
+        <a class="navbar-brand" href="{% url 'user_homepage' %}">
+            RentWiseNYC
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% url 'placeholder' %}">All rentals</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'favorites_page' %}">Favourites</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'placeholder' %}">My account</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'placeholder' %}">Links</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                </li>
+            </ul>
+            <form class="d-flex">
+                <input class="form-control me-sm-2" type="search" placeholder="Search">
+                <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </div>
     </div>
-  </nav>
+</nav>
 
 <body>
+    <!-- <div class="container mt-3">
+        <div class="row">
+            <div class="col">
+                <button onclick="window.history.back()" class="btn btn-primary">Back</button>
+            </div>
+        </div>
+    </div> -->
     <div class="container my-4">
         <div class="address-container">
             <h1>{{ listing.address }}</h1>
         </div>
-        <div class="listing-details-container">
+        <div class="image-and-details-container">
             <div class="image-container">
                 <!-- Display the first image prominently -->
                 {% if listing.images.all %}
                 <div id="mainImageContainer">
                     <img id="mainImage" src="{{ listing.images.first.image_url }}" alt="Listing Image">
+                    <div class="favorite-icon" onclick="toggleFavorite(event, {{ listing.id }})"
+                        data-listing-id="{{ listing.id }}">♥</div>
+
                 </div>
                 {% endif %}
 
@@ -147,45 +214,64 @@
                 {% if listing.images.all %}
                 <div id="thumbnails">
                     {% for image in listing.images.all %}
-                        {% if forloop.first %}
-                            <img class="thumbnail selected-thumbnail" id="thumb{{ forloop.counter }}" src="{{ image.image_url }}" alt="Listing Thumbnail" onclick="displayImage('{{ image.image_url }}', {{ forloop.counter }})">
-                        {% else %}
-                            <img class="thumbnail" id="thumb{{ forloop.counter }}" src="{{ image.image_url }}" alt="Listing Thumbnail" onclick="displayImage('{{ image.image_url }}', {{ forloop.counter }})">
-                        {% endif %}
+                    {% if forloop.first %}
+                    <img class="thumbnail selected-thumbnail" id="thumb{{ forloop.counter }}"
+                        src="{{ image.image_url }}" alt="Listing Thumbnail"
+                        onclick="displayImage('{{ image.image_url }}', {{ forloop.counter }})">
+                    {% else %}
+                    <img class="thumbnail" id="thumb{{ forloop.counter }}" src="{{ image.image_url }}"
+                        alt="Listing Thumbnail" onclick="displayImage('{{ image.image_url }}', {{ forloop.counter }})">
+                    {% endif %}
                     {% endfor %}
                 </div>
                 {% endif %}
             </div>
 
-            <!-- Listing details container -->
-            <div class="listing-details">
-                <h2>Listing Details</h2>
-                <p><strong>Bedrooms:</strong> {{ listing.beds }}</p>
-                <p><strong>Bath:</strong> {{ listing.baths }}</p>
-                <p><strong>Price:</strong> ${{ listing.price }}/month</p>
-                <p><strong>Borough:</strong> {{ listing.borough }}</p>
-                <p><strong>Neighbourhood:</strong> {{ listing.neighborhood }}</p>
-                <p><strong>Square Footage:</strong> {{ listing.sq_ft }} sq ft</p>
-                <!-- Add other listing details as needed -->
+            <div class="listing-details-container">
+                <div class="listing-details">
+                    <h4>Listing Details</h4>
+                    <strong>Bedrooms:</strong> {{ listing.beds }}<br>
+                    <strong>Bath:</strong> {{ listing.baths }}<br>
+                    <strong>Price:</strong> ${{ listing.price }}/month<br>
+                    <strong>Borough:</strong> {{ listing.borough }}<br>
+                    <strong>Neighbourhood:</strong> {{ listing.neighborhood }}<br>
+                    <strong>Square Footage:</strong> {{ listing.sq_ft }} sq ft<br>
+                    <p></p>
+                    <h4>Amenities:</h4>
+                    Doorman: {% if listing.doorman %}<span class="badge rounded-pill bg-secondary">Yes</span>{% else %}<span class="badge rounded-pill bg-light">No</span>{% endif %}<br>
+                    Elevator: {% if listing.elevator %}<span class="badge rounded-pill bg-secondary">Yes</span>{% else %}<span class="badge rounded-pill bg-light">No</span>{% endif %}<br>
+                    Laundry: {% if listing.laundry %}<span class="badge rounded-pill bg-secondary">Yes</span>{% else %}<span class="badge rounded-pill bg-light">No</span>{% endif %}<br>
+                    Dishwasher: {% if listing.dishwasher %}<span class="badge rounded-pill bg-secondary">Yes</span>{% else %}<span class="badge rounded-pill bg-light">No</span>{% endif %}
+                </div>
+                <div class="date-available">
+                    <h4>Date available: {{ listing.Availability_Date }}</h4>
+                </div>
             </div>
         </div>
         <div class="info-container">
             <div class="description-container">
                 <h4>Description:</h4>
-                <p>{{listing.address}} is a 
-                    {{ listing.sq_ft }} square foot 
-                    {{ listing.beds|floatformat:0 }} bed, 
-                    {{ listing.baths|floatformat:0 }} bath 
+                <p>{{listing.address}} is a
+                    {{ listing.sq_ft }} square foot
+                    {{ listing.beds|floatformat:0 }} bed,
+                    {{ listing.baths|floatformat:0 }} bath
                     {{ listing.unit_type|lower }} located in the
-                    {{ listing.neighborhood }} neighborhood in {{ listing.borough }}. 
+                    {{ listing.neighborhood }} neighborhood in {{ listing.borough }}.
                 </p>
+                <h4>Contact Information:</h4>
+                <p>{{ listing.Landlord.email }}</p>
             </div>
             <div class="clickable-map">
-                <div id="map" style="width: 100%; height: 400px;"></div>
-
+                <div id="map" style="width: 100%; height: 500px;"></div>
             </div>
         </div>
     </div>
+
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
         let hiddenInput = document.getElementById("GOOGLE_MAPS_API_KEY");
@@ -227,7 +313,77 @@
                 map: map,
                 title: '{{ listing.address }}' // Add the address as marker title
             });
-        }
+            }
+
+        // Function to get the CSRF token from cookies
+  function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+              const cookie = cookies[i].trim();
+              // Does this cookie string begin with the name we want?
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
+  }
+
+
+       // Updated function for toggling favorite status
+function toggleFavorite(event, listingId) {
+  console.log("Toggle favorite function called for listing ID:", listingId);
+
+  event.stopPropagation(); // Prevent the event from bubbling up to the parent elements
+  event.preventDefault(); // Prevent the default action (navigating to the next page)
+
+  const icon = event.currentTarget;
+  $.ajax({
+      type: "POST",
+      url: '/toggle_favorite/',
+      data: {
+          'listing_id': listingId,
+          'csrfmiddlewaretoken': getCookie('csrftoken'),
+      },
+      success: function(response) {
+          if (response.status === 'added') {
+              icon.classList.add('active');
+          } else if (response.status === 'removed') {
+              icon.classList.remove('active');
+          }
+      },
+      error: function(xhr, status, error) {
+          console.error("Error toggling favorite:", status, error);
+          alert('An error occurred while processing your request.');
+      }
+  });
+}
+        document.addEventListener("DOMContentLoaded", function() {
+      // Parse the favorite listings IDs from a JSON string to an array
+      const favoriteListingsIds = JSON.parse('{{ favorite_listings_ids|safe }}');
+
+      // Wait for the existing listings to be generated
+      setTimeout(function() {
+        // Select all favorite icons
+        const favoriteIcons = document.querySelectorAll('.favorite-icon');
+
+        favoriteIcons.forEach(function(icon) {
+          // Extract listing ID stored in a data attribute (e.g., data-listing-id)
+          const listingId = parseInt(icon.getAttribute('data-listing-id'), 10);
+
+          // Check if the listing ID is in the list of favorites
+          if (favoriteListingsIds.includes(listingId)) {
+            // Add the 'active' class to mark it as favorited
+            icon.classList.add('active');
+          }
+        });
+      }, 100); // Adjust timeout as needed to ensure it runs after listings are generated
+    });
+
+
     </script>
 
 </body>
