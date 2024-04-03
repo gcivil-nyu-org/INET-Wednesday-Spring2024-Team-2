@@ -531,8 +531,8 @@ class LandlordUserPageAccessTest(TestCase):
 class ListingDetailViewTest(TestCase):
     def setUp(self):
         self.client = Client()
-        self.user = User.objects.create_user(username='testuser', password='password')
-        self.client.login(username='testuser', password='password')
+        self.user = User.objects.create_user(username="testuser", password="password")
+        self.client.login(username="testuser", password="password")
 
         self.listing = Rental_Listings.objects.create(
             address="123 Main St",
@@ -549,7 +549,9 @@ class ListingDetailViewTest(TestCase):
 
     def test_listing_detail_view(self):
         # Assuming your view name is 'listing_detail'
-        response = self.client.get(reverse('listing_detail', kwargs={'listing_id': self.listing.pk}))
+        response = self.client.get(
+            reverse("listing_detail", kwargs={"listing_id": self.listing.pk})
+        )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.listing.address)
         self.assertContains(response, self.listing.beds)
@@ -561,3 +563,9 @@ class ListingDetailViewTest(TestCase):
         )
         self.assertEqual(response.status_code, 200)
 
+    def test_listing_detail_not_found(self):
+        non_existent_listing_id = -1  # Assuming this ID does not exist
+        response = self.client.get(
+            reverse("listing_detail", kwargs={"listing_id": non_existent_listing_id})
+        )
+        self.assertEqual(response.status_code, 404)
