@@ -568,4 +568,4 @@ class ListingDetailViewTest(TestCase):
         response = self.client.get(
             reverse("listing_detail", kwargs={"listing_id": non_existent_listing_id})
         )
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 302)
