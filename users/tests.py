@@ -6,8 +6,11 @@ from .models import CustomUser, Rental_Listings, Favorite
 from django.contrib.messages import get_messages
 from datetime import date
 from django.core.files.uploadedfile import SimpleUploadedFile
-from unittest.mock import patch
 import json
+import os
+import sys
+import unittest
+from unittest.mock import patch, MagicMock
 
 
 class CustomUserModelTests(TestCase):
@@ -569,3 +572,25 @@ class ListingDetailViewTest(TestCase):
             reverse("listing_detail", kwargs={"listing_id": non_existent_listing_id})
         )
         self.assertEqual(response.status_code, 302)
+
+class InitTestCase(TestCase):
+    def test_default_settings(self):
+        # Do not set ENV_NAME or set it to a value other than "prod" or "develop"
+        from rent_wise_nyc import settings
+        # Assert that settings imported from local.py are correctly applied
+        self.assertEqual(settings.ALLOWED_HOSTS, ["127.0.0.1"])
+
+class ManagePyTestCase(unittest.TestCase):
+    @patch.dict(os.environ, {'DJANGO_SETTINGS_MODULE': 'rent_wise_nyc.settings'})
+    @patch('django.core.management.execute_from_command_line')
+    def test_main_success(self, mock_execute_from_command_line):
+        from manage import main
+        main()
+        mock_execute_from_command_line.assert_called_once_with(sys.argv)
+
+    @patch('django.core.management.execute_from_command_line', side_effect=ImportError)
+    def test_main_import_error(self, mock_execute_from_command_line):
+        from manage import main
+        with self.assertRaises(ImportError):
+            main()
+
