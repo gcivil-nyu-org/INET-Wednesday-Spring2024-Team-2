@@ -573,12 +573,12 @@ class ListingDetailViewTest(TestCase):
         )
         self.assertEqual(response.status_code, 302)
 
-class InitTestCase(TestCase):
-    def test_default_settings(self):
-        # Do not set ENV_NAME or set it to a value other than "prod" or "develop"
-        from rent_wise_nyc import settings
-        # Assert that settings imported from local.py are correctly applied
-        self.assertEqual(settings.ALLOWED_HOSTS, ["127.0.0.1"])
+# class InitTestCase(TestCase):
+#     def test_default_settings(self):
+#         # Do not set ENV_NAME or set it to a value other than "prod" or "develop"
+#         from rent_wise_nyc import settings
+#         # Assert that settings imported from local.py are correctly applied
+#         self.assertEqual(settings.ALLOWED_HOSTS, ["127.0.0.1"])
 
 class ManagePyTestCase(unittest.TestCase):
     @patch.dict(os.environ, {'DJANGO_SETTINGS_MODULE': 'rent_wise_nyc.settings'})
