@@ -29,6 +29,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponseBadRequest
 import logging
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 
 logger = logging.getLogger(__name__)
 
@@ -222,6 +223,7 @@ def rentals_page(request):
     no_fee = request.GET.get("no_fee") == "on"
     building_type = request.GET.get("building_type")
     parking = request.GET.get("parking") == "on"
+    search_query = request.GET.get("search_query", "")
 
     # Start with all listings
     listings = Rental_Listings.objects.all()
@@ -258,6 +260,12 @@ def rentals_page(request):
             listings = listings.filter(unit_type=building_type)
     if parking:
         listings = listings.filter(parking_available=True)
+    if search_query:
+        query = SearchQuery(search_query)
+        listings = listings.annotate(
+            search=SearchVector('address'),
+            rank=SearchRank(SearchVector('address'), query)
+        ).filter(search=query).order_by('-rank')
 
     # Annotate each listing with the URL of its first image
     listings = listings.annotate(first_image=Min("images__image_url"))
