@@ -313,6 +313,19 @@
                 map: map,
                 title: '{{ listing.address }}' // Add the address as marker title
             });
+
+            // Create a button element
+            const viewInGoogleMapsBtn = document.createElement('button');
+            viewInGoogleMapsBtn.textContent = 'View in Google Maps';
+            viewInGoogleMapsBtn.classList.add('btn', 'btn-primary', 'mt-2');
+            viewInGoogleMapsBtn.style.margin = '10px'; // Add some margin to the button
+            viewInGoogleMapsBtn.style.padding = '5px'; // Add padding for better appearance
+            viewInGoogleMapsBtn.addEventListener('click', function() {
+                window.open(`https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`, '_blank');
+            });
+
+            // Add the button to the map
+            map.controls[google.maps.ControlPosition.TOP_RIGHT].push(viewInGoogleMapsBtn);
             }
 
         // Function to get the CSRF token from cookies
@@ -385,6 +398,16 @@ function toggleFavorite(event, listingId) {
 
 
     </script>
+
+    <script>
+        document.getElementById('viewInGoogleMaps').addEventListener('click', function() {
+        var latitude = {{ listing.latitude }};
+        var longitude = {{ listing.longitude }};
+        window.open(`https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`, '_blank');
+        });
+    </script>
+
+    
 
 </body>
 </html>
