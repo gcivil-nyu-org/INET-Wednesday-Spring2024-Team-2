@@ -264,6 +264,12 @@
             <div class="clickable-map">
                 <div id="map" style="width: 100%; height: 500px;"></div>
             </div>
+
+            <div id="metroStations" class="metro-stations-info" style="padding: 20px;">
+                <h4>Nearby Metro Stations</h4>
+                <div id="metroStationsList">Loading nearby metro stations...</div>
+            </div>
+
         </div>
     </div>
 
@@ -277,7 +283,7 @@
         let hiddenInput = document.getElementById("GOOGLE_MAPS_API_KEY");
         let apiKey = hiddenInput.value;
         const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap`;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap&libraries=places`;
         script.async = true;
         script.defer = true;
         document.head.appendChild(script);
@@ -329,22 +335,57 @@
             }
 
         // Function to get the CSRF token from cookies
-  function getCookie(name) {
-      let cookieValue = null;
-      if (document.cookie && document.cookie !== '') {
-          const cookies = document.cookie.split(';');
-          for (let i = 0; i < cookies.length; i++) {
-              const cookie = cookies[i].trim();
-              // Does this cookie string begin with the name we want?
-              if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                  break;
-              }
-          }
-      }
-      return cookieValue;
-  }
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
 
+        function findNearbyMetroStations() {
+        var mapCenter = new google.maps.LatLng({{ listing.latitude }}, {{ listing.longitude }});
+        var map = new google.maps.Map(document.createElement('div'), {
+            center: mapCenter,
+            zoom: 15
+        });
+
+        var request = {
+            location: mapCenter,
+            radius: '1000', // Search within 1000 meters.
+            type: ['subway_station'] // Search for subway stations.
+        };
+
+        var service = new google.maps.places.PlacesService(map);
+        service.nearbySearch(request, function(results, status) {
+            if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+                var stationsHtml = results.map(function(station) {
+                    return station.name + ' - ' + station.vicinity;
+                }).join('<br>');
+                document.getElementById('metroStationsList').innerHTML = stationsHtml;
+            } else {
+                document.getElementById('metroStationsList').innerHTML = 'No nearby metro stations found.';
+            }
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        // Ensure the Places library is loaded. If not, load it dynamically.
+        if (typeof google === 'object' && typeof google.maps === 'object' && google.maps.places) {
+            findNearbyMetroStations();
+        } else {
+            // Wait a bit and try again to ensure the Google Maps and Places libraries are loaded
+            setTimeout(findNearbyMetroStations, 1000);
+        }
+    });
 
        // Updated function for toggling favorite status
 function toggleFavorite(event, listingId) {
@@ -406,7 +447,6 @@ function toggleFavorite(event, listingId) {
         window.open(`https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`, '_blank');
         });
     </script>
-
     
 
 </body>
