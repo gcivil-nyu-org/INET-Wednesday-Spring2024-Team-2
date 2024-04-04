@@ -328,22 +328,27 @@ def add_rental_listing(request):
             for image in images:
                 file_name, file_extension = os.path.splitext(image.name)
                 unique_file_name = f"pdfs/{uuid.uuid4()}{file_extension}"
-                s3_client = boto3.client(
-                    "s3",
-                    aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-                    aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-                )
 
-                s3_client.upload_fileobj(
-                    image,
-                    AWS_STORAGE_BUCKET_NAME,
-                    unique_file_name,
-                )
-                image_url = f"https://{AWS_STORAGE_BUCKET_NAME}." \
-                            f"s3.amazonaws.com/{unique_file_name}"
-                RentalImages.objects.create(
-                    rental_listing=rental_listing, image_url=image_url
-                )
+                try:
+                    s3_client = boto3.client(
+                        "s3",
+                        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+                    )
+
+                    s3_client.upload_fileobj(
+                        image,
+                        AWS_STORAGE_BUCKET_NAME,
+                        unique_file_name,
+                    )
+
+                    image_url = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{unique_file_name}"
+                    RentalImages.objects.create(
+                        rental_listing=rental_listing, image_url=image_url
+                    )
+
+                except Exception as e:
+                    print(f"Error uploading file to S3: {e}")
 
             return redirect("landlord_homepage")
     else:
@@ -354,6 +359,11 @@ def add_rental_listing(request):
 @user_type_required("user")
 def placeholder_view(request):
     return render(request, "users/searchRental/placeholder.html")
+
+
+@user_type_required("landlord")
+def landlord_placeholder_view(request):
+    return render(request, "users/searchRental/landlord_placeholder.html")
 
 
 def listing_detail(request, listing_id):

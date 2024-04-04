@@ -54,6 +54,27 @@
         .listing-details h3 {
         margin-top: 0;
         }
+        .listing-container {
+    width: 50%;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.listing {
+    flex: 1;
+    box-sizing: border-box;
+    padding: 10px;
+    width: 100%;
+}
+
+.listing-image img {
+    width: 100%;
+    height: auto;
+}
+
     </style>
 </head>
 <body>
@@ -69,16 +90,16 @@
     <div class="collapse navbar-collapse" id="navbarContent">
       <ul class="navbar-nav me-auto">
         <li class="nav-item">
-          <a class="nav-link active" href="{% url 'placeholder' %}">All rentals</a>
+          <a class="nav-link active" href="{% url 'landlord_placeholder' %}">All rentals</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'placeholder' %}">Favourites</a>
+          <a class="nav-link" href="{% url 'landlord_placeholder' %}">Favourites</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'placeholder' %}">My account</a>
+          <a class="nav-link" href="{% url 'landlord_placeholder' %}">My account</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'placeholder' %}">Links</a>
+          <a class="nav-link" href="{% url 'landlord_placeholder' %}">Links</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{% url 'logout' %}" >Logout</a>
@@ -181,19 +202,22 @@
 
     <!-- Assuming listings is dynamically generated content -->
     {% for listing in listings %}
-    <div class="listing">
-        <div class="listing-image">
-            <img src="{% static listing.image_path %}" alt="Listing Image">
-            <div class="favorite-icon" onclick="toggleFavorite(event, {{ forloop.counter0 }})">♥</div>
-        </div>
-        <div class="listing-details">
-            <h3>{{ listing.address }}</h3>
-            <p><strong>Bedrooms:</strong> {{ listing.bedrooms }}</p>
-            <p><strong>Bath:</strong> {{ listing.baths }}</p>
-            <p><strong>Price:</strong> ${{ listing.price }}/month</p>
-            <!-- Additional listing details -->
+    <div class="listing-container">
+        <div class="listing">
+            <div class="listing-image">
+                <img src="{{ listing.photo.url }}" alt="Listing Image">
+                <div class="favorite-icon">♥</div>
+            </div>
+            <div class="listing-details">
+                <h3>{{ listing.address }}</h3>
+                <p><strong>Bedrooms:</strong> {{ listing.bedrooms }}</p>
+                <p><strong>Bath:</strong> {{ listing.baths }}</p>
+                <p><strong>Price:</strong> ${{ listing.price }}/month</p>
+                <!-- Additional listing details -->
+            </div>
         </div>
     </div>
+
     {% empty %}
         <p>No listings available.</p>
     {% endfor %}

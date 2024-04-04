@@ -1,10 +1,12 @@
+from unittest.mock import patch
+
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
 
 from .forms import User, UserSignUpForm
-from .models import CustomUser
+from .models import CustomUser, Rental_Listings, RentalImages
 from django.contrib.messages import get_messages
-
 
 class CustomUserModelTests(TestCase):
     def test_create_user_with_default_user_type(self):
@@ -88,27 +90,7 @@ class LoginProcessTests(TestCase):
         )
         self.assertRedirects(response, reverse("user_homepage"))
 
-    # def test_unverified_landlord_login_attempt(self):
-    #     # Make sure this landlord is not verified for this test case.
-    #     unverified_landlord = CustomUser.objects.create_user(
-    #         username="unverified_landlord",
-    #         password="testpassword",
-    #         user_type=CustomUser.LANDLORD,
-    #         verified=False,
-    #     )
-    #     self.assertIsNotNone(unverified_landlord.id)
-    #     response = self.client.post(
-    #         reverse("landlord_login"),
-    #         {"username": "unverified_landlord", "password": "testpassword"},
-    #     )
-    #     messages = list(get_messages(response.wsgi_request))
-    #     self.assertTrue(
-    #         any(
-    #             "Your account has not been verified by the admin yet."
-    #             in message.message
-    #             for message in messages
-    #         )
-    #     )
+
 
 
 class LogoutViewTest(TestCase):
@@ -175,4 +157,31 @@ class LandlordSignUpTest(TestCase):
         }
         response = self.client.post(reverse("landlord_signup"), form_data)
         self.assertEqual(CustomUser.objects.count(), 0)
+        self.assertTrue(response.context["form"].errors)
+
+
+class AddRentalListingTest(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.landlord_user = CustomUser.objects.create_user(
+            username='testlandlord',
+            email='landlord@example.com',
+            password='testpassword123',
+            user_type=CustomUser.LANDLORD
+        )
+
+    def test_rental_listing_form_display_on_get_request(self):
+        self.client.login(username='testlandlord', password='testpassword123')
+        response = self.client.get(reverse("post_new_listings"))
+        self.assertEqual(response.status_code, 200)
+
+
+
+    def test_rental_listing_error_on_invalid_post_request(self):
+        self.client.login(username='testlandlord', password='testpassword123')
+        form_data = {
+        }
+        response = self.client.post(reverse("post_new_listings"), form_data)
+        self.assertEqual(Rental_Listings.objects.count(), 0)
         self.assertTrue(response.context["form"].errors)

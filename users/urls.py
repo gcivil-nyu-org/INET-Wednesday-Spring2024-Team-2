@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
-from .views import placeholder_view
+from .views import placeholder_view, landlord_placeholder_view
 
 urlpatterns = [
     path("", views.home, name="index"),
@@ -49,6 +49,7 @@ urlpatterns = [
     path("post_new_listings/", views.add_rental_listing,
          name="post_new_listings"),
     path("placeholder/", placeholder_view, name="placeholder"),
+    path("landlord_placeholder/", landlord_placeholder_view, name="landlord_placeholder"),
     path("listings/<int:listing_id>/", views.listing_detail,
          name="listing_detail"),
     path("toggle_favorite/", views.toggle_favorite, name="toggle_favorite"),
