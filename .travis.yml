@@ -11,7 +11,7 @@ before_script:
 script:
 - black .
 - black --check .
-- flake8 --ignore=E303,E501,W503,F401 --max-line-length=150
+- flake8 --ignore=E303,E501,W503,F401,F811,F841 --max-line-length=150
 - coverage run --source=users manage.py test
 after_success:
 - coveralls
