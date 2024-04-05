@@ -55,8 +55,7 @@ def login_process(request, user_type, this_page, destination_url_name):
         form = CustomLoginForm()
         return render(request, this_page, {"form": form})
 
-    form = CustomLoginForm(request,
-                           request.POST)  # Pass the request to the form
+    form = CustomLoginForm(request, request.POST)  # Pass the request to the form
     if form.is_valid():
         username = form.cleaned_data["username"]
         password = form.cleaned_data["password"]
@@ -117,8 +116,7 @@ def user_signup(request):
                 user.verified = True
             else:
                 user.verified = False
-            login(request, user,
-                  backend="django.contrib.auth.backends.ModelBackend")
+            login(request, user, backend="django.contrib.auth.backends.ModelBackend")
             return redirect("user_homepage")
     else:
         form = UserSignUpForm()
@@ -171,8 +169,7 @@ def landlord_signup(request):
                         aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
                     )
                     existing_files = s3_client.list_objects_v2(
-                        Bucket=settings.AWS_STORAGE_BUCKET_NAME,
-                        Prefix=file_name
+                        Bucket=settings.AWS_STORAGE_BUCKET_NAME, Prefix=file_name
                     )
 
                     if "Contents" in existing_files:
@@ -182,8 +179,7 @@ def landlord_signup(request):
                             " Please rename your file and try again.",
                         )
                         return render(
-                            request, "signup/landlord_signup.html",
-                            {"form": form}
+                            request, "signup/landlord_signup.html", {"form": form}
                         )
 
                     s3_client.upload_fileobj(
@@ -288,8 +284,7 @@ def rentals_page(request):
     }
 
     # Query to get the IDs of listings that are favorited by the current user
-    favorite_listings_ids = Favorite.objects.filter(
-        user=request.user).values_list(
+    favorite_listings_ids = Favorite.objects.filter(user=request.user).values_list(
         "listing__id", flat=True
     )
     filter_params = {k: v for k, v in filter_params.items() if v is not None}
@@ -300,8 +295,7 @@ def rentals_page(request):
     page_obj = paginator.get_page(page_number)
 
     # Query to get the IDs of listings that are favorited by the current user
-    favorite_listings_ids = Favorite.objects.filter(
-        user=request.user).values_list(
+    favorite_listings_ids = Favorite.objects.filter(user=request.user).values_list(
         "listing__id", flat=True
     )
 
@@ -442,8 +436,7 @@ def toggle_favorite(request):
 @login_required
 def favorites_page(request):
     # Fetch only the listings that the user has marked as favorite
-    favorite_listings = Favorite.objects.filter(
-        user=request.user).select_related(
+    favorite_listings = Favorite.objects.filter(user=request.user).select_related(
         "listing"
     )
     listings = [fav.listing for fav in favorite_listings]

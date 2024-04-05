@@ -1,12 +1,10 @@
-from unittest.mock import patch
 
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
 
 from .forms import User, UserSignUpForm
-from .models import CustomUser, Rental_Listings, RentalImages
-from django.contrib.messages import get_messages
+from .models import CustomUser, Rental_Listings
+
 
 class CustomUserModelTests(TestCase):
     def test_create_user_with_default_user_type(self):
@@ -91,8 +89,6 @@ class LoginProcessTests(TestCase):
         self.assertRedirects(response, reverse("user_homepage"))
 
 
-
-
 class LogoutViewTest(TestCase):
     def test_logout_redirect(self):
         response = self.client.get(reverse("logout"))
@@ -161,46 +157,66 @@ class LandlordSignUpTest(TestCase):
 
 
 class AddRentalListingTest(TestCase):
-
     @classmethod
     def setUpTestData(cls):
         cls.landlord_user = CustomUser.objects.create_user(
-            username='testlandlord',
-            email='landlord@example.com',
-            password='testpassword123',
-            user_type=CustomUser.LANDLORD
+            username="testlandlord",
+            email="landlord@example.com",
+            password="testpassword123",
+            user_type=CustomUser.LANDLORD,
         )
 
     def test_rental_listing_form_display_on_get_request(self):
-        self.client.login(username='testlandlord', password='testpassword123')
+        self.client.login(username="testlandlord", password="testpassword123")
         response = self.client.get(reverse("post_new_listings"))
         self.assertEqual(response.status_code, 200)
 
-
-
     def test_rental_listing_error_on_invalid_post_request(self):
-        self.client.login(username='testlandlord', password='testpassword123')
-        form_data = {
-        }
+        self.client.login(username="testlandlord", password="testpassword123")
+        form_data = {}
         response = self.client.post(reverse("post_new_listings"), form_data)
         self.assertEqual(Rental_Listings.objects.count(), 0)
         self.assertTrue(response.context["form"].errors)
 
+
 class RentalListingsTestCase(TestCase):
     def setUp(self):
-        self.user = CustomUser.objects.create_user('testuser', 'test@example.com', 'password')
-        Rental_Listings.objects.create(address='123 Test St', price=1000, borough='Manhattan', beds='2', baths='1', elevator=True, washer_dryer_in_unit=False, broker_fee=0, unit_type='Apartment', parking_available=True)
-        Rental_Listings.objects.create(address='456 Test Ave', price=2000, borough='Brooklyn', beds='3', baths='2', elevator=False, washer_dryer_in_unit=True, broker_fee=0, unit_type='Condo', parking_available=False)
-        self.client.login(username='testuser', password='password')
-
+        self.user = CustomUser.objects.create_user(
+            "testuser", "test@example.com", "password"
+        )
+        Rental_Listings.objects.create(
+            address="123 Test St",
+            price=1000,
+            borough="Manhattan",
+            beds="2",
+            baths="1",
+            elevator=True,
+            washer_dryer_in_unit=False,
+            broker_fee=0,
+            unit_type="Apartment",
+            parking_available=True,
+        )
+        Rental_Listings.objects.create(
+            address="456 Test Ave",
+            price=2000,
+            borough="Brooklyn",
+            beds="3",
+            baths="2",
+            elevator=False,
+            washer_dryer_in_unit=True,
+            broker_fee=0,
+            unit_type="Condo",
+            parking_available=False,
+        )
+        self.client.login(username="testuser", password="password")
 
     def test_rentals_page_response_and_filters(self):
-        response = self.client.get(reverse('rentalspage'))
+        response = self.client.get(reverse("rentalspage"))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'users/searchRental/rentalspage.html')
-        response = self.client.get(reverse('rentalspage') + '?borough=Manhattan&min_price=500&max_price=1500')
-        listings = response.context['page_obj']
+        self.assertTemplateUsed(response, "users/searchRental/rentalspage.html")
+        self.client.get(
+            reverse("rentalspage") + "?borough=Manhattan&min_price=500&max_price=1500"
+        )
 
     def test_rentals_page_pagination(self):
-        response = self.client.get(reverse('rentalspage') + '?page=2')
-
+        self.client.get(reverse("rentalspage") + "?page=2")

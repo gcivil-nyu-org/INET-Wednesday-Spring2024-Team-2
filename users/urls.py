@@ -13,8 +13,7 @@ urlpatterns = [
     path("users/", views.user_home, name="user"),
     path("landlord/home/", views.landlord_home, name="landlord_homepage"),
     path("user/home/", views.user_home, name="user_homepage"),
-    path("signup/landlord_signup/", views.landlord_signup,
-         name="landlord_signup"),
+    path("signup/landlord_signup/", views.landlord_signup, name="landlord_signup"),
     path(
         "login/password_reset/",
         auth_views.PasswordResetView.as_view(
@@ -46,12 +45,12 @@ urlpatterns = [
         name="password_reset_complete",
     ),
     path("rentalspage/", views.rentals_page, name="rentalspage"),
-    path("post_new_listings/", views.add_rental_listing,
-         name="post_new_listings"),
+    path("post_new_listings/", views.add_rental_listing, name="post_new_listings"),
     path("placeholder/", placeholder_view, name="placeholder"),
-    path("landlord_placeholder/", landlord_placeholder_view, name="landlord_placeholder"),
-    path("listings/<int:listing_id>/", views.listing_detail,
-         name="listing_detail"),
+    path(
+        "landlord_placeholder/", landlord_placeholder_view, name="landlord_placeholder"
+    ),
+    path("listings/<int:listing_id>/", views.listing_detail, name="listing_detail"),
     path("toggle_favorite/", views.toggle_favorite, name="toggle_favorite"),
     path("favorites/", views.favorites_page, name="favorites_page"),
 ]
