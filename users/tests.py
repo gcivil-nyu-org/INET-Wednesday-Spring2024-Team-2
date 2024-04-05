@@ -185,3 +185,22 @@ class AddRentalListingTest(TestCase):
         response = self.client.post(reverse("post_new_listings"), form_data)
         self.assertEqual(Rental_Listings.objects.count(), 0)
         self.assertTrue(response.context["form"].errors)
+
+class RentalListingsTestCase(TestCase):
+    def setUp(self):
+        self.user = CustomUser.objects.create_user('testuser', 'test@example.com', 'password')
+        Rental_Listings.objects.create(address='123 Test St', price=1000, borough='Manhattan', beds='2', baths='1', elevator=True, washer_dryer_in_unit=False, broker_fee=0, unit_type='Apartment', parking_available=True)
+        Rental_Listings.objects.create(address='456 Test Ave', price=2000, borough='Brooklyn', beds='3', baths='2', elevator=False, washer_dryer_in_unit=True, broker_fee=0, unit_type='Condo', parking_available=False)
+        self.client.login(username='testuser', password='password')
+
+
+    def test_rentals_page_response_and_filters(self):
+        response = self.client.get(reverse('rentalspage'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'users/searchRental/rentalspage.html')
+        response = self.client.get(reverse('rentalspage') + '?borough=Manhattan&min_price=500&max_price=1500')
+        listings = response.context['page_obj']
+
+    def test_rentals_page_pagination(self):
+        response = self.client.get(reverse('rentalspage') + '?page=2')
+
