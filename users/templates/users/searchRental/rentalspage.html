@@ -182,7 +182,7 @@
       <div class="container-fluid">
         <div class="row">
             <div class="text-center fixed-bottom mb-3">
-                <a href="{% url 'placeholder' %}" class="btn btn-primary">Map</a>
+                <a href="{% url 'rental_listings_map' %}?filter_params={{ filter_params }}" class="btn btn-primary">Map</a>
             </div>
         </div>
     </div>
@@ -197,7 +197,7 @@
         <div class="listing">
             <a href="{% url 'listing_detail' listing.id %}">
                 <div class="listing-content">
-                    <div class="listing-image">
+                    <div class="listing-image"> 
                         <img src="{{ listing.first_image }}" alt="Listing Image">
                         <div class="favorite-icon" onclick="toggleFavorite(event, {{ listing.id }})" data-listing-id="{{ listing.id }}">♥</div>
 

@@ -30,6 +30,11 @@ from django.http import JsonResponse, HttpResponseBadRequest
 import logging
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
+from urllib.parse import urlencode
+from django.http import JsonResponse
+from django.core.serializers import serialize
+from django.contrib.sites.models import Site
+
 
 logger = logging.getLogger(__name__)
 
@@ -314,6 +319,7 @@ def rentals_page(request):
     # Pass listings_json and favorite_listings_ids to the template
     context = {
         "page_obj": page_obj,
+        "listings": listings,
         "favorite_listings_ids": list(favorite_listings_ids),
         "filter_params": filter_params,  # Ensure it's converted to a list
     }
@@ -333,43 +339,6 @@ def listing_detail(request, listing_id):
     # Pass the listing data to a template for rendering
     context = {"listing": listing}
     return render(request, "users/searchRental/listing_detail.html", context)
-
-
-# @user_type_required("user")
-# def add_to_favorites(request):
-#     listing_id = request.POST.get('listing_id')
-#     if not listing_id:
-#         return JsonResponse({'error': 'Listing ID is required'}, status=400)
-#     try:
-#         listing = Rental_Listings.objects.get(id=listing_id)
-#         Favorite.objects.get_or_create(user=request.user, listing=listing)
-#         return JsonResponse({'success': True})
-#     except Rental_Listings.DoesNotExist:
-#         return JsonResponse({'error': 'Listing not found'}, status=404)
-#     except Exception as e:
-#         # Log the error for debugging purposes
-#         print(f"Error adding to favorites: {e}")
-#         return JsonResponse({'error': 'Internal server error'}, status=500)
-
-# @user_type_required("user")
-# def remove_from_favorites(request):
-#     if request.method == "POST" and request.is_ajax():
-#         user = request.user
-#         listing_id = request.POST.get("listing_id")
-#         try:
-#             listing = Rental_Listings.objects.get(id=listing_id)
-#             favorite, deleted = Favorite.objects.filter(user=user, listing=listing).delete()
-#             if deleted:
-#                 return JsonResponse({"success": True})
-#             else:
-#                 return JsonResponse({'error': 'Favorite not found'}, status=404)
-#         except Rental_Listings.DoesNotExist:
-#             return JsonResponse({'error': 'Listing not found'}, status=404)
-#         except Exception as e:
-#             logger.error(f"Error removing from favorites: {e}")
-#             return JsonResponse({'error': 'Internal server error'}, status=500)
-#     else:
-# return HttpResponseBadRequest("Invalid request")
 
 
 @csrf_exempt
@@ -414,3 +383,21 @@ def favorites_page(request):
         "favorite_listings_ids": favorite_listings_ids,
     }
     return render(request, "users/searchRental/favorites.html", context)
+
+def map_view(request):
+    # Fetch all rental listings from your model
+    filter_params = request.GET.get('filter_params')
+    print(filter_params)
+    rental_listings = Rental_Listings.objects.all()[:5]
+    rental_listings_json = serialize('json', rental_listings)
+    # rental_listings_json = serialize('json', listings)
+
+    current_site = Site.objects.get_current()
+    current_site.domain
+
+    # return JsonResponse(rental_listings_json, safe=False)
+    context = {
+        "rental_listings": rental_listings_json,
+        "this_domain": current_site.domain
+    }
+    return render(request, "users/searchRental/map_view.html", context)
