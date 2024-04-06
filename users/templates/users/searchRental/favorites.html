@@ -231,6 +231,21 @@ function toggleFavorite(event, listingId) {
       }, 100); // Adjust timeout as needed to ensure it runs after listings are generated
     });
     </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+          // Add click event listeners to listing images for redirection
+          const listingImages = document.querySelectorAll('.listing-image img');
+          listingImages.forEach(function(imageElement, index) {
+              imageElement.style.cursor = 'pointer'; // Make the cursor indicate clickable items
+              imageElement.addEventListener('click', function() {
+                  // Use the corresponding favorite icon's data-listing-id attribute for the redirect
+                  const listingId = document.querySelectorAll('.favorite-icon')[index].getAttribute('data-listing-id');
+                  const detailPageUrl = /listings/${listingId}/; // Construct the detail page URL
+                  window.location.href = detailPageUrl; // Redirect to the listing detail page
+              });
+          });
+      });
+    </script>
 
 </body>
 </html>
