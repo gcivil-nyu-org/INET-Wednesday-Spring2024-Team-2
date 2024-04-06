@@ -90,10 +90,7 @@
     <div class="collapse navbar-collapse" id="navbarContent">
       <ul class="navbar-nav me-auto">
         <li class="nav-item">
-          <a class="nav-link active" href="{% url 'landlord_placeholder' %}">All rentals</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'landlord_placeholder' %}">Favourites</a>
+          <a class="nav-link active" href="{% url 'post_new_listings' %}">Post listing</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{% url 'landlord_placeholder' %}">My account</a>
@@ -113,89 +110,89 @@
   </div>
 </nav>
 
-<div class="container-fluid filter-sort-section">
-    <div class="filter-sort-container">
-      <div class="btn-group">
-        <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-          Filter
-        </button>
-        <div class="dropdown-menu p-4" style="width: 300px;">
-          <form id="filterForm" method="GET">
-            <div class="mb-3">
-              <label for="bedrooms" class="form-label">Bedrooms</label>
-              <select class="form-select" id="bedrooms" name="bedrooms">
-                <option value="1">1 bedroom</odption>
-                <option value="2">2 bedrooms</option>
-                <option value="3">3 bedrooms</option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <label for="bathrooms" class="form-label">Bathrooms</label>
-              <select class="form-select" id="bathrooms" name = "bathrooms">
-                <option value="1">1 bath</option>
-                <option value="1.5">1.5 bath</option>
-                <option value="2">2 bath</option>
-                <option value="3">3 bath</option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <label for="minPrice" class="form-label">Min Price</label>
-              <input type="number" class="form-control" id="minPrice" name = "min_price" placeholder="000000000">
-            </div>
-            <div class="mb-3">
-              <label for="maxPrice" class="form-label">Max Price</label>
-              <input type="number" class="form-control" id="maxPrice" name = "max_price" placeholder="9999999999">
-            </div>
-            <div class="mb-3 form-check">
-              <input type="checkbox" class="form-check-input" id="elevator" name = "elevator">
-              <label class="form-check-label" for="elevator">Elevator</label>
-            </div>
-            <div class="mb-3 form-check">
-              <input type="checkbox" class="form-check-input" id="laundry" name = "laundry">
-              <label class="form-check-label" for="laundry">Laundry</label>
-            </div>
-            <div class="mb-3 form-check">
-              <input type="checkbox" class="form-check-input" id="brokerFee" name = "broker_fee">
-              <label class="form-check-label" for="brokerFee">Broker Fee</label>
-            </div>
-            <div class="mb-3">
-                <label for="buildingType" class="form-label">Building Type</label>
-                <select class="form-select" id="buildingType" name = "">
-                  <option value="Apartment">Apartment</option>
-                  <option value="Hostel">Hostel</option>
-                </select>
-            </div>
-            <div class="mb-3 form-check">
-              <input type="checkbox" class="form-check-input" id="parking" name="parking">
-              <label class="form-check-label" for="parking">Parking</label>
-            </div>
-            <button type="submit" class="btn btn-primary">Apply</button>
-          </form>
-        </div>
-      </div>
-
-      <!-- Sort Button -->
-      <div class="btn-group ms-2">
-        <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-          Sort
-        </button>
-        <ul class="dropdown-menu">
-          <!-- Add sort options here -->
-          <li><a class="dropdown-item" href="#">Recent Listing</a></li>
-          <li><a class="dropdown-item" href="#">Lowest to Highest</a></li>
-          <li><a class="dropdown-item" href="#">Highest to Lowest</a></li>
-        </ul>
-      </div>
-      <div class="container-fluid">
-        <div class="row">
-            <div class="text-center fixed-bottom mb-3">
-                <a href="{% url 'placeholder' %}" class="btn btn-primary">Map</a>
-            </div>
-        </div>
-    </div>
-
-    </div>
-  </div>
+{#<div class="container-fluid filter-sort-section">#}
+{#    <div class="filter-sort-container">#}
+{#      <div class="btn-group">#}
+{#        <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">#}
+{#          Filter#}
+{#        </button>#}
+{#        <div class="dropdown-menu p-4" style="width: 300px;">#}
+{#          <form id="filterForm" method="GET">#}
+{#            <div class="mb-3">#}
+{#              <label for="bedrooms" class="form-label">Bedrooms</label>#}
+{#              <select class="form-select" id="bedrooms" name="bedrooms">#}
+{#                <option value="1">1 bedroom</odption>#}
+{#                <option value="2">2 bedrooms</option>#}
+{#                <option value="3">3 bedrooms</option>#}
+{#              </select>#}
+{#            </div>#}
+{#            <div class="mb-3">#}
+{#              <label for="bathrooms" class="form-label">Bathrooms</label>#}
+{#              <select class="form-select" id="bathrooms" name = "bathrooms">#}
+{#                <option value="1">1 bath</option>#}
+{#                <option value="1.5">1.5 bath</option>#}
+{#                <option value="2">2 bath</option>#}
+{#                <option value="3">3 bath</option>#}
+{#              </select>#}
+{#            </div>#}
+{#            <div class="mb-3">#}
+{#              <label for="minPrice" class="form-label">Min Price</label>#}
+{#              <input type="number" class="form-control" id="minPrice" name = "min_price" placeholder="000000000">#}
+{#            </div>#}
+{#            <div class="mb-3">#}
+{#              <label for="maxPrice" class="form-label">Max Price</label>#}
+{#              <input type="number" class="form-control" id="maxPrice" name = "max_price" placeholder="9999999999">#}
+{#            </div>#}
+{#            <div class="mb-3 form-check">#}
+{#              <input type="checkbox" class="form-check-input" id="elevator" name = "elevator">#}
+{#              <label class="form-check-label" for="elevator">Elevator</label>#}
+{#            </div>#}
+{#            <div class="mb-3 form-check">#}
+{#              <input type="checkbox" class="form-check-input" id="laundry" name = "laundry">#}
+{#              <label class="form-check-label" for="laundry">Laundry</label>#}
+{#            </div>#}
+{#            <div class="mb-3 form-check">#}
+{#              <input type="checkbox" class="form-check-input" id="brokerFee" name = "broker_fee">#}
+{#              <label class="form-check-label" for="brokerFee">Broker Fee</label>#}
+{#            </div>#}
+{#            <div class="mb-3">#}
+{#                <label for="buildingType" class="form-label">Building Type</label>#}
+{#                <select class="form-select" id="buildingType" name = "">#}
+{#                  <option value="Apartment">Apartment</option>#}
+{#                  <option value="Hostel">Hostel</option>#}
+{#                </select>#}
+{#            </div>#}
+{#            <div class="mb-3 form-check">#}
+{#              <input type="checkbox" class="form-check-input" id="parking" name="parking">#}
+{#              <label class="form-check-label" for="parking">Parking</label>#}
+{#            </div>#}
+{#            <button type="submit" class="btn btn-primary">Apply</button>#}
+{#          </form>#}
+{#        </div>#}
+{#      </div>#}
+{##}
+{#      <!-- Sort Button -->#}
+{#      <div class="btn-group ms-2">#}
+{#        <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">#}
+{#          Sort#}
+{#        </button>#}
+{#        <ul class="dropdown-menu">#}
+{#          <!-- Add sort options here -->#}
+{#          <li><a class="dropdown-item" href="#">Recent Listing</a></li>#}
+{#          <li><a class="dropdown-item" href="#">Lowest to Highest</a></li>#}
+{#          <li><a class="dropdown-item" href="#">Highest to Lowest</a></li>#}
+{#        </ul>#}
+{#      </div>#}
+{#      <div class="container-fluid">#}
+{#        <div class="row">#}
+{#            <div class="text-center fixed-bottom mb-3">#}
+{#                <a href="{% url 'placeholder' %}" class="btn btn-primary">Map</a>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{##}
+{#    </div>#}
+{#  </div>#}
 
 <div class="listings-container">
 
