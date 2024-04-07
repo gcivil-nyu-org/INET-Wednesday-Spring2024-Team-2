@@ -381,7 +381,8 @@
                 // Generate HTML for the 3 nearest stations, converting distance to miles
                 var stationsHtml = nearestStations.map(function(station) {
                     var distanceInMiles = (station.distance * 0.000621371).toFixed(2); // Convert meters to miles
-                    return station.name + ' - ' + station.vicinity + ' (' + distanceInMiles + ' miles away)';
+                    // return station.name + ' - ' + station.vicinity + ' (' + distanceInMiles + ' miles away)';
+                    return station.name + ' - ' + distanceInMiles + ' miles away.';
                 }).join('<br>');
 
                 document.getElementById('metroStationsList').innerHTML = stationsHtml;
