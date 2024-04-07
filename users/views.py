@@ -245,7 +245,7 @@ def apply_filters(listings, filter_params):
     if filter_params.get("no_fee"):
         listings = listings.filter(broker_fee=0)
     if filter_params.get("building_type"):
-        if building_type == "Any":
+        if filter_params.get("building_type") == "Any":
             listings = listings
         else:
             listings = listings.filter(unit_type=filter_params.get("building_type"))
