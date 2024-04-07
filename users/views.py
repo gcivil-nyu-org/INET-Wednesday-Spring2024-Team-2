@@ -253,11 +253,16 @@ def apply_filters(listings, filter_params):
         listings = listings.filter(parking_available=True)
     if filter_params.get("search_query"):
         query = SearchQuery(filter_params.get("search_query"))
-        listings = listings.annotate(
-            search=SearchVector('address'),
-            rank=SearchRank(SearchVector('address'), query)
-        ).filter(search=query).order_by('-rank')
+        listings = (
+            listings.annotate(
+                search=SearchVector("address"),
+                rank=SearchRank(SearchVector("address"), query),
+            )
+            .filter(search=query)
+            .order_by("-rank")
+        )
     return listings
+
 
 @user_type_required("user")
 def rentals_page(request):
@@ -380,15 +385,16 @@ def favorites_page(request):
     }
     return render(request, "users/searchRental/favorites.html", context)
 
+
 def map_view(request):
     # Fetch all rental listings from your model
-    filter_params = ast.literal_eval(request.GET.get('filter_params'))
+    filter_params = ast.literal_eval(request.GET.get("filter_params"))
     rental_listings = Rental_Listings.objects.all()
 
     # http://127.0.0.1:8000/map/?filter_params={%27borough%27:%20%27Manhattan%27,%20%27min_price%27:%20%27%27,%20%27max_price%27:%20%27%27}
     rental_listings = apply_filters(rental_listings, filter_params)
 
-    rental_listings_json = serialize('json', rental_listings)
+    rental_listings_json = serialize("json", rental_listings)
 
     current_site = Site.objects.get_current()
     current_site.domain
@@ -396,6 +402,6 @@ def map_view(request):
     # return JsonResponse(rental_listings_json, safe=False)
     context = {
         "rental_listings": rental_listings_json,
-        "this_domain": current_site.domain
+        "this_domain": current_site.domain,
     }
     return render(request, "users/searchRental/map_view.html", context)

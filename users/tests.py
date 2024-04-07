@@ -573,6 +573,7 @@ class ListingDetailViewTest(TestCase):
         )
         self.assertEqual(response.status_code, 302)
 
+
 # class InitTestCase(TestCase):
 #     def test_default_settings(self):
 #         # Do not set ENV_NAME or set it to a value other than "prod" or "develop"
@@ -580,17 +581,19 @@ class ListingDetailViewTest(TestCase):
 #         # Assert that settings imported from local.py are correctly applied
 #         self.assertEqual(settings.ALLOWED_HOSTS, ["127.0.0.1"])
 
+
 class ManagePyTestCase(unittest.TestCase):
-    @patch.dict(os.environ, {'DJANGO_SETTINGS_MODULE': 'rent_wise_nyc.settings'})
-    @patch('django.core.management.execute_from_command_line')
+    @patch.dict(os.environ, {"DJANGO_SETTINGS_MODULE": "rent_wise_nyc.settings"})
+    @patch("django.core.management.execute_from_command_line")
     def test_main_success(self, mock_execute_from_command_line):
         from manage import main
+
         main()
         mock_execute_from_command_line.assert_called_once_with(sys.argv)
 
-    @patch('django.core.management.execute_from_command_line', side_effect=ImportError)
+    @patch("django.core.management.execute_from_command_line", side_effect=ImportError)
     def test_main_import_error(self, mock_execute_from_command_line):
         from manage import main
+
         with self.assertRaises(ImportError):
             main()
-

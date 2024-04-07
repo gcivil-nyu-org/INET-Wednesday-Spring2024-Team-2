@@ -53,13 +53,13 @@
 
                 google.maps.event.addListener(marker, 'click', function() {window.location.href = marker.url;});
               
-
                 });
-                // var markerCluster = new MarkerClusterer(map, markers, {
-                //         imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
-                //         gridSize: 10, 
-                //         minimumClusterSize: 2 
-                // });
+                    // Use MarkerClusterer library to cluster markers
+                var markerCluster = new MarkerClusterer(map, markers, {
+                    imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
+                    gridSize: 25, // Adjust the cluster size as per your requirement
+                    maxZoom: 10 // Set the maximum zoom level to show clustered markers
+                });
 
         }
 
