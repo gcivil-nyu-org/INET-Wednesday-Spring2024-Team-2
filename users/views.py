@@ -1,5 +1,6 @@
 import os
 import uuid
+import ast
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
@@ -215,62 +216,71 @@ def landlord_signup(request):
     return render(request, "signup/landlord_signup.html", {"form": form})
 
 
+def apply_filters(listings, filter_params):
+    # TODO: fix in database
+    listings = listings.exclude(neighborhood="Hell's Kitchen")
+    # Apply filters
+    if filter_params.get("borough"):
+        listings = listings.filter(borough=filter_params.get("borough"))
+    if filter_params.get("min_price"):
+        min_price = int(filter_params.get("min_price"))
+        listings = listings.filter(price__gte=min_price)
+    if filter_params.get("max_price"):
+        max_price = int(filter_params.get("max_price"))
+        listings = listings.filter(price__lte=max_price)
+    if filter_params.get("bedrooms"):
+        if filter_params.get("bedrooms") == "Any":
+            listings = listings
+        else:
+            listings = listings.filter(beds=filter_params.get("bedrooms"))
+    if filter_params.get("bathrooms"):
+        if filter_params.get("bathrooms") == "Any":
+            listings = listings
+        else:
+            listings = listings.filter(baths=filter_params.get("bathrooms"))
+    if filter_params.get("elevator"):
+        listings = listings.filter(elevator=True)
+    if filter_params.get("laundry"):
+        listings = listings.filter(washer_dryer_in_unit=True)
+    if filter_params.get("no_fee"):
+        listings = listings.filter(broker_fee=0)
+    if filter_params.get("building_type"):
+        if building_type == "Any":
+            listings = listings
+        else:
+            listings = listings.filter(unit_type=filter_params.get("building_type"))
+    if filter_params.get("parking"):
+        listings = listings.filter(parking_available=True)
+    if filter_params.get("search_query"):
+        query = SearchQuery(filter_params.get("search_query"))
+        listings = listings.annotate(
+            search=SearchVector('address'),
+            rank=SearchRank(SearchVector('address'), query)
+        ).filter(search=query).order_by('-rank')
+    return listings
+
 @user_type_required("user")
 def rentals_page(request):
     # Filter parameters
-    borough = request.GET.get("borough")
-    min_price = request.GET.get("min_price")
-    max_price = request.GET.get("max_price")
-    bedrooms = request.GET.get("bedrooms")
-    bathrooms = request.GET.get("bathrooms")
-    elevator = request.GET.get("elevator") == "on"
-    laundry = request.GET.get("laundry") == "on"
-    no_fee = request.GET.get("no_fee") == "on"
-    building_type = request.GET.get("building_type")
-    parking = request.GET.get("parking") == "on"
-    search_query = request.GET.get("search_query", "")
+    filter_params = {
+        "borough": request.GET.get("borough"),
+        "min_price": request.GET.get("min_price"),
+        "max_price": request.GET.get("max_price"),
+        "bedrooms": request.GET.get("bedrooms"),
+        "bathrooms": request.GET.get("bathrooms"),
+        "elevator": request.GET.get("elevator") == "on",
+        "laundry": request.GET.get("laundry") == "on",
+        "no_fee": request.GET.get("no_fee") == "on",
+        "building_type": request.GET.get("building_type"),
+        "parking": request.GET.get("parking") == "on",
+        "search_query": request.GET.get("search_query", ""),
+    }
 
     # Start with all listings
     listings = Rental_Listings.objects.all()
 
     # Apply filters
-    if borough:
-        listings = listings.filter(borough=borough)
-    if min_price:
-        min_price = int(min_price)
-        listings = listings.filter(price__gte=min_price)
-    if max_price:
-        max_price = int(max_price)
-        listings = listings.filter(price__lte=max_price)
-    if bedrooms:
-        if bedrooms == "Any":
-            listings = listings
-        else:
-            listings = listings.filter(beds=bedrooms)
-    if bathrooms:
-        if bathrooms == "Any":
-            listings = listings
-        else:
-            listings = listings.filter(baths=bathrooms)
-    if elevator:
-        listings = listings.filter(elevator=True)
-    if laundry:
-        listings = listings.filter(washer_dryer_in_unit=True)
-    if no_fee:
-        listings = listings.filter(broker_fee=0)
-    if building_type:
-        if building_type == "Any":
-            listings = listings
-        else:
-            listings = listings.filter(unit_type=building_type)
-    if parking:
-        listings = listings.filter(parking_available=True)
-    if search_query:
-        query = SearchQuery(search_query)
-        listings = listings.annotate(
-            search=SearchVector('address'),
-            rank=SearchRank(SearchVector('address'), query)
-        ).filter(search=query).order_by('-rank')
+    listings = apply_filters(listings, filter_params)
 
     # Annotate each listing with the URL of its first image
     listings = listings.annotate(first_image=Min("images__image_url"))
@@ -285,20 +295,6 @@ def rentals_page(request):
         listings = listings.order_by("-price")
     else:
         listings = listings.order_by("price")
-
-    # Build filter parameters for maintaining filter state in URL
-    filter_params = {
-        "borough": borough,
-        "min_price": min_price,
-        "max_price": max_price,
-        "bedrooms": bedrooms,
-        "bathrooms": bathrooms,
-        "elevator": request.GET.get("elevator"),
-        "laundry": request.GET.get("laundry"),
-        "no_fee": request.GET.get("no_fee"),
-        "building_type": building_type,
-        "parking": request.GET.get("parking"),
-    }
 
     # Query to get the IDs of listings that are favorited by the current user
     favorite_listings_ids = Favorite.objects.filter(user=request.user).values_list(
@@ -386,11 +382,13 @@ def favorites_page(request):
 
 def map_view(request):
     # Fetch all rental listings from your model
-    filter_params = request.GET.get('filter_params')
-    print(filter_params)
-    rental_listings = Rental_Listings.objects.all()[:5]
+    filter_params = ast.literal_eval(request.GET.get('filter_params'))
+    rental_listings = Rental_Listings.objects.all()
+
+    # http://127.0.0.1:8000/map/?filter_params={%27borough%27:%20%27Manhattan%27,%20%27min_price%27:%20%27%27,%20%27max_price%27:%20%27%27}
+    rental_listings = apply_filters(rental_listings, filter_params)
+
     rental_listings_json = serialize('json', rental_listings)
-    # rental_listings_json = serialize('json', listings)
 
     current_site = Site.objects.get_current()
     current_site.domain
