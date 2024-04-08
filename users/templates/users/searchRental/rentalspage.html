@@ -57,11 +57,15 @@
           top: 10px;
           right: 10px;
           cursor: pointer;
-          font-size: 24px; /* Adjust size as needed */
+          font-size: 24px; 
           color: rgb(255, 253, 253); /* Default non-favorite color */
         }
         .favorite-icon.active {
-            color: red; /* Favorited state color */
+          color: red; /* Favorited state color */
+        }
+        .pagination li,
+        .step-links a {
+          display: inline-block;
         }
 
     </style>
@@ -225,6 +229,26 @@
 {% else %}
     <p><strong> Sorry! No available rentals match your search. Please adjust your parameters and try again. </strong></p>
 {% endif %}
+
+
+<div>
+  <ul class="pagination">
+    <span class="step-links">
+      {% if page_obj.has_previous %}
+        <a class="page-link" href="?page=1{% if filter_params.borough %}&borough={{ filter_params.borough }}{% endif %}{% if filter_params.min_price %}&min_price={{ filter_params.min_price }}{% endif %}{% if filter_params.max_price %}&max_price={{ filter_params.max_price }}{% endif %}{% if filter_params.bedrooms %}&bedrooms={{ filter_params.bedrooms }}{% endif %}{% if filter_params.bathrooms %}&bathrooms={{ filter_params.bathrooms }}{% endif %}{% if filter_params.elevator %}&elevator={{ filter_params.elevator }}{% endif %}{% if filter_params.laundry %}&laundry={{ filter_params.laundry }}{% endif %}{% if filter_params.no_fee %}&no_fee={{ filter_params.no_fee }}{% endif %}{% if filter_params.building_type %}&building_type={{ filter_params.building_type }}{% endif %}{% if filter_params.parking %}&parking={{ filter_params.parking }}{% endif %}">&laquo; first</a>
+        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if filter_params.borough %}&borough={{ filter_params.borough }}{% endif %}{% if filter_params.min_price %}&min_price={{ filter_params.min_price }}{% endif %}{% if filter_params.max_price %}&max_price={{ filter_params.max_price }}{% endif %}{% if filter_params.bedrooms %}&bedrooms={{ filter_params.bedrooms }}{% endif %}{% if filter_params.bathrooms %}&bathrooms={{ filter_params.bathrooms }}{% endif %}{% if filter_params.elevator %}&elevator={{ filter_params.elevator }}{% endif %}{% if filter_params.laundry %}&laundry={{ filter_params.laundry }}{% endif %}{% if filter_params.no_fee %}&no_fee={{ filter_params.no_fee }}{% endif %}{% if filter_params.building_type %}&building_type={{ filter_params.building_type }}{% endif %}{% if filter_params.parking %}&parking={{ filter_params.parking }}{% endif %}">{{ page_obj.previous_page_number }}</a>
+      {% endif %}
+        <li class="page-item active">
+          <a class="page-link" href="?page={{ page_obj.number }}{% if filter_params.borough %}&borough={{ filter_params.borough }}{% endif %}{% if filter_params.min_price %}&min_price={{ filter_params.min_price }}{% endif %}{% if filter_params.max_price %}&max_price={{ filter_params.max_price }}{% endif %}{% if filter_params.bedrooms %}&bedrooms={{ filter_params.bedrooms }}{% endif %}{% if filter_params.bathrooms %}&bathrooms={{ filter_params.bathrooms }}{% endif %}{% if filter_params.elevator %}&elevator={{ filter_params.elevator }}{% endif %}{% if filter_params.laundry %}&laundry={{ filter_params.laundry }}{% endif %}{% if filter_params.no_fee %}&no_fee={{ filter_params.no_fee }}{% endif %}{% if filter_params.building_type %}&building_type={{ filter_params.building_type }}{% endif %}{% if filter_params.parking %}&parking={{ filter_params.parking }}{% endif %}">{{ page_obj.number }} </a>
+        </li>
+      {% if page_obj.has_next %}
+        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if filter_params.borough %}&borough={{ filter_params.borough }}{% endif %}{% if filter_params.min_price %}&min_price={{ filter_params.min_price }}{% endif %}{% if filter_params.max_price %}&max_price={{ filter_params.max_price }}{% endif %}{% if filter_params.bedrooms %}&bedrooms={{ filter_params.bedrooms }}{% endif %}{% if filter_params.bathrooms %}&bathrooms={{ filter_params.bathrooms }}{% endif %}{% if filter_params.elevator %}&elevator={{ filter_params.elevator }}{% endif %}{% if filter_params.laundry %}&laundry={{ filter_params.laundry }}{% endif %}{% if filter_params.no_fee %}&no_fee={{ filter_params.no_fee }}{% endif %}{% if filter_params.building_type %}&building_type={{ filter_params.building_type }}{% endif %}{% if filter_params.parking %}&parking={{ filter_params.parking }}{% endif %}">{{ page_obj.next_page_number }}</a>
+        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if filter_params.borough %}&borough={{ filter_params.borough }}{% endif %}{% if filter_params.min_price %}&min_price={{ filter_params.min_price }}{% endif %}{% if filter_params.max_price %}&max_price={{ filter_params.max_price }}{% endif %}{% if filter_params.bedrooms %}&bedrooms={{ filter_params.bedrooms }}{% endif %}{% if filter_params.bathrooms %}&bathrooms={{ filter_params.bathrooms }}{% endif %}{% if filter_params.elevator %}&elevator={{ filter_params.elevator }}{% endif %}{% if filter_params.laundry %}&laundry={{ filter_params.laundry }}{% endif %}{% if filter_params.no_fee %}&no_fee={{ filter_params.no_fee }}{% endif %}{% if filter_params.building_type %}&building_type={{ filter_params.building_type }}{% endif %}{% if filter_params.parking %}&parking={{ filter_params.parking }}{% endif %}">last &raquo;</a>
+      {% endif %}
+    </span>
+  </ul>
+</div>
+
 </div>
   
 <!-- Optional JavaScript -->
@@ -295,27 +319,6 @@ function toggleFavorite(event, listingId) {
   });
 }
 
-</script>
-
-<div class="pagination">
-  <span class="step-links">
-      {% if page_obj.has_previous %}
-          <a href="?page=1">&laquo; first</a>
-          <a href="?page={{ page_obj.previous_page_number }}">previous</a>
-      {% endif %}
-
-      <span class="current">
-          Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-      </span>
-
-      {% if page_obj.has_next %}
-          <a href="?page={{ page_obj.next_page_number }}">next</a>
-          <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
-      {% endif %}
-  </span>
-</div>
-  </script>
-  <script>
     document.addEventListener("DOMContentLoaded", function() {
       // Parse the favorite listings IDs from a JSON string to an array
       const favoriteListingsIds = JSON.parse('{{ favorite_listings_ids|safe }}');
