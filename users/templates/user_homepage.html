@@ -9,31 +9,105 @@
     <link rel="stylesheet" href="https://bootswatch.com/5/pulse/bootstrap.css">
 </head>
 <body class="bg-light">
+    <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="{% url 'user_homepage' %}">
+              RentWiseNYC <!-- Here's the simple text replacement -->
+          </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav me-auto">
+              <li class="nav-item">
+                <a class="nav-link active" href="{% url 'placeholder' %}">All rentals</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'favorites_page' %}">Favourites</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'placeholder' %}">My account</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'placeholder' %}">Links</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'logout' %}" >Logout</a>
+              </li>
+            </ul>
+            <form class="d-flex" method="get" action="{% url 'rentalspage' %}">
+              <input class="form-control me-sm-2" type="search" placeholder="e.g. address,building" name="search_query" style="color: rgba(255, 255, 255, 0.75);">
+              <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+            </form>
+          </div>
+        </div>
+      </nav>
 
 <div class="container mt-5">
     <h2 class="text-center">User Homepage</h2>
     {% if user.is_authenticated %}
         <p class="text-center">Welcome, {{ user.username }}!</p>
-        <div class="d-flex justify-content-end">
-            <a href="{% url 'logout' %}" class="btn btn-secondary">Logout</a>
-        </div>
         <div class="container">
             <div class="row justify-content-center mt-4">
                 <div class="col-md-6">
-                    <form action="{% url 'rentalspage' %}" method="get" >
+                    <form action="{% url 'rentalspage' %}" method="get">
                         <div class="text-center">
                             <label for="boroughSearch" class="form-label">Search for Borough for Available rentals</label>
                         </div>
-                        <input type="search" placeholder="Search" class="form-control form-control me-sm-2" id="boroughSearch" name="borough" autocomplete="off">
+                        <div class="row mt-3">
+                            <input type="search" placeholder="Search" class="form-control form-control mt-3" id="boroughSearch" name="borough" autocomplete="off">
+
+                            <div class="col-md-4">
+                                <label for="minPrice" class="form-label">Minimum Price:</label>
+                                <input type="number" class="form-control" id="minPrice" name="min_price" placeholder="Min Price">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="maxPrice" class="form-label">Maximum Price:</label>
+                                <input type="number" class="form-control" id="maxPrice" name="max_price" placeholder="Max Price">
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check mt-4">
+                                    <input class="form-check-input" type="checkbox" id="no_fee" name="no_fee">
+                                    <label class="form-check-label" for="no_fee">No Fee</label>
+                                </div>
+                            </div>
+                        </div>
                         <div class="text-center mt-3">
-                            <button type="submit" class="btn btn-primary">Search Rentals</button>
+                            <button type="submit" class="btn btn-primary">Search</button>
                         </div>
                     </form>
+                    <!-- <form action="{% url 'rentalspage' %}" method="get">
+                        <div class="row">
+                          <div class="col-md-4">
+                            <label for="boroughSearch" class="form-label">Search:</label>
+                            <input type="search" placeholder="Search" class="form-control " id="boroughSearch" name="borough" autocomplete="off" >
+                          </div>
+                          <div class="col-md-2">
+                            <label for="minPrice" class="form-label">MinPrice:</label>
+                            <input type="number" class="form-control" id="minPrice" name="min_price" placeholder="Min Price">
+                          </div>
+                          <div class="col-md-2">
+                            <label for="maxPrice" class="form-label">MaxPrice:</label>
+                            <input type="number" class="form-control" id="maxPrice" name="max_price" placeholder="Max Price">
+                          </div>
+                          <div class="col-md-2">
+                            <label for="noFee" class="form-label">No Fee:</label>
+                            <div class="form-check mt-2">
+                              <input class="form-check-input" type="checkbox" id="noFee" name="no_fee">
+                              <label class="form-check-label" for="noFee">No Fee</label>
+                            </div>
+                          </div>
+                          <div class="col-md-2 align-self-end">
+                            <button type="submit" class="btn btn-primary mt-4">Search</button>
+                          </div>
+                        </div>
+                      </form> -->
+                      
                 </div>
             </div>
         </div>
         <script>
-            const boroughs = ['Manhattan', 'Brooklyn', 'Queens', 'Bronx', 'Staten Island'];
+            const boroughs = ['Manhattan', 'Brooklyn', 'Queens', 'The bronx', 'Staten island'];
         
             const searchInput = document.getElementById('boroughSearch');
             const searchResults = document.createElement('div');

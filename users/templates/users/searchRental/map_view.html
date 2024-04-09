@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load env_extras %}
+<input id="GOOGLE_MAPS_API_KEY" value="{% get_env_var 'GOOGLE_MAPS_API_KEY' %}" type="hidden" />
+<head>
+    <title>Rental Listings Map</title>
+    <style>
+        #map {
+            /* height: 400px; */
+            height: 800px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
+    <script>
+        let hiddenInput = document.getElementById("GOOGLE_MAPS_API_KEY");
+        let apiKey = hiddenInput.value;
+        var markers = [];
+
+        function initMap() {
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 10,
+                center: {lat: 40.71, lng: -74}  // Set initial center of the map
+            });
+            var rentalListings = JSON.parse('{{ rental_listings|safe }}');
+
+            // Loop through rental listings and add markers to the map
+            rentalListings.forEach(function(listing) {
+                var labelText = "$" + parseFloat(listing.fields.price).toLocaleString('en-US', {maximumFractionDigits: 0});
+                var marker = new google.maps.Marker({
+                    position: {lat: parseFloat(listing.fields.latitude), lng: parseFloat(listing.fields.longitude)},
+                    title: listing.fields.address, 
+                    label: {
+                        text: labelText,
+                        color: '#000000', 
+                        fontWeight: 'bold' 
+                    },
+                    url: '{{ this_domain }}' + "/listings/" + listing.pk,
+                    map: map,
+                    optimized: true,
+                    icon: {
+                        path: google.maps.SymbolPath.CIRCLE,
+                        scale: 14, 
+                        fillColor: "#CBC3E3",
+                        fillOpacity: 1,
+                        strokeWeight: 0.3
+                    },
+                });
+                markers.push(marker);
+
+                google.maps.event.addListener(marker, 'click', function() {window.location.href = marker.url;});
+              
+                });
+                    // Use MarkerClusterer library to cluster markers
+                var markerCluster = new MarkerClusterer(map, markers, {
+                    imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
+                    gridSize: 25, // Adjust the cluster size as per your requirement
+                    maxZoom: 10 // Set the maximum zoom level to show clustered markers
+                });
+
+        }
+
+        // Create script element for Google Maps API
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap`;
+        script.async = true;
+        script.defer = true;
+        document.body.appendChild(script); // Append the script to the body
+    </script>
+
+</body>
+</html>
