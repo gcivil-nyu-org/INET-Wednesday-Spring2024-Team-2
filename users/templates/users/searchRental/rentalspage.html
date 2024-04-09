@@ -16,47 +16,62 @@
             display: flex;
             justify-content: flex-end;
         }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr); /* Single column grid */
+            gap: 20px; /* Gap between grid items */
+        }
         .listing {
-        display: flex;
-        border: 1px solid #ddd;
-        margin-bottom: 20px;
-        border-radius: 5px;
-        overflow: hidden;
+            position: relative;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .listing a {
+            text-decoration: none;
+            color: black;
+        }
+        .listing-content {
+            display: flex;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            width: 100%; /* Ensure full width for flex layout */
         }
         .listing-image {
-        width: 50%;
-        position: relative;
+            width: 50%; /* Set fixed width for image */
+            position: relative;
         }
         .listing-image img {
-        width: 100%;
-        height: auto;
-        display: block;
-        }
-        .favorite-icon {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        cursor: pointer;
-        font-size: 24px; /* Adjust size as needed */
-        color: #ccc; /* Default non-favorite color */
-        /* Add more styling for the favorite icon */
-        }
-        .favorite-icon.favorited {
-            color: red; /* Favorited state color */
-        }
-        .favorite-icon.active {
-        color: red;
+            width: 100%;
+            height: auto; /* Maintain aspect ratio */
+            display: block;
+            object-fit: cover; /* Cover container */
         }
         .listing-details {
-        padding: 20px;
-        width: 50%;
+            width: 50%; /* Set fixed width for details */
+            padding: 20px;
+            box-sizing: border-box; /* Include padding in width calculation */
         }
-        .listing-details h3 {
-        margin-top: 0;
+        .favorite-icon {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          cursor: pointer;
+          font-size: 24px; 
+          color: rgb(255, 253, 253); /* Default non-favorite color */
         }
+        .favorite-icon.active {
+          color: red; /* Favorited state color */
+        }
+        .pagination li,
+        .step-links a {
+          display: inline-block;
+        }
+
     </style>
 </head>
 <body>
+
 
 <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
   <div class="container-fluid">
@@ -72,7 +87,7 @@
           <a class="nav-link active" href="{% url 'placeholder' %}">All rentals</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'placeholder' %}">Favourites</a>
+          <a class="nav-link" href="{% url 'favorites_page' %}">Favourites</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{% url 'placeholder' %}">My account</a>
@@ -84,8 +99,8 @@
           <a class="nav-link" href="{% url 'logout' %}" >Logout</a>
         </li>
       </ul>
-      <form class="d-flex">
-        <input class="form-control me-sm-2" type="search" placeholder="Search">
+      <form class="d-flex" method="get" action="{% url 'rentalspage' %}">
+        <input class="form-control me-sm-2" type="search" placeholder="e.g. address,building" name="search_query" style="color: rgba(255, 255, 255, 0.75);">
         <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
       </form>
     </div>
@@ -103,7 +118,8 @@
             <div class="mb-3">
               <label for="bedrooms" class="form-label">Bedrooms</label>
               <select class="form-select" id="bedrooms" name="bedrooms">
-                <option value="1">1 bedroom</odption>
+                <option value="Any">Any</option>
+                <option value="1">1 bedroom</option>
                 <option value="2">2 bedrooms</option>
                 <option value="3">3 bedrooms</option>
               </select>
@@ -111,6 +127,7 @@
             <div class="mb-3">
               <label for="bathrooms" class="form-label">Bathrooms</label>
               <select class="form-select" id="bathrooms" name = "bathrooms">
+                <option value="Any">Any</option>
                 <option value="1">1 bath</option>
                 <option value="1.5">1.5 bath</option>
                 <option value="2">2 bath</option>
@@ -134,12 +151,13 @@
               <label class="form-check-label" for="laundry">Laundry</label>
             </div>
             <div class="mb-3 form-check">
-              <input type="checkbox" class="form-check-input" id="brokerFee" name = "broker_fee">
-              <label class="form-check-label" for="brokerFee">Broker Fee</label>
+              <input type="checkbox" class="form-check-input" id="no_fee" name = "no_fee">
+              <label class="form-check-label" for="no_fee">No Broker Fee</label>
             </div>
             <div class="mb-3">
                 <label for="buildingType" class="form-label">Building Type</label>
                 <select class="form-select" id="buildingType" name = "">
+                  <option value="Any">Any</option>
                   <option value="Apartment">Apartment</option>
                   <option value="Hostel">Hostel</option>
                 </select>
@@ -159,16 +177,16 @@
           Sort
         </button>
         <ul class="dropdown-menu">
-          <!-- Add sort options here -->
-          <li><a class="dropdown-item" href="#">Recent Listing</a></li>
-          <li><a class="dropdown-item" href="#">Lowest to Highest</a></li>
-          <li><a class="dropdown-item" href="#">Highest to Lowest</a></li>
+          <!-- Add dynamic sort options here with current filter parameters -->
+          <li><a class="dropdown-item" href="?sort=recent{% if filter_params.borough %}&borough={{ filter_params.borough }}{% endif %}{% if filter_params.min_price %}&min_price={{ filter_params.min_price }}{% endif %}{% if filter_params.max_price %}&max_price={{ filter_params.max_price }}{% endif %}{% if filter_params.bedrooms %}&bedrooms={{ filter_params.bedrooms }}{% endif %}{% if filter_params.bathrooms %}&bathrooms={{ filter_params.bathrooms }}{% endif %}{% if filter_params.elevator %}&elevator={{ filter_params.elevator }}{% endif %}{% if filter_params.laundry %}&laundry={{ filter_params.laundry }}{% endif %}{% if filter_params.no_fee %}&no_fee={{ filter_params.no_fee }}{% endif %}{% if filter_params.building_type %}&building_type={{ filter_params.building_type }}{% endif %}{% if filter_params.parking %}&parking={{ filter_params.parking }}{% endif %}">Recent Listing</a></li>
+          <li><a class="dropdown-item" href="?sort=low_to_high{% if filter_params.borough %}&borough={{ filter_params.borough }}{% endif %}{% if filter_params.min_price %}&min_price={{ filter_params.min_price }}{% endif %}{% if filter_params.max_price %}&max_price={{ filter_params.max_price }}{% endif %}{% if filter_params.bedrooms %}&bedrooms={{ filter_params.bedrooms }}{% endif %}{% if filter_params.bathrooms %}&bathrooms={{ filter_params.bathrooms }}{% endif %}{% if filter_params.elevator %}&elevator={{ filter_params.elevator }}{% endif %}{% if filter_params.laundry %}&laundry={{ filter_params.laundry }}{% endif %}{% if filter_params.no_fee %}&no_fee={{ filter_params.no_fee }}{% endif %}{% if filter_params.building_type %}&building_type={{ filter_params.building_type }}{% endif %}{% if filter_params.parking %}&parking={{ filter_params.parking }}{% endif %}">Lowest to Highest</a></li>
+          <li><a class="dropdown-item" href="?sort=high_to_low{% if filter_params.borough %}&borough={{ filter_params.borough }}{% endif %}{% if filter_params.min_price %}&min_price={{ filter_params.min_price }}{% endif %}{% if filter_params.max_price %}&max_price={{ filter_params.max_price }}{% endif %}{% if filter_params.bedrooms %}&bedrooms={{ filter_params.bedrooms }}{% endif %}{% if filter_params.bathrooms %}&bathrooms={{ filter_params.bathrooms }}{% endif %}{% if filter_params.elevator %}&elevator={{ filter_params.elevator }}{% endif %}{% if filter_params.laundry %}&laundry={{ filter_params.laundry }}{% endif %}{% if filter_params.no_fee %}&no_fee={{ filter_params.no_fee }}{% endif %}{% if filter_params.building_type %}&building_type={{ filter_params.building_type }}{% endif %}{% if filter_params.parking %}&parking={{ filter_params.parking }}{% endif %}">Highest to Lowest</a></li>
         </ul>
       </div>
       <div class="container-fluid">
         <div class="row">
             <div class="text-center fixed-bottom mb-3">
-                <a href="{% url 'placeholder' %}" class="btn btn-primary">Map</a>
+                <a href="{% url 'rental_listings_map' %}?filter_params={{ filter_params }}" class="btn btn-primary">Map</a>
             </div>
         </div>
     </div>
@@ -177,50 +195,60 @@
   </div>
 
   <div class="container my-4">
-    <!-- Listings generated by a for-loop -->
-    <script>
-        var staticBasePath = "{% static 'users/images/' %}";
-    </script>    
-    <script>
-      const listings = JSON.parse('{{ listings_json|safe }}');
-    
-      // Function to toggle the favorite state
-      function toggleFavorite(event, index) {
-        const icon = event.currentTarget;
-        icon.classList.toggle('active');
-        // Here you would normally update the favorite status in your database or state
-      }
-    
-      if (listings.length === 0) {
-        // Display an error message if no listings are found
-        document.write("<p><strong> Sorry!! No available rentals for the search please check your spelling </p>");
-      } else {
-        // Loop through the listings and display them
-        for (let i = 0; i < listings.length; i++) {
-          const listing = listings[i];
-          document.write(`
-            <div class="listing">
-              <div class="listing-image">
-                <img src="${staticBasePath}${'home1.jpg'}" alt="Listing Image">
-                <div class="favorite-icon" onclick="toggleFavorite(event, ${i})">♥</div>
-              </div>
-              <div class="listing-details">
-                <h3>${listing.fields.address}</h3>
-                <p><strong>Bedrooms:</strong> ${listing.fields.beds}</p>
-                <p><strong>Bath:</strong> ${listing.fields.baths}</p>
-                <p><strong>Price:</strong> $${listing.fields.price}/month</p>
-                <p><strong>Borough:</strong> ${listing.fields.borough}</p>
-                <p><strong>Neighbourhood:</strong> ${listing.fields.neighborhood}</p>
-                <p><strong>Square Footage:</strong> ${listing.fields.sq_ft} sq ft</p>
-                <p><strong>Posted by:</strong> ${listing.fields.postedBy}</p>
-              </div>
-            </div>
-          `);
-        }
-      }
-    </script>
-  
-  </div>
+    {% if page_obj %}
+    {% for listing in page_obj %}
+        <div class="listing">
+            <a href="{% url 'listing_detail' listing.id %}">
+                <div class="listing-content">
+                    <div class="listing-image"> 
+                        <img src="{{ listing.first_image }}" alt="Listing Image">
+                        <div class="favorite-icon" onclick="toggleFavorite(event, {{ listing.id }})" data-listing-id="{{ listing.id }}">♥</div>
+
+                    </div>
+                    <div class="listing-details">
+                        <h3>{{ listing.address }}</h3>
+                        <p><strong>Bedrooms:</strong> {{ listing.beds }}</p>
+                        <p><strong>Bath:</strong> {{ listing.baths }}</p>
+                        <p><strong>Price:</strong> ${{ listing.price }}/month</p>
+                        <p><strong>Borough:</strong> {{ listing.borough }}</p>
+                        <p><strong>Neighbourhood:</strong> {{ listing.neighborhood }}</p>
+                        <p><strong>Square Footage:</strong> {{ listing.sq_ft }} sq ft</p>
+                        <p><strong>Broker Fee:</strong> ${{ listing.broker_fee }}</p>
+                        <!-- <p><strong>Laundry:</strong> {{ listing.washer_dryer_in_unit }}</p>
+                        <p><strong>Elevator:</strong> {{ listing.elevator }}</p>
+                        <p><strong>Parking:</strong> {{ listing.parking_available }} </p> -->
+                        <p><strong>Availability Date:</strong> {{ listing.Availability_Date }}</p>
+                        <p><strong>Building Type:</strong> {{ listing.unit_type }} </p>
+                        <!-- <p><strong>Posted by:</strong> {{ listing.Landlord_id }}</p> -->
+                    </div>
+                </div>
+            </a>
+        </div>
+    {% endfor %}
+{% else %}
+    <p><strong> Sorry! No available rentals match your search. Please adjust your parameters and try again. </strong></p>
+{% endif %}
+
+
+<div>
+  <ul class="pagination">
+    <span class="step-links">
+      {% if page_obj.has_previous %}
+        <a class="page-link" href="?page=1{% if filter_params.borough %}&borough={{ filter_params.borough }}{% endif %}{% if filter_params.min_price %}&min_price={{ filter_params.min_price }}{% endif %}{% if filter_params.max_price %}&max_price={{ filter_params.max_price }}{% endif %}{% if filter_params.bedrooms %}&bedrooms={{ filter_params.bedrooms }}{% endif %}{% if filter_params.bathrooms %}&bathrooms={{ filter_params.bathrooms }}{% endif %}{% if filter_params.elevator %}&elevator={{ filter_params.elevator }}{% endif %}{% if filter_params.laundry %}&laundry={{ filter_params.laundry }}{% endif %}{% if filter_params.no_fee %}&no_fee={{ filter_params.no_fee }}{% endif %}{% if filter_params.building_type %}&building_type={{ filter_params.building_type }}{% endif %}{% if filter_params.parking %}&parking={{ filter_params.parking }}{% endif %}">&laquo; first</a>
+        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if filter_params.borough %}&borough={{ filter_params.borough }}{% endif %}{% if filter_params.min_price %}&min_price={{ filter_params.min_price }}{% endif %}{% if filter_params.max_price %}&max_price={{ filter_params.max_price }}{% endif %}{% if filter_params.bedrooms %}&bedrooms={{ filter_params.bedrooms }}{% endif %}{% if filter_params.bathrooms %}&bathrooms={{ filter_params.bathrooms }}{% endif %}{% if filter_params.elevator %}&elevator={{ filter_params.elevator }}{% endif %}{% if filter_params.laundry %}&laundry={{ filter_params.laundry }}{% endif %}{% if filter_params.no_fee %}&no_fee={{ filter_params.no_fee }}{% endif %}{% if filter_params.building_type %}&building_type={{ filter_params.building_type }}{% endif %}{% if filter_params.parking %}&parking={{ filter_params.parking }}{% endif %}">{{ page_obj.previous_page_number }}</a>
+      {% endif %}
+        <li class="page-item active">
+          <a class="page-link" href="?page={{ page_obj.number }}{% if filter_params.borough %}&borough={{ filter_params.borough }}{% endif %}{% if filter_params.min_price %}&min_price={{ filter_params.min_price }}{% endif %}{% if filter_params.max_price %}&max_price={{ filter_params.max_price }}{% endif %}{% if filter_params.bedrooms %}&bedrooms={{ filter_params.bedrooms }}{% endif %}{% if filter_params.bathrooms %}&bathrooms={{ filter_params.bathrooms }}{% endif %}{% if filter_params.elevator %}&elevator={{ filter_params.elevator }}{% endif %}{% if filter_params.laundry %}&laundry={{ filter_params.laundry }}{% endif %}{% if filter_params.no_fee %}&no_fee={{ filter_params.no_fee }}{% endif %}{% if filter_params.building_type %}&building_type={{ filter_params.building_type }}{% endif %}{% if filter_params.parking %}&parking={{ filter_params.parking }}{% endif %}">{{ page_obj.number }} </a>
+        </li>
+      {% if page_obj.has_next %}
+        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if filter_params.borough %}&borough={{ filter_params.borough }}{% endif %}{% if filter_params.min_price %}&min_price={{ filter_params.min_price }}{% endif %}{% if filter_params.max_price %}&max_price={{ filter_params.max_price }}{% endif %}{% if filter_params.bedrooms %}&bedrooms={{ filter_params.bedrooms }}{% endif %}{% if filter_params.bathrooms %}&bathrooms={{ filter_params.bathrooms }}{% endif %}{% if filter_params.elevator %}&elevator={{ filter_params.elevator }}{% endif %}{% if filter_params.laundry %}&laundry={{ filter_params.laundry }}{% endif %}{% if filter_params.no_fee %}&no_fee={{ filter_params.no_fee }}{% endif %}{% if filter_params.building_type %}&building_type={{ filter_params.building_type }}{% endif %}{% if filter_params.parking %}&parking={{ filter_params.parking }}{% endif %}">{{ page_obj.next_page_number }}</a>
+        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if filter_params.borough %}&borough={{ filter_params.borough }}{% endif %}{% if filter_params.min_price %}&min_price={{ filter_params.min_price }}{% endif %}{% if filter_params.max_price %}&max_price={{ filter_params.max_price }}{% endif %}{% if filter_params.bedrooms %}&bedrooms={{ filter_params.bedrooms }}{% endif %}{% if filter_params.bathrooms %}&bathrooms={{ filter_params.bathrooms }}{% endif %}{% if filter_params.elevator %}&elevator={{ filter_params.elevator }}{% endif %}{% if filter_params.laundry %}&laundry={{ filter_params.laundry }}{% endif %}{% if filter_params.no_fee %}&no_fee={{ filter_params.no_fee }}{% endif %}{% if filter_params.building_type %}&building_type={{ filter_params.building_type }}{% endif %}{% if filter_params.parking %}&parking={{ filter_params.parking }}{% endif %}">last &raquo;</a>
+      {% endif %}
+    </span>
+  </ul>
+</div>
+
+</div>
   
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -243,8 +271,75 @@ $(document).ready(function() {
         }
     });
 });
-</script>
 
+  // Function to get the CSRF token from cookies
+  function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+              const cookie = cookies[i].trim();
+              // Does this cookie string begin with the name we want?
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
+  }
+
+  // Updated function for toggling favorite status
+function toggleFavorite(event, listingId) {
+  console.log("Toggle favorite function called for listing ID:", listingId);
+
+  event.stopPropagation(); // Prevent the event from bubbling up to the parent elements
+  event.preventDefault(); // Prevent the default action (navigating to the next page)
+
+  const icon = event.currentTarget;
+  $.ajax({
+      type: "POST",
+      url: '/toggle_favorite/',
+      data: {
+          'listing_id': listingId,
+          'csrfmiddlewaretoken': getCookie('csrftoken'),
+      },
+      success: function(response) {
+          if (response.status === 'added') {
+              icon.classList.add('active');
+          } else if (response.status === 'removed') {
+              icon.classList.remove('active');
+          }
+      },
+      error: function(xhr, status, error) {
+          console.error("Error toggling favorite:", status, error);
+          alert('An error occurred while processing your request.');
+      }
+  });
+}
+
+    document.addEventListener("DOMContentLoaded", function() {
+      // Parse the favorite listings IDs from a JSON string to an array
+      const favoriteListingsIds = JSON.parse('{{ favorite_listings_ids|safe }}');
+
+      // Wait for the existing listings to be generated
+      setTimeout(function() {
+        // Select all favorite icons
+        const favoriteIcons = document.querySelectorAll('.favorite-icon');
+
+        favoriteIcons.forEach(function(icon) {
+          // Extract listing ID stored in a data attribute (e.g., data-listing-id)
+          const listingId = parseInt(icon.getAttribute('data-listing-id'), 10);
+
+          // Check if the listing ID is in the list of favorites
+          if (favoriteListingsIds.includes(listingId)) {
+            // Add the 'active' class to mark it as favorited
+            icon.classList.add('active');
+          }
+        });
+      }, 100); // Adjust timeout as needed to ensure it runs after listings are generated
+    });
+    </script>
 
 </body>
 </html>
