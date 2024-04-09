@@ -3,36 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Landlord Homepage</title>
+    <title>Landlord Home</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'users/common_style.css' %}">
-    <style>
-        .logout-link {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 8px 15px;
-            background-color: #909790;
-            color: white;
-            border-radius: 4px;
-            text-decoration: none;
-            transition: background-color 0.2s;
-        }
-
-        .logout-link:hover {
-            background-color: #555b55;
-        }
-
-        body {
-            position: relative;
-        }
-    </style>
+    <link rel="stylesheet" href="https://bootswatch.com/5/pulse/bootstrap.css">
 </head>
-<body>
-<h2>Landlord Homepage</h2>
-{% if user.is_authenticated %}
-    <p>Welcome, {{ user.username }}!</p>
-    <a href="{% url 'logout' %}" class="logout-link">Logout</a>
-{% endif %}
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="{% url 'landlord_homepage' %}">
+              RentWiseNYC <!-- Here's the simple text replacement -->
+          </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav me-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'placeholder' %}">Post Rental</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'placeholder' %}">My Listings</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'landlord_profile_update' %}">My account</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'placeholder' %}">Links</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'logout' %}" >Logout</a>
+              </li>
+            </ul>
+           
+          </div>
+        </div>
+      </nav>
+
+<div class="container mt-5">
+    <h2 class="text-center">LandLord Homepage</h2>
+    {% if user.is_authenticated %}
+        <p class="text-center">Welcome, {{ user.username }}!</p>
+    {% endif %}
+</div>
+
 </body>
 </html>

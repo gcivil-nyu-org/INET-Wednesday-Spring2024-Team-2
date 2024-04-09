@@ -50,4 +50,10 @@ urlpatterns = [
     path("toggle_favorite/", views.toggle_favorite, name="toggle_favorite"),
     path("favorites/", views.favorites_page, name="favorites_page"),
     path("map/", views.map_view, name="rental_listings_map"),
+    path("user/account/", views.profile_view_edit, name="profile_view_edit"),
+    path(
+        "landlord/account/",
+        views.landlord_profile_update,
+        name="landlord_profile_update",
+    ),
 ]
