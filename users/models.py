@@ -133,3 +133,37 @@ class Favorite(models.Model):
 
     def _str_(self):
         return f"{self.user.username} - {self.listing.address}"
+
+
+class BuildingInfestationReport(models.Model):
+    building_id = models.IntegerField()
+    registration_id = models.IntegerField()
+    borough = models.CharField(max_length=100)
+    house_number = models.CharField(max_length=50)
+    street_name = models.CharField(max_length=255)
+    postcode = models.CharField(max_length=255)
+    dwelling_units = models.CharField(max_length=255)
+    infested_dwelling_unit_count = models.CharField(max_length=255)
+    eradicated_unit_count = models.CharField(max_length=255)
+    reinfested_dwelling_unit_count = models.CharField(max_length=255)
+    filing_date = models.DateField()
+    filing_period_start_date = models.DateField()
+    filing_period_end_date = models.DateField()
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    community_board = models.CharField(max_length=255)
+    council_district = models.CharField(max_length=255)
+    census_tract = models.CharField(max_length=50)
+    bin = models.CharField(max_length=255)
+    bbl = models.CharField(max_length=255)
+    nta = models.CharField(max_length=255)
+
+    def _str_(self):
+        return f"{self.building_id} - {self.street_name}"
+
+
+class ExampleTable1(models.Model):
+    example_column = models.CharField(max_length=255)
+
+    def _str_(self):
+        return self.example_column
