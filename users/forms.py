@@ -1,3 +1,5 @@
+from datetime import date
+
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
@@ -121,7 +123,6 @@ class RentalListingForm(forms.ModelForm):
     unit_type = forms.ChoiceField(choices=UNIT_TYPE_CHOICES)
     neighborhood = forms.ChoiceField(choices=NEIGHBORHOOD_CHOICES)
     borough = forms.ChoiceField(choices=BOROUGH_CHOICES)
-    broker_fee = forms.BooleanField(required=False)
     photo = forms.ImageField(required=False)
     class Meta:
         model = Rental_Listings
