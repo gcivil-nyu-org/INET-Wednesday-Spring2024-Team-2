@@ -74,20 +74,69 @@ class LandlordSignupForm(UserCreationForm):
 
 
 class RentalListingForm(forms.ModelForm):
-    photo = forms.ImageField(required=False)  # 根据需要设置required为True或False
+    ROOMS_CHOICES = [(i, str(i)) for i in range(1, 11)]
+    BATHS_CHOICES = [(i * 0.5, str(i * 0.5)) for i in
+                     range(2, 21)]
 
+    UNIT_TYPE_CHOICES = [('Apartment', 'Apartment'),
+                         ('House', 'House')]
+    NEIGHBORHOOD_CHOICES = [
+        ('Manhattan', 'Manhattan'),
+        ('Brooklyn', 'Brooklyn'),
+        ('Upper East Side', 'Upper East Side'),
+        ('Upper West Side', 'Upper West Side'),
+        ('Midtown', 'Midtown'),
+        ('Harlem', 'Harlem'),
+        ('Chelsea', 'Chelsea'),
+        ('Greenwich Village', 'Greenwich Village'),
+        ('Soho', 'Soho'),
+        ('East Village', 'East Village'),
+        ('Lower East Side', 'Lower East Side'),
+        ('Williamsburg', 'Williamsburg'),
+        ('Bushwick', 'Bushwick'),
+        ('Park Slope', 'Park Slope'),
+        ('Brooklyn Heights', 'Brooklyn Heights'),
+        ('Red Hook', 'Red Hook'),
+        ('Astoria', 'Astoria'),
+        ('Long Island City', 'Long Island City'),
+        ('Flushing', 'Flushing'),
+        ('Jamaica', 'Jamaica'),
+        ('Forest Hills', 'Forest Hills'),
+        ('Riverdale', 'Riverdale'),
+        ('Fordham', 'Fordham'),
+        ('Concourse', 'Concourse'),
+        ('Throgs Neck', 'Throgs Neck'),
+        ('St. George', 'St. George'),
+        ('Tottenville', 'Tottenville'),
+        ('Stapleton', 'Stapleton'),
+    ]
+
+    BOROUGH_CHOICES = [('Manhattan', 'Manhattan'), ('Brooklyn', 'Brooklyn'),
+                       ('Queens', 'Queens'), ('Bronx', 'Bronx'),
+                       ('Staten Island', 'Staten Island')]
+
+    rooms = forms.ChoiceField(choices=ROOMS_CHOICES)
+    beds = forms.ChoiceField(choices=ROOMS_CHOICES)
+    baths = forms.ChoiceField(choices=BATHS_CHOICES)
+    unit_type = forms.ChoiceField(choices=UNIT_TYPE_CHOICES)
+    neighborhood = forms.ChoiceField(choices=NEIGHBORHOOD_CHOICES)
+    borough = forms.ChoiceField(choices=BOROUGH_CHOICES)
+    broker_fee = forms.BooleanField(required=False)
+    photo = forms.ImageField(required=False)
     class Meta:
         model = Rental_Listings
         fields = [
             "address",
+            "zipcode",
             "price",
-            "link",
             "sq_ft",
             "rooms",
             "beds",
             "baths",
             "unit_type",
             "neighborhood",
+            "borough",
+            "broker_fee",
             "central_air_conditioning",
             "dishwasher",
             "doorman",
@@ -109,6 +158,12 @@ class RentalListingForm(forms.ModelForm):
         if price < 0:
             raise forms.ValidationError("Price cannot be negative.")
         return price
+
+    def clean_Availability_Date(self):
+        availability_date = self.cleaned_data.get("Availability_Date")
+        if availability_date and availability_date < date.today():
+            raise ValidationError("The availability date cannot be in the past.")
+        return availability_date
 
 
 class CustomLoginForm(AuthenticationForm):

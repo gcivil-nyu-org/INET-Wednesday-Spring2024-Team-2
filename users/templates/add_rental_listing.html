@@ -25,13 +25,44 @@
     </style>
 </head>
 <body>
+<nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{% url 'landlord_homepage' %}">
+        RentWiseNYC <!-- Here's the simple text replacement -->
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link active" href="{% url 'post_new_listings' %}">Post listing</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">My account</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'landlord_placeholder' %}">Links</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'logout' %}" >Logout</a>
+        </li>
+      </ul>
+      <form class="d-flex">
+        <input class="form-control me-sm-2" type="search" placeholder="Search">
+        <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+      </form>
+    </div>
+  </div>
+</nav>
 
 <div class="container mt-5">
     <h2 class="text-center">Add Rental Listing</h2>
     <div class="custom-form">
         <form method="post" enctype="multipart/form-data" class="mt-4">
             {% csrf_token %}
-            {% for field in form %}
+        {% for field in form %}
+            {% if field.name != "photo" %}
                 <div class="mb-3">
                     <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
                     {{ field }}
@@ -44,7 +75,12 @@
                         </div>
                     {% endfor %}
                 </div>
-            {% endfor %}
+            {% endif %}
+        {% endfor %}
+        <div class="mb-3">
+            <label for="photo" class="form-label">Photos</label>
+            <input type="file" id="photo" name="photos" multiple class="form-control">
+        </div>
             <div class="form-group">
                 <button type="submit" class="btn btn-primary form-button">Submit</button>
             </div>

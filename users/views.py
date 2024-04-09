@@ -79,12 +79,12 @@ def login_process(request, user_type, this_page, destination_url_name):
                 # noqa:<E501>
             )
             return render(request, this_page, {"form": form})
-        # if user_type == "landlord" and user.verified is False:
-        #     messages.error(
-        #         request,
-        #         "Your account has not been verified by the admin yet. Please wait!",
-        #     )
-        #     return render(request, this_page, {"form": form})
+        if user_type == "landlord" and user.verified is False:
+            messages.error(
+                request,
+                "Your account has not been verified by the admin yet. Please wait!",
+            )
+            return render(request, this_page, {"form": form})
         login(request, user)
         return redirect(reverse(destination_url_name))
 
@@ -326,7 +326,7 @@ def rentals_page(request):
 def add_rental_listing(request):
     if request.method == "POST":
         form = RentalListingForm(request.POST, request.FILES)
-        images = request.FILES.getlist("photo")  # 假设你有一个字段名为'image'来上传图片
+        images = request.FILES.getlist("photos")
         if form.is_valid():
             rental_listing = form.save(commit=False)
             rental_listing.Landlord = request.user
