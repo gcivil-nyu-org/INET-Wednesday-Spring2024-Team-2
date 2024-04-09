@@ -10,8 +10,10 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.sites.models import Site
 from django.core import serializers
 from django.core.paginator import Paginator
+from django.core.serializers import serialize
 from django.db.models import Min
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404

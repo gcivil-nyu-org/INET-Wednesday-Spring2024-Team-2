@@ -124,6 +124,7 @@ class RentalListingForm(forms.ModelForm):
     neighborhood = forms.ChoiceField(choices=NEIGHBORHOOD_CHOICES)
     borough = forms.ChoiceField(choices=BOROUGH_CHOICES)
     photo = forms.ImageField(required=False)
+
     class Meta:
         model = Rental_Listings
         fields = [

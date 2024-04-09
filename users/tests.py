@@ -14,6 +14,7 @@ import unittest
 from unittest.mock import patch, MagicMock
 from .forms import User, UserSignUpForm
 from .models import CustomUser, Rental_Listings
+from .views import map_view
 
 
 class CustomUserModelTests(TestCase):
