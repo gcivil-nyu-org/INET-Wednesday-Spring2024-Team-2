@@ -35,6 +35,7 @@ from urllib.parse import urlencode
 from django.http import JsonResponse
 from django.core.serializers import serialize
 from django.contrib.sites.models import Site
+from .forms import CustomUserEditForm
 
 
 logger = logging.getLogger(__name__)
@@ -221,7 +222,13 @@ def apply_filters(listings, filter_params):
     listings = listings.exclude(neighborhood="Hell's Kitchen")
     # Apply filters
     if filter_params.get("borough"):
-        listings = listings.filter(borough=filter_params.get("borough"))
+        borough = filter_params.get("borough")
+        if borough == "All(NYC)":
+            # No need to filter by borough if "All(NYC)" is selected
+            pass
+        else:
+            # Filter by neighborhood or borough using exact match
+            listings = listings.filter(Q(neighborhood=borough) | Q(borough=borough))
     if filter_params.get("min_price"):
         min_price = int(filter_params.get("min_price"))
         listings = listings.filter(price__gte=min_price)
@@ -328,7 +335,7 @@ def rentals_page(request):
     return render(request, "users/searchRental/rentalspage.html", context)
 
 
-@user_type_required("user")
+@login_required
 def placeholder_view(request):
     return render(request, "users/searchRental/placeholder.html")
 
@@ -405,3 +412,41 @@ def map_view(request):
         "this_domain": current_site.domain,
     }
     return render(request, "users/searchRental/map_view.html", context)
+
+
+@login_required
+@user_type_required("user")
+def profile_view_edit(request):
+    if request.method == "POST":
+        form = CustomUserEditForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Your profile was successfully updated!")
+            return redirect("profile_view_edit")
+    else:
+        form = CustomUserEditForm(instance=request.user)
+
+    return render(
+        request,
+        "users/Profile/profile_view_edit.html",
+        {"form": form, "user": request.user},
+    )
+
+
+@login_required
+@user_type_required("landlord")
+def landlord_profile_update(request):
+    if request.method == "POST":
+        form = CustomUserEditForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Your profile was successfully updated!")
+            return redirect("landlord_profile_update")
+    else:
+        form = CustomUserEditForm(instance=request.user)
+
+    return render(
+        request,
+        "users/Profile/landlord_profile_update.html",
+        {"form": form, "user": request.user},
+    )

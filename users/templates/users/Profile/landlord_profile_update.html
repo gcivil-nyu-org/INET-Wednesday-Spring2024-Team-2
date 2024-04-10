@@ -1,0 +1,98 @@
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Profile</title>
+    <link href="https://bootswatch.com/5/pulse/bootstrap.min.css" rel="stylesheet">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" href="https://bootswatch.com/5/pulse/bootstrap.min.css">
+    <!-- <link rel="stylesheet" href="{% static 'users/common_style.css' %}"> -->
+    <style>
+        /* Additional custom styling */
+        .custom-form {
+            max-width: 400px; /* Adjust the max-width as needed */
+            margin: auto; /* Center the form */
+        }
+        .form-button {
+            width: 100%;
+            padding: 10px; /* Adjust padding to match the login button */
+            margin-top: 10px; /* Space between buttons */
+            display: block; /* Ensure it's displayed as block */
+            text-align: center; /* Center the text for consistency */
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="{% url 'landlord_homepage' %}">
+              RentWiseNYC <!-- Here's the simple text replacement -->
+          </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav me-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'placeholder' %}">Post Rental</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'placeholder' %}">My Listings</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'landlord_profile_update' %}">My account</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'placeholder' %}">Links</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'logout' %}" >Logout</a>
+              </li>
+            </ul>
+           
+          </div>
+        </div>
+      </nav>
+
+
+    <div class="container mt-5">
+        <h2 class="text-center">Update Profile</h2>
+        <div class="custom-form">
+            <form action="" method="post" class="mt-4">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    <input type="email" id="email" value="{{ user.email }}" class="form-control" disabled="">
+                </div>
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" value="{{ user.username }}" class="form-control" disabled="">
+                </div>
+
+                {{ form|crispy }}
+                <input type="submit" class="btn btn-primary btn-block mt-3" value="Save Changes"/>
+            </form>
+
+            <div class="container mt-3">
+                {% for message in messages %}
+                    
+                    {% if message.tags == 'error'  %}
+                        <!-- <div class="alert alert-danger" role="alert">
+                            Please correct the errors below.
+                        </div> -->
+                    {% else %}
+                        <div class="alert {% if message.tags == 'success' %}alert-success{% endif %}" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>
