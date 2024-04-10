@@ -222,8 +222,13 @@ def apply_filters(listings, filter_params):
     listings = listings.exclude(neighborhood="Hell's Kitchen")
     # Apply filters
     if filter_params.get("borough"):
-        borough=filter_params.get("borough")
-        listings = listings.filter(Q(neighborhood__icontains=borough) | Q(borough__icontains=borough))
+        borough = filter_params.get("borough")
+        if borough == "All(NYC)":
+            # No need to filter by borough if "All(NYC)" is selected
+            pass
+        else:
+            # Filter by neighborhood or borough using exact match
+            listings = listings.filter(Q(neighborhood=borough) | Q(borough=borough))
     if filter_params.get("min_price"):
         min_price = int(filter_params.get("min_price"))
         listings = listings.filter(price__gte=min_price)

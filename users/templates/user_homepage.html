@@ -123,7 +123,7 @@
                   <form action="{% url 'rentalspage' %}" method="get">
                       <div class="row">
                           <div class="col-4">
-                              <label for="borough" class="form-label">Search for a rental listing</label>
+                              <label for="borough" class="form-label">Search listing by Borough/Neighborhood</label>
                               <input type="search" placeholder="Start typing to select a location" class="form-control" id="borough" name="borough" autocomplete="off" required>
                               <div class="search-results"></div>
                           </div>
@@ -247,11 +247,12 @@
               "Flatiron",
               "Greenwich Village",
               "Brooklyn Heights",
-              "Central Park South"
+              "Central Park South",
+              "All(NYC)"
           ];
 
         
-          const searchInput = document.getElementById('borough');
+    const searchInput = document.getElementById('borough');
     const searchResults = document.querySelector('.search-results');
 
     function renderResults(results) {
@@ -272,10 +273,11 @@
 
     function showOptions(inputValue) {
         const matchingLocations = locations.filter(location =>
-            location.toLowerCase().startsWith(inputValue.toLowerCase())
+            location.toLowerCase().includes(inputValue.toLowerCase())
         );
         renderResults(matchingLocations);
     }
+
 
     searchInput.addEventListener('input', function() {
         const inputValue = this.value.trim();
