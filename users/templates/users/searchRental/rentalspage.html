@@ -168,16 +168,24 @@
             </div>
             <div class="mb-3">
                 <label for="buildingType" class="form-label">Building Type</label>
-                <select class="form-select" id="buildingType" name = "">
+                <select class="form-select" id="buildingType" name = "building_type">
                   <option value="Any">Any</option>
                   <option value="Apartment">Apartment</option>
-                  <option value="Hostel">Hostel</option>
+                  <option value="Condo">Condo</option>
+                  <option value="Rental Unit">Rental Unit</option>
+                  <option value="Building">Building</option>            
+                  <option value="Multi-family">Multi-family</option>
+                  <option value="House">House</option>
+                  <option value="Townhouse">Townhouse</option>
+                  <option value="Co-op">Co-op</option>
                 </select>
             </div>  
             <div class="mb-3 form-check">
               <input type="checkbox" class="form-check-input" id="parking" name="parking">
               <label class="form-check-label" for="parking">Parking</label>
             </div>
+            <input type="hidden" name="borough" value="{{ filter_params.borough }}">
+
             <button type="submit" class="btn btn-primary">Apply</button>
           </form>
         </div>
@@ -269,7 +277,32 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/js/bootstrap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+      const filterForm = document.getElementById('filterForm');
+      const queryParams = new URLSearchParams(window.location.search);
 
+      // Populate form fields with existing filter parameters
+      document.querySelectorAll('#filterForm select, #filterForm input[type="number"], #filterForm input[type="checkbox"]').forEach((elem) => {
+          const paramName = elem.getAttribute('name');
+          if (queryParams.has(paramName)) {
+              if (elem.type === 'checkbox') {
+                  elem.checked = true;
+              } else {
+                  elem.value = queryParams.get(paramName);
+              }
+          }
+      });
+
+      // Submit form with updated filter parameters
+      filterForm.addEventListener('submit', function (event) {
+          event.preventDefault();
+          const formData = new FormData(filterForm);
+          const params = new URLSearchParams(formData);
+          window.location.href = `${window.location.pathname}?${params}`;
+      });
+  });
+</script>
 <script>
 // Add the JavaScript for validating min and max price here
 $(document).ready(function() {
@@ -351,6 +384,8 @@ function toggleFavorite(event, listingId) {
         });
       }, 100); // Adjust timeout as needed to ensure it runs after listings are generated
     });
+
+    
     </script>
 
 </body>
