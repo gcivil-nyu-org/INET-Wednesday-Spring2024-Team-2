@@ -92,7 +92,7 @@ class CustomUserEditForm(forms.ModelForm):
 
     def clean_full_name(self):
         full_name = self.cleaned_data["full_name"]
-        if not re.match("^[a-zA-Z\\s]*$", full_name):    #noqa: W605
+        if not re.match("^[a-zA-Z\\s]*$", full_name):  # noqa: W605
             raise ValidationError("Name should only contain letters and spaces.")
         return full_name
 
@@ -104,6 +104,6 @@ class CustomUserEditForm(forms.ModelForm):
 
     def clean_city(self):
         city = self.cleaned_data["city"]
-        if not re.match("^[a-zA-Z\\s]*$", city):       #noqa: W605
+        if not re.match("^[a-zA-Z\\s]*$", city):  # noqa: W605
             raise ValidationError("City should only contain letters and spaces.")
         return city
