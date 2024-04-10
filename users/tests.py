@@ -646,6 +646,7 @@ class MapViewTestCase(TestCase):
         # Check if the response status code is 200
         self.assertEqual(response.status_code, 200)
 
+
 # class ProfileViewEditTestCase(TestCase):
 #     def setUp(self):
 #         self.factory = RequestFactory()
@@ -697,82 +698,110 @@ class MapViewTestCase(TestCase):
 #         updated_user = CustomUser.objects.get(pk=self.user.pk)
 #         self.assertEqual(updated_user.full_name, 'Test Landlord')
 
+
 class ProfileUpdateTestCase(TestCase):
     def setUp(self):
         # Create a test user
-        self.user = CustomUser.objects.create_user(username='testuser', email='test@example.com', password='testpassword123' , user_type = 'user')
-        self.client.login(username='testuser', password='testpassword123')
+        self.user = CustomUser.objects.create_user(
+            username="testuser",
+            email="test@example.com",
+            password="testpassword123",
+            user_type="user",
+        )
+        self.client.login(username="testuser", password="testpassword123")
 
     def test_profile_update_form_loads_correctly(self):
         """Test that the profile update form loads with the correct initial data."""
-        response = self.client.get(reverse('profile_view_edit'))
+        response = self.client.get(reverse("profile_view_edit"))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'value="test@example.com"')  # Check for pre-filled email
-        self.assertContains(response, 'value="testuser"')  # Check for pre-filled username
+        self.assertContains(
+            response, 'value="test@example.com"'
+        )  # Check for pre-filled email
+        self.assertContains(
+            response, 'value="testuser"'
+        )  # Check for pre-filled username
 
     def test_unauthenticated_access_redirects_to_login(self):
         """Test that unauthenticated users are redirected to the login page."""
         self.client.logout()  # Log out to test unauthenticated access
-        response = self.client.get(reverse('profile_view_edit'))
-        self.assertRedirects(response, f"/accounts/login/?next={reverse('profile_view_edit')}")
+        response = self.client.get(reverse("profile_view_edit"))
+        self.assertRedirects(
+            response, f"/accounts/login/?next={reverse('profile_view_edit')}"
+        )
 
     def test_successful_profile_update(self):
         """Test submitting the form with valid data updates the user's profile."""
         data = {
-            'full_name': 'Test User',  'phone_number'  : 9876543211, 'city' : 'New York'
+            "full_name": "Test User",
+            "phone_number": 9876543211,
+            "city": "New York",
         }
-        response = self.client.post(reverse('profile_view_edit'), data)
+        response = self.client.post(reverse("profile_view_edit"), data)
         self.assertEqual(response.status_code, 302)
         self.user.refresh_from_db()
-        self.assertEqual(self.user.full_name, 'Test User')
+        self.assertEqual(self.user.full_name, "Test User")
         messages = [msg.message for msg in get_messages(response.wsgi_request)]
-        self.assertIn('Your profile was successfully updated!', messages)
+        self.assertIn("Your profile was successfully updated!", messages)
 
     def test_invalid_form_submission(self):
         """Test that invalid form submissions are handled correctly."""
         data = {
-            'full_name': '',  
+            "full_name": "",
         }
-        response = self.client.post(reverse('profile_view_edit'), data)
+        response = self.client.post(reverse("profile_view_edit"), data)
         self.assertEqual(response.status_code, 200)  # Page reloads with form errors
-        self.assertFormError(response, 'form', 'full_name', 'This field is required.')
+        self.assertFormError(response, "form", "full_name", "This field is required.")
+
 
 class LandlordProfileUpdateTestCase(TestCase):
     def setUp(self):
         # Create a test user
-        self.user = CustomUser.objects.create_user(username='testlandlord', email='test@example.com', password='testpassword123' , user_type = 'landlord')
-        self.client.login(username='testlandlord', password='testpassword123')
+        self.user = CustomUser.objects.create_user(
+            username="testlandlord",
+            email="test@example.com",
+            password="testpassword123",
+            user_type="landlord",
+        )
+        self.client.login(username="testlandlord", password="testpassword123")
 
     def test_profile_update_form_loads_correctly(self):
         """Test that the profile update form loads with the correct initial data."""
-        response = self.client.get(reverse('landlord_profile_update'))
+        response = self.client.get(reverse("landlord_profile_update"))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'value="test@example.com"')  # Check for pre-filled email
-        self.assertContains(response, 'value="testlandlord"')  # Check for pre-filled username
+        self.assertContains(
+            response, 'value="test@example.com"'
+        )  # Check for pre-filled email
+        self.assertContains(
+            response, 'value="testlandlord"'
+        )  # Check for pre-filled username
 
     def test_unauthenticated_access_redirects_to_login(self):
         """Test that unauthenticated users are redirected to the login page."""
         self.client.logout()  # Log out to test unauthenticated access
-        response = self.client.get(reverse('landlord_profile_update'))
-        self.assertRedirects(response, f"/accounts/login/?next={reverse('landlord_profile_update')}")
+        response = self.client.get(reverse("landlord_profile_update"))
+        self.assertRedirects(
+            response, f"/accounts/login/?next={reverse('landlord_profile_update')}"
+        )
 
     def test_successful_profile_update(self):
         """Test submitting the form with valid data updates the user's profile."""
         data = {
-            'full_name': 'Test Landlord',  'phone_number'  : 9876543211, 'city' : 'New York'
+            "full_name": "Test Landlord",
+            "phone_number": 9876543211,
+            "city": "New York",
         }
-        response = self.client.post(reverse('landlord_profile_update'), data)
+        response = self.client.post(reverse("landlord_profile_update"), data)
         self.assertEqual(response.status_code, 302)
         self.user.refresh_from_db()
-        self.assertEqual(self.user.full_name, 'Test Landlord')
+        self.assertEqual(self.user.full_name, "Test Landlord")
         messages = [msg.message for msg in get_messages(response.wsgi_request)]
-        self.assertIn('Your profile was successfully updated!', messages)
-        
+        self.assertIn("Your profile was successfully updated!", messages)
+
     def test_invalid_form_submission(self):
         """Test that invalid form submissions are handled correctly."""
         data = {
-            'full_name': '',  
+            "full_name": "",
         }
-        response = self.client.post(reverse('landlord_profile_update'), data)
+        response = self.client.post(reverse("landlord_profile_update"), data)
         self.assertEqual(response.status_code, 200)  # Page reloads with form errors
-        self.assertFormError(response, 'form', 'full_name', 'This field is required.')
+        self.assertFormError(response, "form", "full_name", "This field is required.")
