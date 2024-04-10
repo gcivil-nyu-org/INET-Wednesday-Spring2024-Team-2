@@ -7,155 +7,287 @@
     {% load static %}
     <!-- Using the Pulse theme from Bootswatch -->
     <link rel="stylesheet" href="https://bootswatch.com/5/pulse/bootstrap.css">
+  <style>
+    .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000; /* Adjust z-index as needed */
+    }
+    body {
+        padding-top: 70px; /* Adjust padding top to accommodate fixed navbar */
+    }
+    .search-btn {
+        width: 100px; /* Fixed width */
+        position: absolute;
+        right: 10px; /* Adjust position as needed */
+        top: 50%; /* Center vertically */
+        transform: translateY(-50%);
+    }
+   
+    .container {
+        width: 100%;
+    }
+
+    .row {
+        display: flex;
+        justify-content: center;
+    }
+
+    .col-md-8 {
+        width: 75%;
+    }
+
+    .col-1, .col-2, .col-4 {
+        flex: 0 0 auto;
+    }
+
+    .col-1 {
+        width: 7%;
+    }
+
+    .col-2 {
+        width: 15%;
+    }
+
+    .col-4 {
+        width: 40%;
+    }
+    .search-results {
+        display: none;
+        position: absolute;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1000;
+    }
+
+    .search-option {
+        padding: 8px 12px;
+        cursor: pointer;
+    }
+
+    .search-option:hover {
+        background-color: #f0f0f0;
+    }
+
+</style>
 </head>
 <body class="bg-light">
-    <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="{% url 'user_homepage' %}">
-              RentWiseNYC <!-- Here's the simple text replacement -->
-          </a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarContent">
-            <ul class="navbar-nav me-auto">
-              <li class="nav-item">
-                <a class="nav-link active" href="{% url 'placeholder' %}">All rentals</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'favorites_page' %}">Favourites</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'profile_view_edit' %}">My account</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'placeholder' %}">Links</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'logout' %}" >Logout</a>
-              </li>
-            </ul>
-            <form class="d-flex" method="get" action="{% url 'rentalspage' %}">
-              <input class="form-control me-sm-2" type="search" placeholder="e.g. address,building" name="search_query" style="color: rgba(255, 255, 255, 0.75);">
-              <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
-            </form>
-          </div>
-        </div>
-      </nav>
+  <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{% url 'user_homepage' %}">
+          RentWiseNYC <!-- Here's the simple text replacement -->
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="{% url 'placeholder' %}">All rentals</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'favorites_page' %}">Favourites</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'profile_view_edit' %}">My account</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'placeholder' %}">Links</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'logout' %}" >Logout</a>
+          </li>
+        </ul>
+        <form class="d-flex" method="get" action="{% url 'rentalspage' %}">
+          <input class="form-control me-sm-2" type="search" placeholder="e.g. address, building" name="search_query" style="color: rgba(255, 255, 255, 0.75);">
+          <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+        </form>
+      </div>
+    </div>
+  </nav>
 
 <div class="container mt-5">
-    <h2 class="text-center">User Homepage</h2>
     {% if user.is_authenticated %}
         <p class="text-center">Welcome, {{ user.username }}!</p>
-        <div class="container">
-            <div class="row justify-content-center mt-4">
-                <div class="col-md-6">
-                    <form action="{% url 'rentalspage' %}" method="get">
-                        <div class="text-center">
-                            <label for="boroughSearch" class="form-label">Search for Borough for Available rentals</label>
-                        </div>
-                        <div class="row mt-3">
-                            <input type="search" placeholder="Search" class="form-control form-control mt-3" id="boroughSearch" name="borough" autocomplete="off">
-
-                            <div class="col-md-4">
-                                <label for="minPrice" class="form-label">Minimum Price:</label>
-                                <input type="number" class="form-control" id="minPrice" name="min_price" placeholder="Min Price">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="maxPrice" class="form-label">Maximum Price:</label>
-                                <input type="number" class="form-control" id="maxPrice" name="max_price" placeholder="Max Price">
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-check mt-4">
-                                    <input class="form-check-input" type="checkbox" id="no_fee" name="no_fee">
-                                    <label class="form-check-label" for="no_fee">No Fee</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="text-center mt-3">
-                            <button type="submit" class="btn btn-primary">Search</button>
-                        </div>
-                    </form>
-                    <!-- <form action="{% url 'rentalspage' %}" method="get">
-                        <div class="row">
-                          <div class="col-md-4">
-                            <label for="boroughSearch" class="form-label">Search:</label>
-                            <input type="search" placeholder="Search" class="form-control " id="boroughSearch" name="borough" autocomplete="off" >
+        <div class="container mt-5">
+          <div class="row justify-content-center">
+              <div class="col-md-8">
+                  <form action="{% url 'rentalspage' %}" method="get">
+                      <div class="row">
+                          <div class="col-4">
+                              <label for="borough" class="form-label">Search for a rental listing</label>
+                              <input type="search" placeholder="Start typing to select a location" class="form-control" id="borough" name="borough" autocomplete="off">
+                              <div class="search-results"></div>
                           </div>
-                          <div class="col-md-2">
-                            <label for="minPrice" class="form-label">MinPrice:</label>
+                          <div class="col-2 ">
+                            <label for="minPrice" class="form-label">Min Price</label>
                             <input type="number" class="form-control" id="minPrice" name="min_price" placeholder="Min Price">
                           </div>
-                          <div class="col-md-2">
-                            <label for="maxPrice" class="form-label">MaxPrice:</label>
-                            <input type="number" class="form-control" id="maxPrice" name="max_price" placeholder="Max Price">
+                        
+                          <div class="col-2">
+                              <label for="maxPrice" class="form-label">Max Price</label>
+                              <input type="number" class="form-control" id="maxPrice" name="max_price" placeholder="Max Price">
                           </div>
-                          <div class="col-md-2">
-                            <label for="noFee" class="form-label">No Fee:</label>
-                            <div class="form-check mt-2">
-                              <input class="form-check-input" type="checkbox" id="noFee" name="no_fee">
-                              <label class="form-check-label" for="noFee">No Fee</label>
-                            </div>
+                          <div class="col-1">
+                              <label class="form-check-label" for="no_fee">No Fee</label>
+                              <input class="form-check-input" type="checkbox" id="no_fee" name="no_fee">
                           </div>
-                          <div class="col-md-2 align-self-end">
-                            <button type="submit" class="btn btn-primary mt-4">Search</button>
+                          <div class="col-1">
+                              <button type="submit" class="btn btn-primary mt-4">Search</button>
                           </div>
-                        </div>
-                      </form> -->
-                      
-                </div>
-            </div>
-        </div>
+                      </div>
+                  </form>
+              </div>
+          </div>
+      </div>
+      
         <script>
-            const boroughs = ['Manhattan', 'Brooklyn', 'Queens', 'The bronx', 'Staten island'];
+            const locations = [
+              "Little Neck",
+              "Jamaica Estates",
+              "Gowanus",
+              "Downtown Brooklyn",
+              "Nolita",
+              "Noho",
+              "DUMBO",
+              "Long Island City",
+              "Turtle Bay",
+              "Stuyvesant Heights",
+              "Hudson Heights",
+              "Fort Greene",
+              "Greenpoint",
+              "Ocean Hill",
+              "Greenwood",
+              "Roosevelt Island",
+              "Yorkville",
+              "Prospect Lefferts Gardens",
+              "Lower East Side",
+              "Midtown",
+              "Murray Hill (Queens)",
+              "Little Italy",
+              "Sheepshead Bay",
+              "Rego Park",
+              "South Harlem",
+              "Bayside",
+              "Carroll Gardens",
+              "City Line",
+              "Gravesend",
+              "Fiske Terrace",
+              "Jackson Heights",
+              "West Chelsea",
+              "Astoria",
+              "Lincoln Square",
+              "East Williamsburg",
+              "Park Slope",
+              "Carnegie Hill",
+              "Middle Village",
+              "Manhattan",
+              "Boerum Hill",
+              "Midwood",
+              "Financial District",
+              "Columbia St Waterfront District",
+              "Hudson Yards",
+              "Murray Hill",
+              "Soho",
+              "Prospect Heights",
+              "Forest Hills",
+              "Ridgewood",
+              "East Harlem",
+              "Jamaica",
+              "Chinatown",
+              "Upper West Side",
+              "Chelsea",
+              "Hamilton Heights",
+              "North Corona",
+              "Gramercy Park",
+              "Cobble Hill",
+              "Battery Park City",
+              "Richmond Hill",
+              "Riverdale",
+              "Windsor Terrace",
+              "Bushwick",
+              "Brooklyn",
+              "Briarwood",
+              "Springfield Gardens",
+              "Bay Ridge",
+              "West Village",
+              "Sunnyside",
+              "Hunters Point",
+              "Clinton Hill",
+              "East Village",
+              "Port Richmond",
+              "Fulton/Seaport",
+              "Williamsburg",
+              "Crown Heights",
+              "Kensington",
+              "Kew Gardens",
+              "New Springville",
+              "Bedford-Stuyvesant",
+              "Madison",
+              "Tribeca",
+              "NoMad",
+              "Hell's Kitchen",
+              "Manhattan Valley",
+              "Washington Heights",
+              "Upper East Side",
+              "Weeksville",
+              "Vinegar Hill",
+              "Lenox Hill",
+              "Flatbush",
+              "Central Harlem",
+              "Spuyten Duyvil",
+              "Flatiron",
+              "Greenwich Village",
+              "Brooklyn Heights",
+              "Central Park South"
+          ];
+
         
-            const searchInput = document.getElementById('boroughSearch');
-            const searchResults = document.createElement('div');
-            searchResults.classList.add('search-results');
-            searchInput.parentNode.appendChild(searchResults);
-        
-            function renderResults(results) {
+          const searchInput = document.getElementById('borough');
+    const searchResults = document.querySelector('.search-results');
+
+    function renderResults(results) {
+        searchResults.innerHTML = '';
+        results.forEach(result => {
+            const option = document.createElement('div');
+            option.classList.add('search-option');
+            option.textContent = result;
+            option.addEventListener('click', function() {
+                searchInput.value = result;
                 searchResults.innerHTML = '';
-                results.forEach(result => {
-                    const option = document.createElement('div');
-                    option.classList.add('search-option');
-                    option.textContent = result;
-                    option.addEventListener('click', function() {
-                        searchInput.value = result;
-                        searchResults.innerHTML = '';
-                    });
-                    searchResults.appendChild(option);
-                });
-            }
-        
-            function showAllOptions() {
-                renderResults(boroughs);
-            }
-        
-            function filterOptions(inputValue) {
-                const matchingBoroughs = boroughs.filter(borough =>
-                    borough.toLowerCase().startsWith(inputValue.toLowerCase())
-                );
-                renderResults(matchingBoroughs);
-            }
-        
-            searchInput.addEventListener('focus', showAllOptions);
-        
-            searchInput.addEventListener('input', function() {
-                const inputValue = this.value.trim();
-                if (inputValue === '') {
-                    showAllOptions();
-                } else {
-                    filterOptions(inputValue);
-                }
             });
-        
-            // Hide results if user clicks outside the search input or results
-            document.addEventListener('click', function(event) {
-                if (!searchResults.contains(event.target) && event.target !== searchInput) {
-                    searchResults.innerHTML = '';
-                }
-            });
+            searchResults.appendChild(option);
+        });
+        searchResults.style.display = 'block';
+        searchResults.style.width = searchInput.offsetWidth + 'px';
+    }
+
+    function showOptions(inputValue) {
+        const matchingLocations = locations.filter(location =>
+            location.toLowerCase().startsWith(inputValue.toLowerCase())
+        );
+        renderResults(matchingLocations);
+    }
+
+    searchInput.addEventListener('input', function() {
+        const inputValue = this.value.trim();
+        if (inputValue.length >= 1) {
+            showOptions(inputValue);
+        } else {
+            searchResults.style.display = 'none';
+        }
+    });
+
+    document.addEventListener('click', function(event) {
+        if (!searchResults.contains(event.target) && event.target !== searchInput) {
+            searchResults.style.display = 'none';
+        }
+    });
+
         </script>
     {% endif %}
 </div>
