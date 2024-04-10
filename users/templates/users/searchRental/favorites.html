@@ -54,6 +54,16 @@
         .listing-details h3 {
         margin-top: 0;
         }
+        .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000; /* Adjust z-index as needed */
+        }
+        body {
+            padding-top: 70px; /* Adjust padding top to accommodate fixed navbar */
+        }
     </style>
 </head>
 <body>
@@ -75,7 +85,7 @@
           <a class="nav-link" href="{% url 'favorites_page' %}">Favourites</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'placeholder' %}">My account</a>
+          <a class="nav-link" href="{% url 'profile_view_edit' %}">My account</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{% url 'placeholder' %}">Links</a>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Placeholder Page</title>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f0f0f0;
+    }
+    .animation {
+        font-size: 24px;
+        font-family: Arial, sans-serif;
+        text-align: center;
+    }
+    .wave {
+        position: relative;
+        display: inline-block;
+        animation: wave 2s infinite;
+    }
+    .wave span {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        display: block;
+        width: 40px;
+        height: 40px;
+        background: #702aca;
+        border-radius: 50%;
+        animation: bounce 2s ease-in-out infinite;
+    }
+    @keyframes wave {
+        0%, 50%, 100% {
+            transform: translateX(0);
+        }
+        25% {
+            transform: translateX(-20px);
+        }
+        75% {
+            transform: translateX(20px);
+        }
+    }
+    @keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-20px);
+        }
+    }
+</style>
+</head>
+<body>
+<div class="animation">
+    <div class="wave">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    <p>Placeholder Page</p>
+
+    <div class="container mt-5">
+        {% if user.is_authenticated %}
+        {% if user.user_type == 'user' %}
+            {% url 'user_homepage' as user_homepage_url %}
+            <p class="text-center">Redirecting...</p>
+            <meta http-equiv="refresh" content="2;url={{ user_homepage_url }}">
+            <p class="text-center"><a href="{{ user_homepage_url }}">User Homepage</a></p>
+        {% elif user.user_type == 'landlord' %}
+            {% url 'landlord_homepage' as landlord_homepage_url %}
+            <p class="text-center">Redirecting...</p>
+            <meta http-equiv="refresh" content="2;url={{ landlord_homepage_url }}">
+            <p class="text-center"><a href="{{ landlord_homepage_url }}">Landlord Homepage</a></p>
+        {% else %}
+            <p class="text-center">Unknown user type!</p>
+        {% endif %}
+    {% else %}
+        <p class="text-center">Please log in to continue.</p>
+    {% endif %}
+    </div>
+</div>
+</body>
+</html>
