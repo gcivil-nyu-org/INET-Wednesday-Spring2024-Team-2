@@ -239,7 +239,8 @@
                     Doorman: {% if listing.doorman %}<span class="badge rounded-pill bg-secondary">Yes</span>{% else %}<span class="badge rounded-pill bg-light">No</span>{% endif %}<br>
                     Elevator: {% if listing.elevator %}<span class="badge rounded-pill bg-secondary">Yes</span>{% else %}<span class="badge rounded-pill bg-light">No</span>{% endif %}<br>
                     Laundry: {% if listing.washer_dryer_in_unit %}<span class="badge rounded-pill bg-secondary">Yes</span>{% else %}<span class="badge rounded-pill bg-light">No</span>{% endif %}<br>
-                    Dishwasher: {% if listing.dishwasher %}<span class="badge rounded-pill bg-secondary">Yes</span>{% else %}<span class="badge rounded-pill bg-light">No</span>{% endif %}
+                    Dishwasher: {% if listing.dishwasher %}<span class="badge rounded-pill bg-secondary">Yes</span>{% else %}<span class="badge rounded-pill bg-light">No</span>{% endif %}<br>
+                    Parking: {% if listing.parking_available %}<span class="badge rounded-pill bg-secondary">Yes</span>{% else %}<span class="badge rounded-pill bg-light">No</span>{% endif %}
                 </div>
                 <div class="date-available">
                     <h4>Date available: {{ listing.Availability_Date }}</h4>
