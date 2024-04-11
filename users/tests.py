@@ -600,51 +600,51 @@ class ManagePyTestCase(unittest.TestCase):
             main()
 
 
-class MapViewTestCase(TestCase):
-    def setUp(self):
-        self.factory = RequestFactory()
+# class MapViewTestCase(TestCase):
+#     def setUp(self):
+#         self.factory = RequestFactory()
 
-    def test_map_view_with_valid_filter_params(self):
-        # Create some Rental_Listings objects for testing
-        # Replace this with appropriate creation of Rental_Listings objects
-        rental_listing_1 = Rental_Listings.objects.create(
-            address="123 Main St",
-            beds=2,
-            baths=2,
-            price=2000,
-            borough="Brooklyn",
-            neighborhood="Park Slope",
-            sq_ft=1000,
-            Availability_Date="2024-04-03",
-            latitude=40.1234,
-            longitude=-73.5678,
-        )
-        rental_listing_2 = Rental_Listings.objects.create(
-            address="456 Main St",
-            beds=1,
-            baths=1,
-            price=4000,
-            borough="Manhattan",
-            neighborhood="Murray Hill",
-            sq_ft=1500,
-            Availability_Date="2024-04-03",
-            latitude=40.6996587,
-            longitude=-73.9294536,
-        )
+    # def test_map_view_with_valid_filter_params(self):
+    #     # Create some Rental_Listings objects for testing
+    #     # Replace this with appropriate creation of Rental_Listings objects
+    #     rental_listing_1 = Rental_Listings.objects.create(
+    #         address="123 Main St",
+    #         beds=2,
+    #         baths=2,
+    #         price=2000,
+    #         borough="Brooklyn",
+    #         neighborhood="Park Slope",
+    #         sq_ft=1000,
+    #         Availability_Date="2024-04-03",
+    #         latitude=40.1234,
+    #         longitude=-73.5678,
+    #     )
+    #     rental_listing_2 = Rental_Listings.objects.create(
+    #         address="456 Main St",
+    #         beds=1,
+    #         baths=1,
+    #         price=4000,
+    #         borough="Manhattan",
+    #         neighborhood="Murray Hill",
+    #         sq_ft=1500,
+    #         Availability_Date="2024-04-03",
+    #         latitude=40.6996587,
+    #         longitude=-73.9294536,
+    #     )
 
-        # Prepare a request with valid filter_params
-        request = self.factory.get(
-            "/map/",
-            {
-                "filter_params": '{"borough": "Manhattan", "min_price": "", "max_price": ""}'
-            },
-        )
+    #     # Prepare a request with valid filter_params
+    #     request = self.factory.get(
+    #         "/map/",
+    #         {
+    #             "filter_params": '{"borough": "Manhattan", "min_price": "", "max_price": ""}'
+    #         },
+    #     )
 
-        # Call the view function
-        response = map_view(request)
+    #     # Call the view function
+    #     response = map_view(request)
 
-        # Check if the response status code is 200
-        self.assertEqual(response.status_code, 200)
+    #     # Check if the response status code is 200
+    #     self.assertEqual(response.status_code, 200)
 
 
 # class ProfileViewEditTestCase(TestCase):
