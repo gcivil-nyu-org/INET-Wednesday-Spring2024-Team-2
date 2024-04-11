@@ -86,10 +86,6 @@
           <a class="nav-link" href="{% url 'logout' %}" >Logout</a>
         </li>
       </ul>
-      <form class="d-flex">
-        <input class="form-control me-sm-2" type="search" placeholder="Search">
-        <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
-      </form>
     </div>
   </div>
 </nav>
@@ -110,7 +106,6 @@
                     <div class="listing-image">
                         <img src="{{ listing.first_image }}" alt="Listing Image">
                         <div class="favorite-icon" onclick="toggleFavorite(event, {{ listing.id }})" data-listing-id="{{ listing.id }}">♥</div>
-
                     </div>
                     <div class="listing-details">
                         <h3>{{ listing.address }}</h3>

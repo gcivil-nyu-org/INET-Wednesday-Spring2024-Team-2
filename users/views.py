@@ -152,7 +152,9 @@ def user_home(request):
 
 @user_type_required("landlord")
 def landlord_home(request):
-    listings = Rental_Listings.objects.filter(Landlord=request.user)
+    listings = Rental_Listings.objects.filter(Landlord=request.user).annotate(
+        first_image=Min("images__image_url")
+    )
     return render(request, "landlord_homepage.html", {"listings": listings})
 
 

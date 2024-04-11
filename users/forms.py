@@ -167,6 +167,16 @@ class RentalListingForm(forms.ModelForm):
             raise ValidationError("The availability date cannot be in the past.")
         return availability_date
 
+    def clean_rooms_beds(self):
+
+        rooms = self.cleaned_data.get("rooms")
+        beds = self.cleaned_data.get("beds")
+
+        if rooms is not None and beds is not None and rooms < beds:
+            raise ValidationError(
+                "Total number of rooms cannot be less than the number of bedrooms.")
+
+
 
 class CustomLoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
