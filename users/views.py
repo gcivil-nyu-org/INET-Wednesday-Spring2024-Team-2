@@ -395,7 +395,6 @@ def favorites_page(request):
     return render(request, "users/searchRental/favorites.html", context)
 
 
-@no_cache
 def map_view(request):
     # Fetch all rental listings from your model
     filter_params = ast.literal_eval(request.GET.get("filter_params"))
