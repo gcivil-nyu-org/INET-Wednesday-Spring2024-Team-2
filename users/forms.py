@@ -1,5 +1,6 @@
 from datetime import date
-
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Submit, Row, Column, Field
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
@@ -125,6 +126,42 @@ class RentalListingForm(forms.ModelForm):
     borough = forms.ChoiceField(choices=BOROUGH_CHOICES)
     photo = forms.ImageField(required=False)
 
+    def __init__(self, *args, **kwargs):
+        super(RentalListingForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_enctype = 'multipart/form-data'
+        self.helper.layout = Layout(
+            Row(
+                Column('address', css_class='form-group col-md-6 mb-0'),
+                Column('zipcode', css_class='form-group col-md-6 mb-0'),
+                css_class='form-row'
+            ),
+            'price',
+            'sq_ft',
+            Row(
+                Column('rooms', css_class='form-group col-md-4 mb-0'),
+                Column('beds', css_class='form-group col-md-4 mb-0'),
+                Column('baths', css_class='form-group col-md-4 mb-0'),
+                css_class='form-row'
+            ),
+            'unit_type',
+            'neighborhood',
+            'borough',
+            'broker_fee',
+            'central_air_conditioning',
+            'dishwasher',
+            'doorman',
+            'elevator',
+            'furnished',
+            'parking_available',
+            'washer_dryer_in_unit',
+            'Submitted_date',
+            'Availability_Date',
+            Field('photo', multiple=True),
+            Submit('submit', 'Submit', css_class='btn btn-primary')
+        )
+
     class Meta:
         model = Rental_Listings
         fields = [
@@ -164,7 +201,12 @@ class RentalListingForm(forms.ModelForm):
     def clean_Availability_Date(self):
         availability_date = self.cleaned_data.get("Availability_Date")
         if availability_date and availability_date < date.today():
-            raise ValidationError("The availability date cannot be in the past.")
+            raise ValidationError(
+                "The availability date cannot be in the past.")
+        if availability_date and availability_date > date.today() + timedelta(
+                days=365):
+            raise ValidationError(
+                "The availability date is too far in the future.")
         return availability_date
 
     def clean_rooms_beds(self):
@@ -175,6 +217,27 @@ class RentalListingForm(forms.ModelForm):
         if rooms is not None and beds is not None and rooms < beds:
             raise ValidationError(
                 "Total number of rooms cannot be less than the number of bedrooms.")
+
+    def clean_zipcode(self):
+        zipcode = self.cleaned_data['zipcode']
+        if not zipcode.isdigit() or len(zipcode) != 5:
+            raise forms.ValidationError(
+                "Please enter a valid 5-digit zip code.")
+        return zipcode
+
+    def clean_sq_ft(self):
+        sq_ft = self.cleaned_data['sq_ft']
+        if sq_ft < 100:
+            raise forms.ValidationError(
+                "Please enter a valid square footage (100 sq ft minimum).")
+        return sq_ft
+
+    def clean_address(self):
+        address = self.cleaned_data['address']
+        if len(address) > 255:
+            raise forms.ValidationError("Address is too long.")
+        return address
+
 
 
 

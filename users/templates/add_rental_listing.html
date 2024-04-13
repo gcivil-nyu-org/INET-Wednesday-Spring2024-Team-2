@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rentals Page - RentWiseNyc</title>
     <!-- Bootstrap CSS from Bootswatch Pulse -->
+    {% load crispy_forms_tags %}
+
     <link href="https://bootswatch.com/5/pulse/bootstrap.min.css" rel="stylesheet">
     <style>
         .custom-form {
@@ -58,34 +60,13 @@
 
 <div class="container mt-5">
     <h2 class="text-center">Add Rental Listing</h2>
-    <div class="custom-form">
-        <form method="post" enctype="multipart/form-data" class="mt-4">
-            {% csrf_token %}
-        {% for field in form %}
-            {% if field.name != "photo" %}
-                <div class="mb-3">
-                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-                    {{ field }}
-                    {% if field.help_text %}
-                        <div id="{{ field.id_for_label }}Help" class="form-text">{{ field.help_text }}</div>
-                    {% endif %}
-                    {% for error in field.errors %}
-                        <div class="invalid-feedback" style="display: block;">
-                            {{ error }}
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endfor %}
-        <div class="mb-3">
-            <label for="photo" class="form-label">Photos</label>
-            <input type="file" id="photo" name="photos" multiple class="form-control">
+    <form method="post" enctype="multipart/form-data">s
+        {% csrf_token %}
+        {{ form|crispy }}
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary form-button">Submit</button>
         </div>
-            <div class="form-group">
-                <button type="submit" class="btn btn-primary form-button">Submit</button>
-            </div>
-        </form>
-    </div>
+    </form>
 </div>
 
 </body>
