@@ -12,7 +12,7 @@ from django.contrib.sites.models import Site
 from django.core import serializers
 from django.core.paginator import Paginator
 from django.core.serializers import serialize
-from django.db.models import Min
+from django.db.models import Min, Q
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
@@ -87,16 +87,17 @@ def login_process(request, user_type, this_page, destination_url_name):
                 # noqa:<E501>
             )
             return render(request, this_page, {"form": form})
-        if user_type == "landlord" and user.verified is False:
-            messages.error(
-                request,
-                "Your account has not been verified by the admin yet. Please wait!",
-            )
-            return render(request, this_page, {"form": form})
+        # if user_type == "landlord" and user.verified is False:
+        #     messages.error(
+        #         request,
+        #         "Your account has not been verified by the admin yet. Please wait!",
+        #     )
+        #     return render(request, this_page, {"form": form})
         login(request, user)
         return redirect(reverse(destination_url_name))
 
     return render(request, this_page, {"form": form})
+
 
 @no_cache
 def landlord_login(request):
@@ -107,6 +108,7 @@ def landlord_login(request):
         destination_url_name="landlord_homepage",
     )
 
+
 @no_cache
 def user_login(request):
     return login_process(
@@ -116,6 +118,7 @@ def user_login(request):
         destination_url_name="user_homepage",
         # URL pattern name for user's homepage
     )
+
 
 @no_cache
 def user_signup(request):
@@ -140,27 +143,34 @@ def user_signup(request):
 
     return render(request, "users/signup/signup.html", {"form": form})
 
+
 @no_cache
 def home(request):
     return render(request, "home.html")
+
 
 @no_cache
 def logout_view(request):
     logout(request)
     return redirect("/")
 
+
 @no_cache
 @user_type_required("user")
 def user_home(request):
     return render(request, "user_homepage.html")
 
+
 @no_cache
 @user_type_required("landlord")
 def landlord_home(request):
-    listings = Rental_Listings.objects.filter(Landlord=request.user).annotate(
-        first_image=Min("images__image_url")
-    ).order_by('-Submitted_date')
+    listings = (
+        Rental_Listings.objects.filter(Landlord=request.user)
+        .annotate(first_image=Min("images__image_url"))
+        .order_by("-Submitted_date")
+    )
     return render(request, "landlord_homepage.html", {"listings": listings})
+
 
 @no_cache
 def landlord_signup(request):
@@ -222,6 +232,7 @@ def landlord_signup(request):
         form = LandlordSignupForm()
     return render(request, "signup/landlord_signup.html", {"form": form})
 
+
 @no_cache
 def apply_filters(listings, filter_params):
     # TODO: fix in database
@@ -275,6 +286,7 @@ def apply_filters(listings, filter_params):
             .order_by("-rank")
         )
     return listings
+
 
 @no_cache
 @user_type_required("user")
@@ -341,8 +353,6 @@ def rentals_page(request):
     return render(request, "users/searchRental/rentalspage.html", context)
 
 
-
-
 @user_type_required("landlord")
 def add_rental_listing(request):
     if request.method == "POST":
@@ -383,10 +393,12 @@ def add_rental_listing(request):
         form = RentalListingForm()
     return render(request, "add_rental_listing.html", {"form": form})
 
+
 @no_cache
 @login_required
 def placeholder_view(request):
     return render(request, "users/searchRental/placeholder.html")
+
 
 @user_type_required("landlord")
 def landlord_placeholder_view(request):
@@ -401,8 +413,6 @@ def listing_detail(request, listing_id):
     # Pass the listing data to a template for rendering
     context = {"listing": listing}
     return render(request, "users/searchRental/listing_detail.html", context)
-
-
 
 
 @csrf_exempt
@@ -448,6 +458,7 @@ def favorites_page(request):
         "favorite_listings_ids": favorite_listings_ids,
     }
     return render(request, "users/searchRental/favorites.html", context)
+
 
 @no_cache
 def map_view(request):
