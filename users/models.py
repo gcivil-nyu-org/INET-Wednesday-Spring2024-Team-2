@@ -122,3 +122,91 @@ class Favorite(models.Model):
 
     def _str_(self):
         return f"{self.user.username} - {self.listing.address}"
+
+
+class BuildingInfestationReport(models.Model):
+    building_id = models.IntegerField()
+    registration_id = models.IntegerField()
+    borough = models.CharField(max_length=100)
+    house_number = models.CharField(max_length=50)
+    street_name = models.CharField(max_length=255)
+    postcode = models.CharField(max_length=255)
+    dwelling_units = models.CharField(max_length=255)
+    infested_dwelling_unit_count = models.CharField(max_length=255)
+    eradicated_unit_count = models.CharField(max_length=255)
+    reinfested_dwelling_unit_count = models.CharField(max_length=255)
+    filing_date = models.DateField()
+    filing_period_start_date = models.DateField()
+    filing_period_end_date = models.DateField()
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    community_board = models.CharField(max_length=255)
+    council_district = models.CharField(max_length=255)
+    census_tract = models.CharField(max_length=50)
+    bin = models.CharField(max_length=255)
+    bbl = models.CharField(max_length=255)
+    nta = models.CharField(max_length=255)
+
+    def _str_(self):
+        return f"{self.building_id} - {self.street_name}"
+
+
+class ExampleTable1(models.Model):
+    example_column = models.CharField(max_length=255)
+
+    def _str_(self):
+        return self.example_column
+
+
+class BuildingViolation(models.Model):
+    violation_id = models.IntegerField(unique=True)
+    building_id = models.IntegerField(default=0)
+    registration_id = models.CharField(max_length=100, default='')
+    boro_id = models.CharField(max_length=100, default='')
+    borough = models.CharField(max_length=100, default='')
+    house_number = models.CharField(max_length=50, default='')
+    low_house_number = models.CharField(max_length=50, default='')
+    high_house_number = models.CharField(max_length=50, default='')
+    street_name = models.CharField(max_length=255, default='')
+    street_code = models.CharField(max_length=100, default='')
+    postcode = models.CharField(max_length=100, default='')
+    apartment = models.CharField(max_length=100, default='')
+    story = models.CharField(max_length=100, default='')
+    block = models.CharField(max_length=100, default='')
+    # lot = models.CharField(max_length=100, default='')
+    # Class = models.CharField(max_length=100, default='')
+    inspection_date = models.DateField(default='2000-01-01')
+    approved_date = models.DateField(default='2000-01-01')
+    originalcertifybydate = models.DateField(default='2000-01-01')
+    originalcorrectbydate = models.DateField(default='2000-01-01')
+    # newcertifybydate = models.DateField(default='2000-01-01')
+    # newcorrectbydate = models.DateField(default='2000-01-01')
+    # certifieddate = models.DateField(default='2000-01-01')
+    ordernumber = models.CharField(max_length=100, default='')
+    nov_id = models.CharField(max_length=100, default='')
+    # nov_description = models.TextField(default='')
+    nov_issued_date = models.DateField(default='2000-01-01')
+    current_status_id = models.CharField(max_length=100, default='')
+    current_status = models.CharField(max_length=100, default='')
+    # current_status_date = models.DateField(default='2000-01-01')
+    # nov_type = models.CharField(max_length=100, default='')
+    # violation_status = models.CharField(max_length=50, default='')
+    # rent_impairing = models.CharField(max_length=1, default='')
+    latitude = models.FloatField(default=0.0)
+    longitude = models.FloatField(default=0.0)
+    community_board = models.CharField(max_length=100, default='')
+    council_district = models.CharField(max_length=100, default='')
+    census_tract = models.CharField(max_length=100, default='')
+    bin = models.CharField(max_length=100, default='')
+    bbl = models.CharField(max_length=20, default='')
+    # nta = models.CharField(max_length=100, default='')
+
+    def str(self):
+        return f"{self.violation_id} - {self.borough} - {self.street_name}"
+
+
+class ExampleTable3(models.Model):
+    example_column = models.CharField(max_length=255)
+
+    def str(self):
+        return self.example_column

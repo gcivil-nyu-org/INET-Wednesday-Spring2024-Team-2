@@ -1,12 +1,10 @@
-from datetime import date
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, Row, Column, Field
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
 from .models import CustomUser, Rental_Listings
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ValidationError
+from django.contrib.auth.forms import UserChangeForm
 
 User = get_user_model()
 
@@ -244,3 +242,32 @@ class RentalListingForm(forms.ModelForm):
 class CustomLoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+
+class CustomUserEditForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ("full_name", "phone_number", "city")
+        widgets = {
+            "full_name": forms.TextInput(attrs={"class": "form-control"}),
+            "phone_number": forms.TextInput(attrs={"class": "form-control"}),
+            "city": forms.TextInput(attrs={"class": "form-control"}),
+        }
+
+    def clean_full_name(self):
+        full_name = self.cleaned_data["full_name"]
+        if not re.match("^[a-zA-Z\\s]*$", full_name):  # noqa: W605
+            raise ValidationError("Name should only contain letters and spaces.")
+        return full_name
+
+    def clean_phone_number(self):
+        phone_number = self.cleaned_data["phone_number"]
+        if not phone_number.isdigit() or len(phone_number) != 10:
+            raise ValidationError("Phone number must contain exactly 10 digits.")
+        return phone_number
+
+    def clean_city(self):
+        city = self.cleaned_data["city"]
+        if not re.match("^[a-zA-Z\\s]*$", city):  # noqa: W605
+            raise ValidationError("City should only contain letters and spaces.")
+        return city
