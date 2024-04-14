@@ -221,3 +221,26 @@ class ExampleTable3(models.Model):
 
     def str(self):
         return self.example_column
+
+
+class ServiceReport311(models.Model):
+    unique_key = models.BigIntegerField(unique=True)
+    created_date = models.DateTimeField()
+    closed_date = models.DateTimeField(blank=True, null=True)
+    agency = models.CharField(max_length=50)
+    complaint_type = models.CharField(max_length=255)
+    incident_zip = models.CharField(max_length=20, blank=True, null=True)
+    incident_address = models.CharField(max_length=255, blank=True, null=True)
+    street_name = models.CharField(max_length=255, blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+    status = models.CharField(max_length=50)
+    due_date = models.DateTimeField(blank=True, null=True)
+    resolution_action_updated_date = models.DateTimeField(blank=True, null=True)
+    community_board = models.CharField(max_length=50)
+    borough = models.CharField(max_length=100)
+    park_borough = models.CharField(max_length=100)
+    latitude = models.FloatField(blank=True, null=True)
+    longitude = models.FloatField(blank=True, null=True)
+
+    def _str_(self):
+        return f"{self.complaint_type} at {self.incident_address} ({self.borough})"
