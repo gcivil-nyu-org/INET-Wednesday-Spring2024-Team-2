@@ -130,8 +130,35 @@
                     border-radius: 5px;
                     background-color: #f8f9fa;
                     border: 1px solid #dee2e6;
+                    margin-bottom: 10px;
                 }
-        
+                .hpd-info-container {
+                    width: 60%;
+                    display: block; 
+                    clear: both; 
+                    background-color: #f8f9fa;
+                    border: 1px solid #dee2e6;
+                    padding: 15px;
+                    margin-right: 10px;
+                    height: 300px;
+                }
+                .hpd-info {
+                    width:30%;
+                    height: 200px;
+                    background-color: bisque;
+                    border: 1px solid black;
+                    display: inline-block;
+                    margin: 5px;
+                    padding: 10px;
+                }
+                .metro-stations-info {
+                    width: 40%;
+                    border-radius: 5px;
+                    background-color: #f8f9fa;
+                    border: 1px solid #dee2e6;
+                    height: 300px;
+                    padding: 15px;
+                }
                 .favorite-icon {
                     position: absolute;
                     top: 10px;
@@ -275,12 +302,24 @@
             <div class="clickable-map">
                 <div id="map" style="width: 100%; height: 500px;"></div>
             </div>
-
-            <div id="metroStations" class="metro-stations-info" style="padding: 20px;">
-                <h4>Nearby Metro Stations</h4>
-                <div id="metroStationsList">Loading nearby metro stations...</div>
+        </div>
+        <div class ="info-container">
+            <div class="hpd-info-container">
+                <h4>Building Information</h4>
+                <div class="hpd-info">
+                    <p>Bedbug Report:</p>
+                </div>
+                <div class="hpd-info">
+                    <p>Building Violations:</p>
+                </div>
+                <div class="hpd-info">
+                    <p>Nearby 311 Calls:</p>
+                </div>
             </div>
-
+            <div id="metroStations" class="metro-stations-info">
+                <h4>Nearby Metro Stations</h4>
+            <div id="metroStationsList">Loading nearby metro stations...</div>
+        </div>
         </div>
     </div>
 
