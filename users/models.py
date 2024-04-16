@@ -244,3 +244,21 @@ class ServiceReport311(models.Model):
 
     def _str_(self):
         return f"{self.complaint_type} at {self.incident_address} ({self.borough})"
+
+class UsersHpdData(models.Model):
+    users_rental_listings_id = models.BigIntegerField(blank=True, null=True, unique=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
+    most_recent_violation_date = models.DateField(blank=True, null=True)
+    count_violations = models.BigIntegerField(blank=True, null=True)
+    num_complaints = models.BigIntegerField(blank=True, null=True)
+    num_noise_complaints = models.BigIntegerField(blank=True, null=True)
+    most_recent_complaint = models.DateTimeField(blank=True, null=True)
+    ttl_infested_apartments = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    last_bedbug_date = models.DateField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'users_hpd_data'
+
+    def _str_(self):
+        return self.address
