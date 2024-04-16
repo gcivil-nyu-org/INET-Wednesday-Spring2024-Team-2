@@ -107,7 +107,7 @@ class Rental_Listings(models.Model):
     )
     Submitted_date = models.DateField(blank=True, default="2024-01-03")
     Availability_Date = models.DateField(blank=True, null=True)
-    users_rental_listings_id = models.ForeignKey(
+    HPD = models.ForeignKey(
         UsersHpdData,
         on_delete=models.CASCADE,
         related_name="rental_listings",
