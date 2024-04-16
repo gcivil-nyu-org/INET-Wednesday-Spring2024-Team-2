@@ -97,6 +97,7 @@ def login_process(request, user_type, this_page, destination_url_name):
 
     return render(request, this_page, {"form": form})
 
+
 @no_cache
 def landlord_login(request):
     return login_process(
@@ -106,6 +107,7 @@ def landlord_login(request):
         destination_url_name="landlord_homepage",
     )
 
+
 @no_cache
 def user_login(request):
     return login_process(
@@ -114,6 +116,7 @@ def user_login(request):
         this_page="login/user_login.html",
         destination_url_name="user_homepage",  # URL pattern name for user's homepage
     )
+
 
 @no_cache
 def user_signup(request):
@@ -138,24 +141,29 @@ def user_signup(request):
 
     return render(request, "users/signup/signup.html", {"form": form})
 
+
 @no_cache
 def home(request):
     return render(request, "home.html")
+
 
 @no_cache
 def logout_view(request):
     logout(request)
     return redirect("/")
 
+
 @no_cache
 @user_type_required("user")
 def user_home(request):
     return render(request, "user_homepage.html")
 
+
 @no_cache
 @user_type_required("landlord")
 def landlord_home(request):
     return render(request, "landlord_homepage.html")
+
 
 @no_cache
 def landlord_signup(request):
@@ -217,6 +225,7 @@ def landlord_signup(request):
         form = LandlordSignupForm()
     return render(request, "signup/landlord_signup.html", {"form": form})
 
+
 @no_cache
 def apply_filters(listings, filter_params):
     # TODO: fix in database
@@ -270,6 +279,7 @@ def apply_filters(listings, filter_params):
             .order_by("-rank")
         )
     return listings
+
 
 @no_cache
 @user_type_required("user")
@@ -335,10 +345,12 @@ def rentals_page(request):
 
     return render(request, "users/searchRental/rentalspage.html", context)
 
+
 @no_cache
 @login_required
 def placeholder_view(request):
     return render(request, "users/searchRental/placeholder.html")
+
 
 @no_cache
 def listing_detail(request, listing_id):
@@ -348,6 +360,7 @@ def listing_detail(request, listing_id):
     # Pass the listing data to a template for rendering
     context = {"listing": listing}
     return render(request, "users/searchRental/listing_detail.html", context)
+
 
 @no_cache
 @csrf_exempt
@@ -393,6 +406,7 @@ def favorites_page(request):
         "favorite_listings_ids": favorite_listings_ids,
     }
     return render(request, "users/searchRental/favorites.html", context)
+
 
 @no_cache
 def map_view(request):

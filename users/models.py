@@ -32,6 +32,27 @@ class CustomUser(AbstractUser):
         super().save(*args, **kwargs)
 
 
+class UsersHpdData(models.Model):
+    id = models.BigIntegerField(unique=True, primary_key=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
+    most_recent_violation_date = models.DateField(blank=True, null=True)
+    count_violations = models.BigIntegerField(blank=True, null=True)
+    num_complaints = models.BigIntegerField(blank=True, null=True)
+    num_noise_complaints = models.BigIntegerField(blank=True, null=True)
+    most_recent_complaint = models.DateTimeField(blank=True, null=True)
+    ttl_infested_apartments = models.DecimalField(
+        max_digits=65535, decimal_places=65535, blank=True, null=True
+    )
+    last_bedbug_date = models.DateField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = "users_hpd_data"
+
+    def _str_(self):
+        return self.address
+
+
 class Rental_Listings(models.Model):
     address = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -86,6 +107,13 @@ class Rental_Listings(models.Model):
     )
     Submitted_date = models.DateField(blank=True, default="2024-01-03")
     Availability_Date = models.DateField(blank=True, null=True)
+    users_rental_listings_id = models.ForeignKey(
+        UsersHpdData,
+        on_delete=models.CASCADE,
+        related_name="rental_listings",
+        null=True,
+        blank=True,
+    )
 
     # landlord = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='rental_listings', null=True,
     #                              blank=True)
@@ -172,44 +200,44 @@ class ExampleTable1(models.Model):
 class BuildingViolation(models.Model):
     violation_id = models.IntegerField(unique=True)
     building_id = models.IntegerField(default=0)
-    registration_id = models.CharField(max_length=100, default='')
-    boro_id = models.CharField(max_length=100, default='')
-    borough = models.CharField(max_length=100, default='')
-    house_number = models.CharField(max_length=50, default='')
-    low_house_number = models.CharField(max_length=50, default='')
-    high_house_number = models.CharField(max_length=50, default='')
-    street_name = models.CharField(max_length=255, default='')
-    street_code = models.CharField(max_length=100, default='')
-    postcode = models.CharField(max_length=100, default='')
-    apartment = models.CharField(max_length=100, default='')
-    story = models.CharField(max_length=100, default='')
-    block = models.CharField(max_length=100, default='')
+    registration_id = models.CharField(max_length=100, default="")
+    boro_id = models.CharField(max_length=100, default="")
+    borough = models.CharField(max_length=100, default="")
+    house_number = models.CharField(max_length=50, default="")
+    low_house_number = models.CharField(max_length=50, default="")
+    high_house_number = models.CharField(max_length=50, default="")
+    street_name = models.CharField(max_length=255, default="")
+    street_code = models.CharField(max_length=100, default="")
+    postcode = models.CharField(max_length=100, default="")
+    apartment = models.CharField(max_length=100, default="")
+    story = models.CharField(max_length=100, default="")
+    block = models.CharField(max_length=100, default="")
     # lot = models.CharField(max_length=100, default='')
     # Class = models.CharField(max_length=100, default='')
-    inspection_date = models.DateField(default='2000-01-01')
-    approved_date = models.DateField(default='2000-01-01')
-    originalcertifybydate = models.DateField(default='2000-01-01')
-    originalcorrectbydate = models.DateField(default='2000-01-01')
+    inspection_date = models.DateField(default="2000-01-01")
+    approved_date = models.DateField(default="2000-01-01")
+    originalcertifybydate = models.DateField(default="2000-01-01")
+    originalcorrectbydate = models.DateField(default="2000-01-01")
     # newcertifybydate = models.DateField(default='2000-01-01')
     # newcorrectbydate = models.DateField(default='2000-01-01')
     # certifieddate = models.DateField(default='2000-01-01')
-    ordernumber = models.CharField(max_length=100, default='')
-    nov_id = models.CharField(max_length=100, default='')
+    ordernumber = models.CharField(max_length=100, default="")
+    nov_id = models.CharField(max_length=100, default="")
     # nov_description = models.TextField(default='')
-    nov_issued_date = models.DateField(default='2000-01-01')
-    current_status_id = models.CharField(max_length=100, default='')
-    current_status = models.CharField(max_length=100, default='')
+    nov_issued_date = models.DateField(default="2000-01-01")
+    current_status_id = models.CharField(max_length=100, default="")
+    current_status = models.CharField(max_length=100, default="")
     # current_status_date = models.DateField(default='2000-01-01')
     # nov_type = models.CharField(max_length=100, default='')
     # violation_status = models.CharField(max_length=50, default='')
     # rent_impairing = models.CharField(max_length=1, default='')
     latitude = models.FloatField(default=0.0)
     longitude = models.FloatField(default=0.0)
-    community_board = models.CharField(max_length=100, default='')
-    council_district = models.CharField(max_length=100, default='')
-    census_tract = models.CharField(max_length=100, default='')
-    bin = models.CharField(max_length=100, default='')
-    bbl = models.CharField(max_length=20, default='')
+    community_board = models.CharField(max_length=100, default="")
+    council_district = models.CharField(max_length=100, default="")
+    census_tract = models.CharField(max_length=100, default="")
+    bin = models.CharField(max_length=100, default="")
+    bbl = models.CharField(max_length=20, default="")
     # nta = models.CharField(max_length=100, default='')
 
     def str(self):
@@ -244,21 +272,3 @@ class ServiceReport311(models.Model):
 
     def _str_(self):
         return f"{self.complaint_type} at {self.incident_address} ({self.borough})"
-
-class UsersHpdData(models.Model):
-    users_rental_listings_id = models.BigIntegerField(blank=True, null=True, unique=True)
-    address = models.CharField(max_length=255, blank=True, null=True)
-    most_recent_violation_date = models.DateField(blank=True, null=True)
-    count_violations = models.BigIntegerField(blank=True, null=True)
-    num_complaints = models.BigIntegerField(blank=True, null=True)
-    num_noise_complaints = models.BigIntegerField(blank=True, null=True)
-    most_recent_complaint = models.DateTimeField(blank=True, null=True)
-    ttl_infested_apartments = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
-    last_bedbug_date = models.DateField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'users_hpd_data'
-
-    def _str_(self):
-        return self.address
