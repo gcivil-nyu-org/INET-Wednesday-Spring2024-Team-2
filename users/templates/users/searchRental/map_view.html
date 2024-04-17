@@ -38,7 +38,7 @@
                         color: '#000000', 
                         fontWeight: 'bold' 
                     },
-                    url: '{{ this_domain }}' + "/listings/" + listing.pk,
+                    url: '{{ this_domain }}' + "/listings/" + listing.pk + "/",
                     map: map,
                     optimized: true,
                     icon: {
@@ -52,7 +52,7 @@
                 markers.push(marker);
 
                 google.maps.event.addListener(marker, 'click', function() {window.location.href = marker.url;});
-              
+
                 });
                     // Use MarkerClusterer library to cluster markers
                 var markerCluster = new MarkerClusterer(map, markers, {

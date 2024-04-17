@@ -36,6 +36,7 @@ from django.core.serializers import serialize
 from django.contrib.sites.models import Site
 from .forms import CustomUserEditForm
 from .decorators import no_cache
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 
 logger = logging.getLogger(__name__)
@@ -121,6 +122,7 @@ def user_login(request):
 
 
 @no_cache
+@ensure_csrf_cookie
 def user_signup(request):
     if request.method == "POST":
         form = UserSignUpForm(request.POST)
@@ -170,6 +172,7 @@ def landlord_home(request):
         .order_by("-Submitted_date")
     )
     return render(request, "landlord_homepage.html", {"listings": listings})
+
 
 
 @no_cache
@@ -415,6 +418,7 @@ def listing_detail(request, listing_id):
     return render(request, "users/searchRental/listing_detail.html", context)
 
 
+@no_cache
 @csrf_exempt
 @login_required
 @user_type_required("user")
