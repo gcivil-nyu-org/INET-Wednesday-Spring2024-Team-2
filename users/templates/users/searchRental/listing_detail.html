@@ -74,7 +74,6 @@
         
                 .listing-details {
                     width: 100%;
-                    /* Set the desired width for the listing details container */
                     height: 500px;
                     padding: 10px;
                     border: 1px solid #ccc;
@@ -112,7 +111,7 @@
                     flex-direction: column;
                     padding-right: 10px;
                     margin-right: 10px;
-                    height: 500px;
+                    height: 400px;
                 }
         
                 .description-container p {
@@ -130,8 +129,44 @@
                     border-radius: 5px;
                     background-color: #f8f9fa;
                     border: 1px solid #dee2e6;
+                    margin-bottom: 10px;
                 }
-        
+                .hpd-info-container {
+                    width: 60%;
+                    display: block; 
+                    clear: both; 
+                    background-color: #f8f9fa;
+                    border: 1px solid #dee2e6;
+                    padding: 15px;
+                    margin-right: 10px;
+                    height: 300px;
+                }
+                .hpd-info {
+                    width:31%;
+                    height: 150px;
+                    overflow-y: auto; 
+                    background-color: #eeeaf9;
+                    border: 1px solid black;
+                    display: inline-block;
+                    margin: 5px;
+                    padding: 10px;
+                }
+                .additional-text {
+                    width: 97%;
+                    padding-left: 10px;
+                    padding-right: 10px;
+                    padding-bottom: 10px;
+                    box-sizing: border-box;
+                    margin: 5px;
+                }
+                .metro-stations-info {
+                    width: 40%;
+                    border-radius: 5px;
+                    background-color: #f8f9fa;
+                    border: 1px solid #dee2e6;
+                    height: 300px;
+                    padding: 15px;
+                }
                 .favorite-icon {
                     position: absolute;
                     top: 10px;
@@ -273,14 +308,61 @@
                 <p>{{ listing.Landlord.email }}</p>
             </div>
             <div class="clickable-map">
-                <div id="map" style="width: 100%; height: 500px;"></div>
+                <div id="map" style="width: 100%; height: 400px;"></div>
             </div>
-
-            <div id="metroStations" class="metro-stations-info" style="padding: 20px;">
+        </div>
+        <div class ="info-container">
+            <div class="hpd-info-container">
+                <h4>Building Information</h4>
+                <div class="hpd-info-wrapper">
+                    <div class="hpd-info">
+                        <p><strong>Bedbug Report:</strong></p>
+                        {% if not listing.hpd_data.last_bedbug_date %}
+                            No bedbug history
+                        {% else %}
+                            Most recent report date: {{ listing.hpd_data.last_bedbug_date }}
+                        {% endif %}
+                        <br>
+                        {% if not listing.hpd_data.ttl_infested_apartments %}
+                        {% else %}
+                            Total infested units: {{ listing.hpd_data.ttl_infested_apartments }}
+                        {% endif %}
+                    </div>
+                    <div class="hpd-info">
+                        <p><strong>Building Violations:</strong></p>
+                        {% if not listing.hpd_data.most_recent_violation_date %}
+                            No violations
+                        {% else %}
+                            Most recent violation date: {{ listing.hpd_data.most_recent_violation_date }}
+                        {% endif %}
+                        <br>
+                        {% if not listing.hpd_data.count_violations %}
+                        {% else %}
+                            Total building violations: {{ listing.hpd_data.count_violations }}
+                        {% endif %}
+                    </div>
+                    <div class="hpd-info">
+                        <p><strong>Nearby 311 Calls:</strong></p>
+                        {% if not listing.hpd_data.num_complaints %}
+                            No nearby 311 complaints
+                        {% else %}
+                            Total complaints: {{ listing.hpd_data.num_complaints }}
+                        {% endif %}
+                        <br>
+                        {% if not listing.hpd_data.num_noise_complaints %}
+                        {% else %}
+                            Noise complaints: {{ listing.hpd_data.num_noise_complaints }}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="additional-text" placeholder="Additional Text">
+                    *The average building has 0.3 infested units, 5.3 recorded violations, and 22 nearby 311 complaints.
+                </div>
+            </div>
+            <div id="metroStations" class="metro-stations-info">
                 <h4>Nearby Metro Stations</h4>
-                <div id="metroStationsList">Loading nearby metro stations...</div>
-            </div>
-
+            <div id="metroStationsList">Loading nearby metro stations...</div>
+        </div>
         </div>
     </div>
 
