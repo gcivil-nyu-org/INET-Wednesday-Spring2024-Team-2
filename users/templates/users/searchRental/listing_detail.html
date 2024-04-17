@@ -323,7 +323,9 @@
                             Most recent report date: {{ listing.hpd_data.last_bedbug_date }}
                         {% endif %}
                         <br>
-                        {% if not listing.hpd_data.ttl_infested_apartments %}
+                        {% if listing.hpd_data.ttl_infested_apartments is none %}
+                        {% elif listing.hpd_data.ttl_infested_apartments == 0 %}
+                            Total infested units: 0
                         {% else %}
                             Total infested units: {{ listing.hpd_data.ttl_infested_apartments }}
                         {% endif %}
