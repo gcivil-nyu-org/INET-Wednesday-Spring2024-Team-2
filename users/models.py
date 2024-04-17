@@ -105,7 +105,7 @@ class UsersHpdData(models.Model):
     num_noise_complaints = models.BigIntegerField(blank=True, null=True)
     most_recent_complaint = models.DateTimeField(blank=True, null=True)
     ttl_infested_apartments = models.DecimalField(
-        max_digits=38, decimal_places=0, blank=True, null=True
+        max_digits=36, decimal_places=0, blank=True, null=True
     )
     last_bedbug_date = models.DateField(blank=True, null=True)
 
