@@ -37,6 +37,7 @@ from django.core.serializers import serialize
 from django.contrib.sites.models import Site
 from .forms import CustomUserEditForm
 from .decorators import no_cache
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 
 logger = logging.getLogger(__name__)
@@ -116,6 +117,7 @@ def user_login(request):
     )
 
 @no_cache
+@ensure_csrf_cookie
 def user_signup(request):
     if request.method == "POST":
         form = UserSignUpForm(request.POST)
