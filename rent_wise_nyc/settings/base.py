@@ -86,8 +86,8 @@ DATABASES = {
         "HOST": os.environ["TEAM_2_DB_HOST"],
         "PORT": os.environ["TEAM_2_DB_PORT"],
     },
-    'TEST': {
-        'NAME': 'rentwisetestdatabase',
+    "TEST": {
+        "NAME": "rentwisetestdatabase",
     },
 }
 
