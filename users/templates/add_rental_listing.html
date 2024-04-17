@@ -3,35 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rentals Page - RentWiseNyc</title>
+    <title>Rental Listing Form</title>
     <!-- Bootstrap CSS from Bootswatch Pulse -->
     {% load crispy_forms_tags %}
-
     <link href="https://bootswatch.com/5/pulse/bootstrap.min.css" rel="stylesheet">
     <style>
+        /* Additional custom styling */
         .custom-form {
-            max-width: 600px;
-            margin: auto;
-            padding: 20px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px; /* Adjust the max-width as needed */
+            margin: auto; /* Center the form */
+            padding: 20px; /* Add padding for spacing */
+            background: #fff; /* White background */
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Box shadow */
+        }
+        .custom-form .form-group {
+            margin-bottom: 10px; /* Reduce margin between form groups */
         }
         .form-button {
             width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            display: block;
-            text-align: center;
+            padding: 10px; /* Adjust padding to match the button */
+            margin-top: 10px; /* Space between button and fields */
+            display: block; /* Ensure it's displayed as block */
+            text-align: center; /* Center the button text */
         }
     </style>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
   <div class="container-fluid">
-    <a class="navbar-brand" href="{% url 'landlord_homepage' %}">
-        RentWiseNYC <!-- Here's the simple text replacement -->
-    </a>
+    <a class="navbar-brand" href="{% url 'landlord_homepage' %}">RentWiseNYC</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -58,15 +59,15 @@
   </div>
 </nav>
 
-<div class="container mt-5">
+<div class="container mt-3">
     <h2 class="text-center">Add Rental Listing</h2>
-    <form method="post" enctype="multipart/form-data">s
-        {% csrf_token %}
-        {{ form|crispy }}
-        <div class="form-group">
+    <div class="custom-form">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form|crispy }}
             <button type="submit" class="btn btn-primary form-button">Submit</button>
-        </div>
-    </form>
+        </form>
+    </div>
 </div>
 
 </body>

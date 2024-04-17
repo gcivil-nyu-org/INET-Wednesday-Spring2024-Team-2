@@ -128,7 +128,8 @@ class RentalListingForm(forms.ModelForm):
     unit_type = forms.ChoiceField(choices=UNIT_TYPE_CHOICES)
     neighborhood = forms.ChoiceField(choices=NEIGHBORHOOD_CHOICES)
     borough = forms.ChoiceField(choices=BOROUGH_CHOICES)
-    photo = forms.ImageField(required=False)
+    photo = forms.ImageField(required=False, widget=forms.ClearableFileInput(attrs={'multiple': True}))
+
 
     def __init__(self, *args, **kwargs):
         super(RentalListingForm, self).__init__(*args, **kwargs)

@@ -357,7 +357,7 @@ def rentals_page(request):
 def add_rental_listing(request):
     if request.method == "POST":
         form = RentalListingForm(request.POST, request.FILES)
-        images = request.FILES.getlist("photos")
+        images = request.FILES.getlist("photo")
         if form.is_valid():
             rental_listing = form.save(commit=False)
             rental_listing.Landlord = request.user
