@@ -32,27 +32,6 @@ class CustomUser(AbstractUser):
         super().save(*args, **kwargs)
 
 
-class UsersHpdData(models.Model):
-    id = models.BigIntegerField(unique=True, primary_key=True)
-    address = models.CharField(max_length=255, blank=True, null=True)
-    most_recent_violation_date = models.DateField(blank=True, null=True)
-    count_violations = models.BigIntegerField(blank=True, null=True)
-    num_complaints = models.BigIntegerField(blank=True, null=True)
-    num_noise_complaints = models.BigIntegerField(blank=True, null=True)
-    most_recent_complaint = models.DateTimeField(blank=True, null=True)
-    ttl_infested_apartments = models.DecimalField(
-        max_digits=65535, decimal_places=65535, blank=True, null=True
-    )
-    last_bedbug_date = models.DateField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = "users_hpd_data"
-
-    def _str_(self):
-        return self.address
-
-
 class Rental_Listings(models.Model):
     address = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -107,27 +86,35 @@ class Rental_Listings(models.Model):
     )
     Submitted_date = models.DateField(blank=True, default="2024-01-03")
     Availability_Date = models.DateField(blank=True, null=True)
-    HPD = models.ForeignKey(
-        UsersHpdData,
-        on_delete=models.CASCADE,
-        related_name="rental_listings",
-        null=True,
-        blank=True,
-    )
 
-    # landlord = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='rental_listings', null=True,
-    #                              blank=True)
-
-    def _str_(self):
+    def __str__(self):
         return self.address
 
 
-# class RentalImage(models.Model):
-#     rental_listing = models.ForeignKey(Rental_Listings, on_delete=models.CASCADE, related_name='images')
-#     image_url = models.URLField(max_length=2048)
+class UsersHpdData(models.Model):
+    hpd = models.OneToOneField(
+        Rental_Listings,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        related_name="hpd_data",
+    )
+    address = models.CharField(max_length=255, blank=True, null=True)
+    most_recent_violation_date = models.DateField(blank=True, null=True)
+    count_violations = models.BigIntegerField(blank=True, null=True)
+    num_complaints = models.BigIntegerField(blank=True, null=True)
+    num_noise_complaints = models.BigIntegerField(blank=True, null=True)
+    most_recent_complaint = models.DateTimeField(blank=True, null=True)
+    ttl_infested_apartments = models.DecimalField(
+        max_digits=38, decimal_places=0, blank=True, null=True
+    )
+    last_bedbug_date = models.DateField(blank=True, null=True)
 
-#     def __str__(self):
-#         return self.image_url
+    class Meta:
+        managed = False
+        db_table = "users_hpd_data"
+
+    def __str__(self):
+        return self.address
 
 
 class ExampleTable(models.Model):

@@ -307,13 +307,19 @@
             <div class="hpd-info-container">
                 <h4>Building Information</h4>
                 <div class="hpd-info">
-                    <p>Bedbug Report:</p>
+                    <p><strong>Bedbug Report:</strong></p>
+                    {% if not listing.HPD.ttl_infested_apartments %} No bedbug history {% else %} {{ listing.HPD.ttl_infested_apartments }}{% endif %}
                 </div>
                 <div class="hpd-info">
-                    <p>Building Violations:</p>
+                    <p><strong>Building Violations:</strong></p>
+                    {% if not listing.HPD.most_recent_violation_date %} No violations {% else %} {{ listing.HPD.most_recent_violation_date }}{% endif %}
+
                 </div>
                 <div class="hpd-info">
-                    <p>Nearby 311 Calls:</p>
+                    <p><strong>Nearby 311 Calls:</strong></p>
+                    {% if not listing.HPD.num_complaints %} No nearby 311 complaints {% else %} {{ listing.HPD.num_complaints }}{% endif %}
+                    {{ listing.hpd_data.count_violations }}
+                    <p>Count Violations: {{ listing.HPD.address }}</p>
                 </div>
             </div>
             <div id="metroStations" class="metro-stations-info">
