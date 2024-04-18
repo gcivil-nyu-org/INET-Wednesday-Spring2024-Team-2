@@ -1,8 +1,11 @@
 import re
+from datetime import date, timedelta
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Submit, Row, Column, Field
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
-from .models import CustomUser
+from .models import CustomUser, Rental_Listings
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserChangeForm
@@ -73,6 +76,169 @@ class LandlordSignupForm(UserCreationForm):
             self.save_m2m()
 
         return user
+
+
+class RentalListingForm(forms.ModelForm):
+    ROOMS_CHOICES = [(i, str(i)) for i in range(1, 11)]
+    BATHS_CHOICES = [(i * 0.5, str(i * 0.5)) for i in range(2, 21)]
+
+    UNIT_TYPE_CHOICES = [("Apartment", "Apartment"), ("House", "House")]
+    NEIGHBORHOOD_CHOICES = [
+        ("Manhattan", "Manhattan"),
+        ("Brooklyn", "Brooklyn"),
+        ("Upper East Side", "Upper East Side"),
+        ("Upper West Side", "Upper West Side"),
+        ("Midtown", "Midtown"),
+        ("Harlem", "Harlem"),
+        ("Chelsea", "Chelsea"),
+        ("Greenwich Village", "Greenwich Village"),
+        ("Soho", "Soho"),
+        ("East Village", "East Village"),
+        ("Lower East Side", "Lower East Side"),
+        ("Williamsburg", "Williamsburg"),
+        ("Bushwick", "Bushwick"),
+        ("Park Slope", "Park Slope"),
+        ("Brooklyn Heights", "Brooklyn Heights"),
+        ("Red Hook", "Red Hook"),
+        ("Astoria", "Astoria"),
+        ("Long Island City", "Long Island City"),
+        ("Flushing", "Flushing"),
+        ("Jamaica", "Jamaica"),
+        ("Forest Hills", "Forest Hills"),
+        ("Riverdale", "Riverdale"),
+        ("Fordham", "Fordham"),
+        ("Concourse", "Concourse"),
+        ("Throgs Neck", "Throgs Neck"),
+        ("St. George", "St. George"),
+        ("Tottenville", "Tottenville"),
+        ("Stapleton", "Stapleton"),
+    ]
+
+    BOROUGH_CHOICES = [
+        ("Manhattan", "Manhattan"),
+        ("Brooklyn", "Brooklyn"),
+        ("Queens", "Queens"),
+        ("Bronx", "Bronx"),
+        ("Staten Island", "Staten Island"),
+    ]
+
+    rooms = forms.ChoiceField(choices=ROOMS_CHOICES)
+    beds = forms.ChoiceField(choices=ROOMS_CHOICES)
+    baths = forms.ChoiceField(choices=BATHS_CHOICES)
+    unit_type = forms.ChoiceField(choices=UNIT_TYPE_CHOICES)
+    neighborhood = forms.ChoiceField(choices=NEIGHBORHOOD_CHOICES)
+    borough = forms.ChoiceField(choices=BOROUGH_CHOICES)
+    photo = forms.ImageField(required=False, widget=forms.ClearableFileInput(attrs={'multiple': True}))
+
+
+    def __init__(self, *args, **kwargs):
+        super(RentalListingForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.form_enctype = "multipart/form-data"
+        self.helper.layout = Layout(
+            Row(
+                Column("address", css_class="form-group col-md-6 mb-0"),
+                Column("zipcode", css_class="form-group col-md-6 mb-0"),
+                css_class="form-row",
+            ),
+            "price",
+            "sq_ft",
+            Row(
+                Column("rooms", css_class="form-group col-md-4 mb-0"),
+                Column("beds", css_class="form-group col-md-4 mb-0"),
+                Column("baths", css_class="form-group col-md-4 mb-0"),
+                css_class="form-row",
+            ),
+            "unit_type",
+            "neighborhood",
+            "borough",
+            "broker_fee",
+            "central_air_conditioning",
+            "dishwasher",
+            "doorman",
+            "elevator",
+            "furnished",
+            "parking_available",
+            "washer_dryer_in_unit",
+            "Submitted_date",
+            "Availability_Date",
+            Field("photo", multiple=True),
+            Submit("submit", "Submit", css_class="btn btn-primary"),
+        )
+
+    class Meta:
+        model = Rental_Listings
+        fields = [
+            "address",
+            "zipcode",
+            "price",
+            "sq_ft",
+            "rooms",
+            "beds",
+            "baths",
+            "unit_type",
+            "neighborhood",
+            "borough",
+            "broker_fee",
+            "central_air_conditioning",
+            "dishwasher",
+            "doorman",
+            "elevator",
+            "furnished",
+            "parking_available",
+            "washer_dryer_in_unit",
+            "Submitted_date",
+            "Availability_Date",
+            "photo",
+        ]
+        widgets = {
+            "Submitted_date": forms.DateInput(attrs={"type": "date"}),
+            "Availability_Date": forms.DateInput(attrs={"type": "date"}),
+        }
+
+    def clean_price(self):
+        price = self.cleaned_data["price"]
+        if price < 0:
+            raise forms.ValidationError("Price cannot be negative.")
+        return price
+
+    def clean_Availability_Date(self):
+        availability_date = self.cleaned_data.get("Availability_Date")
+        if availability_date and availability_date < date.today():
+            raise ValidationError("The availability date cannot be in the past.")
+        if availability_date and availability_date > date.today() + timedelta(days=365):
+            raise ValidationError("The availability date is too far in the future.")
+        return availability_date
+
+    def clean_rooms_beds(self):
+        rooms = self.cleaned_data.get("rooms")
+        beds = self.cleaned_data.get("beds")
+
+        if rooms is not None and beds is not None and rooms < beds:
+            raise ValidationError(
+                "Total number of rooms cannot be less than the number of bedrooms."
+            )
+
+    def clean_zipcode(self):
+        zipcode = self.cleaned_data["zipcode"]
+        if not zipcode.isdigit() or len(zipcode) != 5:
+            raise forms.ValidationError("Please enter a valid 5-digit zip code.")
+        return zipcode
+
+    def clean_sq_ft(self):
+        sq_ft = self.cleaned_data["sq_ft"]
+        if sq_ft < 100:
+            raise forms.ValidationError(
+                "Please enter a valid square footage (100 sq ft minimum)."
+            )
+        return sq_ft
+
+    def clean_address(self):
+        address = self.cleaned_data["address"]
+        if len(address) > 255:
+            raise forms.ValidationError("Address is too long.")
+        return address
 
 
 class CustomLoginForm(AuthenticationForm):

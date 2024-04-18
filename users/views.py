@@ -1,29 +1,27 @@
 import os
+import sys
 import uuid
 import ast
 
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import authenticate, login, logout
-from django.contrib import messages
-from django.db import IntegrityError
-from django.core.exceptions import ValidationError
-import logging.config
-import sys
-from django.urls import reverse
-from users.decorators import user_type_required
-from users.forms import UserSignUpForm
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import Group
-from django.db.models import Q, Min
-from .forms import LandlordSignupForm
 import boto3
 from django.conf import settings
-from .models import CustomUser, RentalImages
-from .forms import CustomLoginForm
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.sites.models import Site
 from django.core import serializers
-from django.forms.models import model_to_dict
-from django.core.paginator import Paginator, Page, EmptyPage, PageNotAnInteger
+from django.core.paginator import Paginator
+from django.core.serializers import serialize
+from django.db.models import Min, Q
+from django.http import JsonResponse
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 
+from users.decorators import user_type_required
+from users.forms import UserSignUpForm, RentalListingForm
+from .forms import CustomLoginForm
+from .forms import LandlordSignupForm
 from .models import Favorite, Rental_Listings
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
@@ -31,6 +29,7 @@ from django.http import JsonResponse, HttpResponseBadRequest
 import logging
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
+from .models import RentalImages
 from urllib.parse import urlencode
 from django.http import JsonResponse
 from django.core.serializers import serialize
@@ -84,15 +83,17 @@ def login_process(request, user_type, this_page, destination_url_name):
         if getattr(user, "user_type", None) != user_type:
             messages.error(
                 request,
-                f"Please provide correct credentials to login as {user_type.capitalize()}!",  # noqa:<E501>
+                f"Please provide correct credentials to login as "
+                f"{user_type.capitalize()}!",
+                # noqa:<E501>
             )
             return render(request, this_page, {"form": form})
-        if user_type == "landlord" and user.verified is False:
-            messages.error(
-                request,
-                "Your account has not been verified by the admin yet. Please wait!",
-            )
-            return render(request, this_page, {"form": form})
+        # if user_type == "landlord" and user.verified is False:
+        #     messages.error(
+        #         request,
+        #         "Your account has not been verified by the admin yet. Please wait!",
+        #     )
+        #     return render(request, this_page, {"form": form})
         login(request, user)
         return redirect(reverse(destination_url_name))
 
@@ -115,7 +116,8 @@ def user_login(request):
         request,
         user_type="user",
         this_page="login/user_login.html",
-        destination_url_name="user_homepage",  # URL pattern name for user's homepage
+        destination_url_name="user_homepage",
+        # URL pattern name for user's homepage
     )
 
 
@@ -164,7 +166,13 @@ def user_home(request):
 @no_cache
 @user_type_required("landlord")
 def landlord_home(request):
-    return render(request, "landlord_homepage.html")
+    listings = (
+        Rental_Listings.objects.filter(Landlord=request.user)
+        .annotate(first_image=Min("images__image_url"))
+        .order_by("-Submitted_date")
+    )
+    return render(request, "landlord_homepage.html", {"listings": listings})
+
 
 
 @no_cache
@@ -348,10 +356,56 @@ def rentals_page(request):
     return render(request, "users/searchRental/rentalspage.html", context)
 
 
+@user_type_required("landlord")
+def add_rental_listing(request):
+    if request.method == "POST":
+        form = RentalListingForm(request.POST, request.FILES)
+        images = request.FILES.getlist("photo")
+        if form.is_valid():
+            rental_listing = form.save(commit=False)
+            rental_listing.Landlord = request.user
+            rental_listing.save()
+            AWS_STORAGE_BUCKET_NAME = "landlord-verification-files"
+            for image in images:
+                file_name, file_extension = os.path.splitext(image.name)
+                unique_file_name = f"pdfs/{uuid.uuid4()}{file_extension}"
+
+                try:
+                    s3_client = boto3.client(
+                        "s3",
+                        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+                    )
+
+                    s3_client.upload_fileobj(
+                        image,
+                        AWS_STORAGE_BUCKET_NAME,
+                        unique_file_name,
+                    )
+
+                    image_url = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{unique_file_name}"
+                    RentalImages.objects.create(
+                        rental_listing=rental_listing, image_url=image_url
+                    )
+
+                except Exception as e:
+                    print(f"Error uploading file to S3: {e}")
+
+            return redirect("landlord_homepage")
+    else:
+        form = RentalListingForm()
+    return render(request, "add_rental_listing.html", {"form": form})
+
+
 @no_cache
 @login_required
 def placeholder_view(request):
     return render(request, "users/searchRental/placeholder.html")
+
+
+@user_type_required("landlord")
+def landlord_placeholder_view(request):
+    return render(request, "users/searchRental/landlord_placeholder.html")
 
 
 @no_cache
