@@ -12,7 +12,18 @@ script:
 - black .
 - black --check .
 - flake8 --ignore=E303,E501,W503,F401,F811,F841 --max-line-length=150
-- coverage run --source=users manage.py test
+- >
+  expect -c '
+    set timeout -1
+    spawn coverage run --source=users manage.py test
+    expect {
+      "Type 'yes' if you would like to try deleting the test database*" {
+        send "yes\r"
+        exp_continue
+      }
+      eof
+    }
+  '
 after_success:
 - coveralls
 deploy:
