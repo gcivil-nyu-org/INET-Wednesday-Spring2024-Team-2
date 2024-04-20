@@ -134,7 +134,8 @@
                 <div class="favorite-icon" data-listing-id="${listing.pk}" onclick="toggleFavorite(event, ${listing.pk})">♥</div>
               </div>
               <div class="listing-details">
-                <h3>${listing.fields.address}</h3>
+               <a href="/listings/${listing.pk}"><h3>${listing.fields
+               .address}</h3></a>
                 <p><strong>Bedrooms:</strong> ${listing.fields.beds}</p>
                 <p><strong>Bath:</strong> ${listing.fields.baths}</p>
                 <p><strong>Price:</strong> $${listing.fields.price}/month</p>
