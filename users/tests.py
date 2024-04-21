@@ -896,5 +896,38 @@ class TestApplyFilters(TestCase):
     def test_no_filters(self):
         filter_params = {}
         filtered_listings = apply_filters(Rental_Listings.objects.all(), filter_params)
-        self.assertEqual(len(filtered_listings), 3)  # Should return all listings
+        self.assertEqual(len(filtered_listings), 3)
+
+    def test_filter_no_fee(self):
+        filter_params = {'no_fee': True}
+        filtered_listings = apply_filters(Rental_Listings.objects.all(), filter_params)
+        self.assertIn(self.listing1, filtered_listings)  # Assuming listing1 has no broker fee
+        self.assertNotIn(self.listing2, filtered_listings)  # Assuming listing2 has a broker fee
+
+    def test_filter_laundry(self):
+        filter_params = {'laundry': True}
+        filtered_listings = apply_filters(Rental_Listings.objects.all(), filter_params)
+        self.assertNotIn(self.listing1, filtered_listings)  # Assuming listing1 does not have laundry
+        self.assertIn(self.listing2, filtered_listings)  # Assuming listing2 has laundry
+
+    def test_filter_building_type(self):
+        filter_params = {'building_type': 'Apartment'}
+        filtered_listings = apply_filters(Rental_Listings.objects.all(), filter_params)
+        self.assertIn(self.listing1, filtered_listings)
+        self.assertNotIn(self.listing2, filtered_listings)
+
+    def test_filter_parking(self):
+        filter_params = {'parking': True}
+        filtered_listings = apply_filters(Rental_Listings.objects.all(), filter_params)
+
+    def test_filter_search_query(self):
+        filter_params = {'search_query': 'Main Street'}
+        filtered_listings = apply_filters(Rental_Listings.objects.all(), filter_params)
+
+    def test_filter_bathrooms(self):
+        filter_params = {'bathrooms': 'Any'}
+        filtered_listings = apply_filters(Rental_Listings.objects.all(), filter_params)
+        self.assertEqual(len(filtered_listings), Rental_Listings.objects.count())
+        filter_params = {'bathrooms': '1'}
+        filtered_listings = apply_filters(Rental_Listings.objects.all(), filter_params)
 
