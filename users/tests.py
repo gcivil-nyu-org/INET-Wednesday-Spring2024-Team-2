@@ -1,17 +1,18 @@
 from django.test import TestCase, SimpleTestCase, Client, RequestFactory
 from django.urls import reverse
 
-from .forms import User, UserSignUpForm, LandlordSignupForm
+from .forms import User, UserSignUpForm, LandlordSignupForm, RentalListingForm
 from .models import CustomUser, Rental_Listings, Favorite
 from django.contrib.messages import get_messages
-from datetime import date
+from datetime import date, timedelta
 from django.core.files.uploadedfile import SimpleUploadedFile
 import json
 import os
 import sys
 import unittest
 from unittest.mock import patch, MagicMock
-from .views import landlord_profile_update, map_view, profile_view_edit
+from .views import landlord_profile_update, map_view, profile_view_edit, \
+    apply_filters
 from .forms import User, UserSignUpForm
 from .models import CustomUser, Rental_Listings
 from .views import map_view
@@ -785,3 +786,115 @@ class LandlordProfileUpdateTestCase(TestCase):
         response = self.client.post(reverse("landlord_profile_update"), data)
         self.assertEqual(response.status_code, 200)  # Page reloads with form errors
         self.assertFormError(response, "form", "full_name", "This field is required.")
+
+class RentalListingsFormTests(TestCase):
+    def setUp(self):
+        self.user = CustomUser.objects.create_user(
+            username="testuser", email="test@nyu.edu", password="testpass123"
+        )
+
+        self.common_data = {
+            'address': "123 Main St",
+            'zipcode': "10001",
+            'price': 1500,
+            'sq_ft': 500,
+            'rooms': 3,
+            'beds': 2,
+            'baths': 1,
+            'unit_type': "Apartment",
+            'neighborhood': "Midtown",
+            'borough': "Manhattan",
+            'Submitted_date': date.today(),
+        }
+
+
+
+    def test_form_with_negative_price(self):
+        data = self.common_data.copy()
+        data['price'] = -100
+        form = RentalListingForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('price', form.errors)
+        self.assertEqual(form.errors['price'], ['Price cannot be negative.'])
+
+    def test_form_with_invalid_zipcode(self):
+        data = self.common_data.copy()
+        data['zipcode'] = '123'
+        form = RentalListingForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('zipcode', form.errors)
+        self.assertEqual(form.errors['zipcode'], ['Please enter a valid 5-digit zip code.'])
+
+    def test_form_with_invalid_availability_date(self):
+        data = self.common_data.copy()
+        data['Availability_Date'] = date.today() - timedelta(days=1)
+        form = RentalListingForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('Availability_Date', form.errors)
+        self.assertEqual(form.errors['Availability_Date'], ['The availability date cannot be in the past.'])
+
+    def test_form_with_rooms_less_than_beds(self):
+        data = self.common_data.copy()
+        data['rooms'] = 1
+        data['beds'] = 2
+        form = RentalListingForm(data=data)
+        self.assertFalse(form.is_valid())
+
+    def test_form_with_large_address(self):
+        data = self.common_data.copy()
+        data['address'] = 'x' * 256
+        form = RentalListingForm(data=data)
+        self.assertFalse(form.is_valid())
+
+
+class TestApplyFilters(TestCase):
+    def setUp(self):
+        # Creating test listings
+        self.listing1 = Rental_Listings.objects.create(
+            neighborhood='Manhattan', borough='Manhattan', price=2000,
+            beds=2, baths=1, elevator=True, washer_dryer_in_unit=False,
+            broker_fee=0, unit_type='Apartment', address='123 Main Street'
+        )
+        self.listing2 = Rental_Listings.objects.create(
+            neighborhood='Brooklyn', borough='Brooklyn', price=1500,
+            beds=1, baths=1, elevator=False, washer_dryer_in_unit=True,
+            broker_fee=500, unit_type='House', address='124 Main Street'
+        )
+        self.listing3 = Rental_Listings.objects.create(
+            neighborhood='Queens', borough='Queens', price=1000,
+            beds=3, baths=2, elevator=True, washer_dryer_in_unit=True,
+            broker_fee=300, unit_type='Apartment', address='125 Main Street'
+        )
+
+    def test_filter_by_borough(self):
+        filter_params = {'borough': 'Manhattan'}
+        filtered_listings = apply_filters(Rental_Listings.objects.all(), filter_params)
+        self.assertTrue(self.listing1 in filtered_listings)
+        self.assertFalse(self.listing2 in filtered_listings)
+        self.assertFalse(self.listing3 in filtered_listings)
+
+    def test_filter_by_price_range(self):
+        filter_params = {'min_price': 1200, 'max_price': 2500}
+        filtered_listings = apply_filters(Rental_Listings.objects.all(), filter_params)
+        self.assertTrue(self.listing1 in filtered_listings)
+        self.assertTrue(self.listing2 in filtered_listings)
+        self.assertFalse(self.listing3 in filtered_listings)
+
+    def test_filter_by_bedrooms(self):
+        filter_params = {'bedrooms': '2'}
+        filtered_listings = apply_filters(Rental_Listings.objects.all(), filter_params)
+        self.assertTrue(self.listing1 in filtered_listings)
+        self.assertFalse(self.listing2 in filtered_listings)
+
+    def test_filter_by_elevator(self):
+        filter_params = {'elevator': True}
+        filtered_listings = apply_filters(Rental_Listings.objects.all(), filter_params)
+        self.assertTrue(self.listing1 in filtered_listings)
+        self.assertFalse(self.listing2 in filtered_listings)
+        self.assertTrue(self.listing3 in filtered_listings)
+
+    def test_no_filters(self):
+        filter_params = {}
+        filtered_listings = apply_filters(Rental_Listings.objects.all(), filter_params)
+        self.assertEqual(len(filtered_listings), 3)  # Should return all listings
+
