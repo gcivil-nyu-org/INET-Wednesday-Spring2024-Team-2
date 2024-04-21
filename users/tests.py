@@ -297,12 +297,32 @@ class FavoriteModelTests(TestCase):
         self.listing = Rental_Listings.objects.create(
             address="123 Fav St", price=1500.00, baths=1, Landlord=self.user
         )
+        self.client = Client()
+        self.client.login(username='favuser', password='testpass123')
+        self.toggle_favorite_url = reverse('toggle_favorite')
 
-    def test_favorite_creation(self):
-        favorite = Favorite.objects.create(user=self.user, listing=self.listing)
+    def test_toggle_favorite_add(self):
+        response = self.client.post(self.toggle_favorite_url, {'listing_id': self.listing.id})
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(Favorite.objects.count(), 1)
-        self.assertEqual(favorite.user, self.user)
-        self.assertEqual(favorite.listing, self.listing)
+        self.assertJSONEqual(str(response.content, encoding='utf8'), {"status": "added"})
+
+    def test_toggle_favorite_remove(self):
+        Favorite.objects.create(user=self.user, listing=self.listing)
+        response = self.client.post(self.toggle_favorite_url, {'listing_id': self.listing.id})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Favorite.objects.count(), 0)
+        self.assertJSONEqual(str(response.content, encoding='utf8'), {"status": "removed"})
+
+    def test_toggle_favorite_with_invalid_listing(self):
+        response = self.client.post(self.toggle_favorite_url, {'listing_id': 9999})  # Assuming 9999 is an invalid ID
+        self.assertEqual(response.status_code, 404)
+        self.assertJSONEqual(str(response.content, encoding='utf8'), {"error": "Listing not found"})
+
+    def test_toggle_favorite_without_listing_id(self):
+        response = self.client.post(self.toggle_favorite_url, {})
+        self.assertEqual(response.status_code, 400)
+        self.assertJSONEqual(str(response.content, encoding='utf8'), {"error": "Listing ID is required"})
 
 
 class LogoutViewTests(TestCase):

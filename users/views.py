@@ -316,13 +316,11 @@ def rentals_page(request):
         listings = listings.order_by("-price")
     else:
         listings = listings.order_by("price")
-
     favorite_listings_ids = Favorite.objects.filter(
         user=request.user).values_list(
         "listing__id", flat=True
     )
     filter_params = {k: v for k, v in filter_params.items() if v is not None}
-
     paginator = Paginator(listings, 5)  # Show 5 listings per page
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
