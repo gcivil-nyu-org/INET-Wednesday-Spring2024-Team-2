@@ -923,6 +923,7 @@ class TestApplyFilters(TestCase):
     def test_filter_search_query(self):
         filter_params = {'search_query': 'Main Street'}
         filtered_listings = apply_filters(Rental_Listings.objects.all(), filter_params)
+        pass
 
     def test_filter_bathrooms(self):
         filter_params = {'bathrooms': 'Any'}
