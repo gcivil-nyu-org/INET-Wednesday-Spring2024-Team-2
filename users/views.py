@@ -423,7 +423,6 @@ def toggle_favorite(request):
 @login_required
 @no_cache
 def favorites_page(request):
-    # Fetch only the listings that the user has marked as favorite
     favorite_listings = Favorite.objects.filter(
         user=request.user).select_related(
         "listing"
@@ -454,7 +453,6 @@ def map_view(request):
         "this_domain": current_site.domain,
     }
     return render(request, "users/searchRental/map_view.html", context)
-
 
 @login_required
 @no_cache

@@ -820,14 +820,24 @@ class RentalListingsFormTests(TestCase):
             'sq_ft': 500,
             'rooms': 3,
             'beds': 2,
-            'baths': 1,
+            'baths': 1.5,
             'unit_type': "Apartment",
             'neighborhood': "Midtown",
             'borough': "Manhattan",
+            'broker_fee': False,
+            'central_air_conditioning': True,
+            'dishwasher': True,
+            'doorman': False,
+            'elevator': True,
+            'furnished': False,
+            'parking_available': True,
+            'washer_dryer_in_unit': False,
             'Submitted_date': date.today(),
+            'Availability_Date': date.today() + timedelta(days=10)
         }
 
-
+    def test_form_with_valid_data(self):
+        form = RentalListingForm(data=self.common_data)
 
     def test_form_with_negative_price(self):
         data = self.common_data.copy()
