@@ -294,7 +294,6 @@ def apply_filters(listings, filter_params):
 @no_cache
 @user_type_required("user")
 def rentals_page(request):
-    # Filter parameters
     filter_params = {
         "borough": request.GET.get("borough"),
         "min_price": request.GET.get("min_price"),
@@ -309,16 +308,12 @@ def rentals_page(request):
         "search_query": request.GET.get("search_query", ""),
     }
 
-    # Start with all listings
     listings = Rental_Listings.objects.all()
 
-    # Apply filters
     listings = apply_filters(listings, filter_params)
 
-    # Annotate each listing with the URL of its first image
     listings = listings.annotate(first_image=Min("images__image_url"))
 
-    # Sorting
     sort_option = request.GET.get("sort")
     if sort_option == "recent":
         listings = listings.order_by(
@@ -335,17 +330,14 @@ def rentals_page(request):
     )
     filter_params = {k: v for k, v in filter_params.items() if v is not None}
 
-    # Pagination
     paginator = Paginator(listings, 5)  # Show 5 listings per page
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
-    # Query to get the IDs of listings that are favorited by the current user
     favorite_listings_ids = Favorite.objects.filter(user=request.user).values_list(
         "listing__id", flat=True
     )
 
-    # Pass listings_json and favorite_listings_ids to the template
     context = {
         "page_obj": page_obj,
         "listings": listings,
@@ -524,3 +516,4 @@ def landlord_profile_update(request):
         "users/Profile/landlord_profile_update.html",
         {"form": form, "user": request.user},
     )
+
