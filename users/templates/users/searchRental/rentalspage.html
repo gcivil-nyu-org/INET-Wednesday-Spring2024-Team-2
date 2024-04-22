@@ -187,6 +187,7 @@
             <input type="hidden" name="borough" value="{{ filter_params.borough }}">
 
             <button type="submit" class="btn btn-primary">Apply</button>
+            <button type="reset" class="btn btn-secondary">Clear Filters</button>
           </form>
         </div>
       </div>
@@ -384,6 +385,25 @@ function toggleFavorite(event, listingId) {
         });
       }, 100); // Adjust timeout as needed to ensure it runs after listings are generated
     });
+
+    document.addEventListener("DOMContentLoaded", function () {
+    const filterForm = document.getElementById('filterForm');
+
+    // Event listener for form reset
+    filterForm.addEventListener('reset', function (event) {
+        event.preventDefault(); // Prevent the default reset behavior
+        // Reset all select elements to their first option (typically 'Any')
+        filterForm.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
+        // Uncheck all checkboxes
+        filterForm.querySelectorAll('input[type="checkbox"]').forEach(checkbox => checkbox.checked = false);
+        // Clear all text and number inputs
+        filterForm.querySelectorAll('input[type="text"], input[type="number"]').forEach(input => input.value = '');
+
+        // Redirect to the base URL or with some default parameters if necessary
+        window.location.href = '{% url "rentalspage" %}';
+    });
+    });
+
 
     
     </script>
