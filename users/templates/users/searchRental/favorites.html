@@ -129,13 +129,13 @@
           const listing = listings[i];
           document.write(`
             <div class="listing">
+            <a href="{% url 'listing_detail' listing.id %}">
               <div class="listing-image">
                 <img src="https://landlord-verification-files.s3.amazonaws.com/rentalimages/home1.jpg" alt="Listing Image">
                 <div class="favorite-icon" data-listing-id="${listing.pk}" onclick="toggleFavorite(event, ${listing.pk})">♥</div>
               </div>
               <div class="listing-details">
-               <a href="/listings/${listing.pk}"><h3>${listing.fields
-               .address}</h3></a>
+                <h3>${listing.fields.address}</h3>
                 <p><strong>Bedrooms:</strong> ${listing.fields.beds}</p>
                 <p><strong>Bath:</strong> ${listing.fields.baths}</p>
                 <p><strong>Price:</strong> $${listing.fields.price}/month</p>
@@ -144,6 +144,7 @@
                 <p><strong>Square Footage:</strong> ${listing.fields.sq_ft} sq ft</p>
                 <p><strong>Posted by:</strong> ${listing.fields.postedBy}</p>
               </div>
+              </a>
             </div>
           `);
         }
