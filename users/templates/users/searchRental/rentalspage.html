@@ -104,9 +104,16 @@
           <li class="nav-item">
             <a class="nav-link" href="{% url 'profile_view_edit' %}">My account</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'placeholder' %}">Links</a>
-          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Resources
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="https://hpdonline.nyc.gov/hpdonline/">Violations and Bedbug Reports</a></li>
+                <li><a class="dropdown-item" href="https://example.com/landlord-behavioral-links">Landlord Behavioral Links</a></li>
+                <li><a class="dropdown-item" href="https://portal.311.nyc.gov/check-status/">311 Reports</a></li>
+            </ul>
+        </li>
           <li class="nav-item">
             <a class="nav-link" href="{% url 'logout' %}" >Logout</a>
           </li>
@@ -277,6 +284,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/js/bootstrap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
