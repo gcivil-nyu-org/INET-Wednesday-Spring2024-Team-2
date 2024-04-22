@@ -25,11 +25,24 @@ class CustomUser(AbstractUser):
     # s3_doclink = models.URLField(max_length=255, blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        if self.user_type == CustomUser.USER:
-            self.verified = True
+        # Check if the instance already exists (i.e., if it's an update rather than a create)
+        if not self._state.adding:
+            # If updating, just save the model as it is, respecting admin changes
+            super().save(*args, **kwargs)
         else:
-            self.verified = False
-        super().save(*args, **kwargs)
+            # If creating a new instance, apply the user_type logic
+            if self.user_type == CustomUser.USER:
+                self.verified = True
+            else:
+                self.verified = False
+            super().save(*args, **kwargs)
+
+    # def save(self, *args, **kwargs):
+    #     if self.user_type == CustomUser.USER:
+    #         self.verified = True
+    #     else:
+    #         self.verified = False
+    #     super().save(*args, **kwargs)
 
 
 class Rental_Listings(models.Model):
