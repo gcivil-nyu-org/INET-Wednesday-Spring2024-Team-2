@@ -37,7 +37,11 @@ class UserSignUpForm(UserCreationForm):
         if User.objects.filter(username=self.cleaned_data["email"]).exists():
             raise ValidationError("Email already exists. Please use a different one.")
         return email
-
+    def clean_phone_number(self):
+        phone_number = self.cleaned_data.get('phone_number')
+        if len(phone_number) != 10 or not phone_number.isdigit():
+            raise ValidationError("Phone number must be 10 digits.")
+        return phone_number
 
 class LandlordSignupForm(UserCreationForm):
     pdf_file = forms.FileField(required=False, label="OwnerShip Document")  #
