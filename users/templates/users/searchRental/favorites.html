@@ -127,13 +127,14 @@
         // Loop through the listings and display them
         for (let i = 0; i < listings.length; i++) {
           const listing = listings[i];
+          const detailUrl = `/listings/${listing.fields.id}/`;
           document.write(`
             <div class="listing">
-            <a href="{% url 'listing_detail' listing.id %}">
               <div class="listing-image">
                 <img src="https://landlord-verification-files.s3.amazonaws.com/rentalimages/home1.jpg" alt="Listing Image">
                 <div class="favorite-icon" data-listing-id="${listing.pk}" onclick="toggleFavorite(event, ${listing.pk})">♥</div>
               </div>
+             <a href="/listings/${listing.pk}" style="text-decoration: none; color: inherit;">
               <div class="listing-details">
                 <h3>${listing.fields.address}</h3>
                 <p><strong>Bedrooms:</strong> ${listing.fields.beds}</p>
