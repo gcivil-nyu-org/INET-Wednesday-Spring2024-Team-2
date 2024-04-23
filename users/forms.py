@@ -125,20 +125,22 @@ class RentalListingForm(forms.ModelForm):
         ("Bronx", "Bronx"),
         ("Staten Island", "Staten Island"),
     ]
-    address = forms.CharField(widget=forms.TextInput(attrs={'id': 'id_address'}))
+    address = forms.CharField(
+        widget=forms.TextInput(attrs={'id': 'id_address', 'placeholder': 'Enter your address', 'autocomplete': 'off'})
+    )
     rooms = forms.ChoiceField(choices=ROOMS_CHOICES)
     beds = forms.ChoiceField(choices=ROOMS_CHOICES)
     baths = forms.ChoiceField(choices=BATHS_CHOICES)
     unit_type = forms.ChoiceField(choices=UNIT_TYPE_CHOICES)
-    neighborhood = forms.ChoiceField(choices=NEIGHBORHOOD_CHOICES)
-    borough = forms.ChoiceField(choices=BOROUGH_CHOICES)
-    photo = forms.ImageField(required=False, widget=forms.ClearableFileInput(attrs={'multiple': True}))
-    latitude = forms.FloatField( widget=forms.TextInput(attrs={'readonly': 'readonly'}))
-    longitude = forms.FloatField(widget=forms.TextInput(attrs={'readonly': 'readonly'}))
-    zipcode = forms.CharField(required=True, widget=forms.TextInput(attrs={'id': 'id_zipcode'}))
-    sq_ft = forms.IntegerField(required=True)
+    neighborhood = forms.CharField(required=True,widget=forms.TextInput(attrs={'id': 'id_neighborhood'}))
+    borough = forms.ChoiceField(choices=BOROUGH_CHOICES, widget=forms.Select(attrs={'id': 'id_borough'}))
+    photo = forms.ImageField(required=False, label= 'Images',widget=forms.ClearableFileInput(attrs={'multiple': True}))
+    latitude = forms.FloatField( widget=forms.HiddenInput(attrs={'readonly': 'readonly'}))
+    longitude = forms.FloatField(widget=forms.HiddenInput(attrs={'readonly': 'readonly'}))
+    zipcode = forms.CharField(required=True, label= 'Zip', widget=forms.TextInput(attrs={'id': 'id_zipcode' ,'placeholder': ''}))
+    sq_ft = forms.IntegerField(required=True, label= 'Area(sqft)')
     Availability_Date = forms.DateField(required=True, widget=forms.DateInput(attrs={"type": "date"}))
-
+    apt_no = forms.CharField(required=False, label= 'Apt#', widget=forms.TextInput(attrs={'id': 'id_aptNo' ,'placeholder': ''}) )
 
     def __init__(self, *args, **kwargs):
         super(RentalListingForm, self).__init__(*args, **kwargs)
@@ -148,7 +150,8 @@ class RentalListingForm(forms.ModelForm):
         self.helper.layout = Layout(
             Row(
                 Column('address', css_class='form-group col-md-8 mb-0'),
-                Column('zipcode', css_class='form-group col-md-4 mb-0'),
+                Column('zipcode', css_class='form-group col-md-2 mb-0'),
+                Column('apt_no', css_class='form-group col-md-2 mb-0'),
                 css_class='form-row',
             ),
              Row(
@@ -193,15 +196,6 @@ class RentalListingForm(forms.ModelForm):
            Row(
                 Column('latitude', css_class='form-group col-md-4 mb-0 align-self-end'),  # Add 'align-self-end' class
                 Column('longitude', css_class='form-group col-md-4 mb-0 align-self-end'),  # Add 'align-self-end' class
-                Column(
-                    HTML(
-                        '<div class="location-button" style="margin-top: 14px;">'
-                        '<button type="button" class="btn btn-primary form-button" id="get-location">Get Location</button>'
-                        '<div class="loading-spinner" id="loading-spinner"></div>'
-                        '</div>'
-                    ),
-                    css_class='form-group col-md-4 mb-0 align-self-center'  # Add 'align-self-end' class
-                ),
                 css_class='form-row location-row',
             ),
 

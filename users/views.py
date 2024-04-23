@@ -365,6 +365,11 @@ def add_rental_listing(request):
             rental_listing = form.save(commit=False)
             rental_listing.Landlord = request.user
             rental_listing.Submitted_date = timezone.now().date()
+            apt_no = form.cleaned_data.get('apt_no', '')
+            if apt_no:
+                base_address = rental_listing.address.split(',')[0]
+                full_address = f"{base_address} #{apt_no}"
+                rental_listing.address = full_address
             rental_listing.save()
             AWS_STORAGE_BUCKET_NAME = "landlord-verification-files"
             for image in images:
