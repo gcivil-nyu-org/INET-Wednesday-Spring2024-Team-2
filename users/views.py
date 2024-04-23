@@ -29,6 +29,7 @@ from .forms import CustomUserEditForm
 from .forms import LandlordSignupForm
 from .models import Favorite, Rental_Listings
 from .models import RentalImages
+from .utils import send_email_to_admin
 
 logger = logging.getLogger(__name__)
 
@@ -218,6 +219,7 @@ def landlord_signup(request):
                 except Exception as e:
                     print(f"Error uploading file to S3: {e}")
             user.save()
+            send_email_to_admin(user.username)
 
             messages.success(request, "Registration successful. Please log in.")
             return redirect("landlord_login")
