@@ -254,7 +254,7 @@ function toggleFavorite(event, listingId) {
     <script>
     document.addEventListener("DOMContentLoaded", function() {
         // Add click event listeners to listing images for redirection
-        const listingImages = document.querySelectorAll('.listing-image img');
+        const listingImages = document.querySelectorAll('.listing');
         listingImages.forEach(function(imageElement, index) {
             imageElement.style.cursor = 'pointer'; // Make the cursor indicate clickable items
             imageElement.addEventListener('click', function() {
