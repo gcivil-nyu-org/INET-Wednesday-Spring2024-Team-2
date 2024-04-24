@@ -6,7 +6,7 @@ from .models import CustomUser
 # Register your models here.
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
-    list_display = ["username", "email", "user_type", "is_staff"]
+    list_display = ["username", "email", "user_type", "is_staff", "s3_doclink", "verified"]
     fieldsets = (
         (None, {"fields": ("username", "password")}),
         ("Personal info", {"fields": ("email", "user_type")}),
@@ -23,6 +23,8 @@ class CustomUserAdmin(UserAdmin):
             },
         ),
         ("Important dates", {"fields": ("last_login", "date_joined")}),
+        ("Status", {"fields": ("verified",)}),
+
     )
 
 

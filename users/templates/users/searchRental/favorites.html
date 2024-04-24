@@ -64,6 +64,9 @@
         body {
             padding-top: 70px; /* Adjust padding top to accommodate fixed navbar */
         }
+        .dropdown-item{
+          color: rgb(172, 169, 169);
+        }
     </style>
 </head>
 <body>
@@ -79,7 +82,7 @@
     <div class="collapse navbar-collapse" id="navbarContent">
       <ul class="navbar-nav me-auto">
         <li class="nav-item">
-          <a class="nav-link active" href="{% url 'placeholder' %}">All rentals</a>
+          <a class="nav-link" href="{% url 'rentalspage' %}">All rentals</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{% url 'favorites_page' %}">Favourites</a>
@@ -87,9 +90,16 @@
         <li class="nav-item">
           <a class="nav-link" href="{% url 'profile_view_edit' %}">My account</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'placeholder' %}">Links</a>
-        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Resources
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="https://hpdonline.nyc.gov/hpdonline/">Violations and Bedbug Reports</a></li>
+              <li><a class="dropdown-item" href="https://example.com/landlord-behavioral-links">Landlord Behavioral Links</a></li>
+              <li><a class="dropdown-item" href="https://portal.311.nyc.gov/check-status/">311 Reports</a></li>
+          </ul>
+      </li>
         <li class="nav-item">
           <a class="nav-link" href="{% url 'logout' %}" >Logout</a>
         </li>
@@ -127,10 +137,11 @@
         // Loop through the listings and display them
         for (let i = 0; i < listings.length; i++) {
           const listing = listings[i];
+          console.log(listing);
           document.write(`
             <div class="listing">
               <div class="listing-image">
-                <img src="https://landlord-verification-files.s3.amazonaws.com/rentalimages/home1.jpg" alt="Listing Image">
+                <img src="https://landlord-verification-files.s3.amazonaws.com/rentalimages/home${i%5+1}.jpg" alt="Listing Image">
                 <div class="favorite-icon" data-listing-id="${listing.pk}" onclick="toggleFavorite(event, ${listing.pk})">♥</div>
               </div>
               <div class="listing-details">
@@ -215,7 +226,7 @@ function toggleFavorite(event, listingId) {
       }
   });
 }
-
+  
   </script>
   <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -244,7 +255,7 @@ function toggleFavorite(event, listingId) {
     <script>
     document.addEventListener("DOMContentLoaded", function() {
         // Add click event listeners to listing images for redirection
-        const listingImages = document.querySelectorAll('.listing-image img');
+        const listingImages = document.querySelectorAll('.listing');
         listingImages.forEach(function(imageElement, index) {
             imageElement.style.cursor = 'pointer'; // Make the cursor indicate clickable items
             imageElement.addEventListener('click', function() {
