@@ -6,7 +6,7 @@ from pathlib import Path
 import os
 
 
-def send_email_to_admin(username):
+def send_email_to_admin(username,email):
     ses_client = boto3.client(
         'ses',
         # region_name=settings.AWS_SES_REGION_NAME,
@@ -18,7 +18,8 @@ def send_email_to_admin(username):
     )
 
     SUBJECT = "New Landlord Signup Notification"
-    BODY_TEXT = (f"A landlord with username '{username}' has signed up. Please verify their documentation and approve them.")
+    # BODY_TEXT = (f"A landlord with username '{username}' has signed up. Please verify their documentation and approve them.")
+    BODY_TEXT = (f"In rentwisenyc, a landlord with username '{username}' and email '{email}' has signed up. Please verify their documentation and approve them. Access it at url http://rent-wise-env.eba-3qbiyspq.us-east-1.elasticbeanstalk.com/admin ")
     CHARSET = "UTF-8"
     response = None
     
