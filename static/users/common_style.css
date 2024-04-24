@@ -40,7 +40,7 @@ input[type="text"]:focus, input[type="password"]:focus {
 }
 
 input[type="submit"] {
-    background-color: #909790; /* More vibrant color */ 
+    background-color: #909790; /* More vibrant color */
     color: #fff;
     border: none;
     padding: 12px 20px;
@@ -61,7 +61,7 @@ input[type="submit"]:hover {
     margin-bottom: 20px;
     border: 1px solid #c4bebe; /* Subtle border */
     border-radius: 4px; /* Rounded corners for alert boxes */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Shadow for depth */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Shadow for depth */
 }
 
 .alert a {
