@@ -20,7 +20,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.csrf import ensure_csrf_cookie
-
+from django.utils import timezone
 from users.decorators import user_type_required
 from users.forms import UserSignUpForm, RentalListingForm
 from .decorators import no_cache
@@ -348,6 +348,12 @@ def add_rental_listing(request):
         if form.is_valid():
             rental_listing = form.save(commit=False)
             rental_listing.Landlord = request.user
+            rental_listing.Submitted_date = timezone.now().date()
+            apt_no = form.cleaned_data.get('apt_no', '')
+            if apt_no:
+                base_address = rental_listing.address.split(',')[0]
+                full_address = f"{base_address} #{apt_no}"
+                rental_listing.address = full_address
             rental_listing.save()
             AWS_STORAGE_BUCKET_NAME = "landlord-verification-files"
             for image in images:

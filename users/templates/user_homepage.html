@@ -76,6 +76,18 @@
         .search-option:hover {
             background-color: #f0f0f0;
         }
+        .invalid-feedback {
+            display: none; /* Hide by default */
+            color: red; /* Error message color */
+            font-size: 0.875em; /* Smaller text for error messages */
+        }
+
+        .invalid-feedback.active {
+            display: block; /* Show when there's an error */
+        }
+        .dropdown-item{
+          color: rgb(172, 169, 169);
+        }
 
     </style>
 </head>
@@ -140,14 +152,20 @@
                             </div>
                             <div class="col-2 ">
                                 <label for="minPrice" class="form-label">Min Price</label>
-                                <input type="number" class="form-control" id="minPrice" name="min_price"
-                                       placeholder="Min Price">
+                                <div class="has-danger">
+                                    <input type="number" class="form-control" id="minPrice" name="min_price"
+                                           placeholder="Min Price">
+                                    <div class="invalid-feedback" id="minPriceError">Heyy </div>
+                                </div>
                             </div>
 
                             <div class="col-2">
                                 <label for="maxPrice" class="form-label">Max Price</label>
-                                <input type="number" class="form-control" id="maxPrice" name="max_price"
-                                       placeholder="Max Price">
+                                <div class="has-danger">
+                                    <input type="number" class="form-control" id="maxPrice" name="max_price"
+                                           placeholder="Max Price">
+                                    <div class="invalid-feedback" id="maxPriceError"></div>
+                                </div>
                             </div>
                             <div class="col-1">
                                 <label class="form-check-label" for="no_fee">No Fee</label>
@@ -166,26 +184,28 @@
 
         <script>
             const locations = [
-                "Little Neck", "Jamaica Estates", "Gowanus", "Downtown Brooklyn", "Nolita", "Noho", "DUMBO",
-                "Long Island City", "Turtle Bay", "Stuyvesant Heights", "Hudson Heights", "Fort Greene", "Greenpoint",
-                "Ocean Hill", "Greenwood", "Roosevelt Island", "Yorkville", "Prospect Lefferts Gardens", "Lower East Side",
-                "Midtown", "Murray Hill (Queens)", "Little Italy", "Sheepshead Bay", "Rego Park", "South Harlem",
-                "Bayside", "Carroll Gardens", "City Line", "Gravesend", "Fiske Terrace", "Jackson Heights", "West Chelsea",
-                "Astoria", "Lincoln Square", "East Williamsburg", "Park Slope", "Carnegie Hill", "Middle Village",
-                "Manhattan", "Boerum Hill", "Midwood", "Financial District", "Columbia St Waterfront District", "Hudson Yards",
-                "Murray Hill", "Soho", "Prospect Heights", "Forest Hills", "Ridgewood", "East Harlem", "Jamaica", "Chinatown",
-                "Upper West Side", "Chelsea", "Hamilton Heights", "North Corona", "Gramercy Park", "Cobble Hill", "Battery Park City",
-                "Richmond Hill", "Riverdale", "Windsor Terrace", "Bushwick", "Brooklyn", "Briarwood", "Springfield Gardens",
-                "Bay Ridge", "West Village", "Sunnyside", "Hunters Point", "Clinton Hill", "East Village", "Port Richmond",
-                "Fulton/Seaport", "Williamsburg", "Crown Heights", "Kensington", "Kew Gardens", "New Springville",
-                "Bedford-Stuyvesant", "Madison", "Tribeca", "NoMad", "Hell's Kitchen", "Manhattan Valley", "Washington Heights",
-                "Upper East Side", "Weeksville", "Vinegar Hill", "Lenox Hill", "Flatbush", "Central Harlem", "Spuyten Duyvil",
-                "Flatiron", "Greenwich Village", "Brooklyn Heights", "Central Park South", "All(NYC)"
+                "All(NYC)", "Astoria", "Battery Park City", "Bay Ridge", "Bayside", "Bedford-Stuyvesant", "Boerum Hill", "Briarwood", 
+                "Brooklyn", "Brooklyn Heights", "Bushwick", "Carnegie Hill", "Carroll Gardens", "Central Harlem", "Central Park South", 
+                "Chelsea", "Chinatown", "City Line", "Clinton Hill", "Cobble Hill", "Columbia St Waterfront District", "Crown Heights", 
+                "Cypress Hills", "DUMBO", "Downtown Brooklyn", "East Harlem", "East Village", "East Williamsburg", "Financial District", 
+                "Fiske Terrace", "Flatbush", "Flatiron", "Forest Hills", "Fort Greene", "Fulton/Seaport", "Gowanus", "Gramercy Park", 
+                "Gravesend", "Greenpoint", "Greenwich Village", "Greenwood", "Hamilton Heights", "Hell's Kitchen", "Hudson Heights", 
+                "Hudson Yards", "Hunters Point", "Jackson Heights", "Jamaica", "Jamaica Estates", "Kensington", "Kew Gardens", "Lenox Hill", 
+                "Lincoln Square", "Little Italy", "Little Neck", "Lower East Side", "Madison", "Manhattan", "Manhattan Valley", 
+                "Murray Hill", "Murray Hill (Queens)", "New Springville", "Noho", "NoMad", "Nolita", "North Corona", "Ocean Hill", 
+                "Park Slope", "Port Richmond", "Prospect Heights", "Prospect Lefferts Gardens", "Rego Park", "Richmond Hill", "Ridgewood", 
+                "Riverdale", "Roosevelt Island", "Sheepshead Bay", "South Harlem", "Soho", "Spuyten Duyvil", "Springfield Gardens", 
+                "Stuyvesant Heights", "Sunnyside", "Tribeca", "Turtle Bay", "Upper East Side", "Upper West Side", "Vinegar Hill", 
+                "Washington Heights", "Weeksville", "West Chelsea", "West Village", "Windsor Terrace", "Williamsburg", "Yorkville"
             ];
 
             const searchInput = document.getElementById('borough');
             const searchResults = document.querySelector('.search-results');
             const searchButton = document.getElementById('searchButton');
+            const minPriceInput = document.getElementById('minPrice');
+            const maxPriceInput = document.getElementById('maxPrice');
+            const minPriceError = document.getElementById('minPriceError');
+            const maxPriceError = document.getElementById('maxPriceError');
 
             function renderResults(results) {
                 searchResults.innerHTML = '';
@@ -208,16 +228,18 @@
                 const matchingLocations = locations.filter(location =>
                     location.toLowerCase().includes(inputValue.toLowerCase())
                 );
-                renderResults(matchingLocations);
+                renderResults(matchingLocations.length > 0 ? matchingLocations : locations);
             }
-
+            searchInput.addEventListener('focus', function() {
+                const inputValue = this.value.trim();
+                showOptions(inputValue); // This will display all options if inputValue is empty
+            });
             searchInput.addEventListener('input', function() {
                 const inputValue = this.value.trim();
                 if (inputValue.length >= 1) {
                     showOptions(inputValue);
                 } else {
-                    searchResults.style.display = 'none';
-                    searchButton.disabled = true;
+                    showOptions('');
                 }
             });
 
@@ -227,17 +249,67 @@
                 }
             });
 
-            const searchForm = document.getElementById('searchForm');
-            searchForm.addEventListener('submit', function(event) {
-                if (searchInput.value.trim() === '' || !locations.includes(searchInput.value.trim())) {
-                    event.preventDefault();
-                    alert('Please select a location from the dropdown.');
-                }
-            });
+            function updatePriceValidation() {
+            const minPrice = minPriceInput.value.trim() ? parseFloat(minPriceInput.value) : null;
+            const maxPrice = maxPriceInput.value.trim() ? parseFloat(maxPriceInput.value) : null;
+
+            // Clear previous errors and remove the active class to hide messages
+            minPriceError.textContent = '';
+            minPriceError.classList.remove('active');
+            maxPriceError.textContent = '';
+            maxPriceError.classList.remove('active');
+
+            // Validate minimum price
+            if (minPrice !== null && (isNaN(minPrice) || minPrice < 0)) {
+                minPriceError.textContent = 'Prices can\'t be negative';
+                minPriceError.classList.add('active'); // Make the error message visible
+                event.preventDefault();
+            }
+
+            // Validate maximum price
+            if (maxPrice !== null && (isNaN(maxPrice) || maxPrice < 0)) {
+                maxPriceError.textContent = 'Prices can\'t be negative';
+                maxPriceError.classList.add('active'); // Make the error message visible
+                event.preventDefault();
+            }
+
+            // Compare min and max prices
+            if (minPrice !== null && maxPrice !== null && minPrice > maxPrice) {
+                maxPriceError.textContent = 'Max price less than min price';
+                maxPriceError.classList.add('active'); // Make the error message visible
+                event.preventDefault();
+            }
+        }
+
+        // Dynamic validation for price inputs
+        minPriceInput.addEventListener('input', updatePriceValidation);
+        maxPriceInput.addEventListener('input', updatePriceValidation);
+
+        function validateForm(event) {
+            let isValid = true;
+            
+            // Trigger price validation on submit
+            updatePriceValidation();
+
+            // Ensure a location is selected from the suggestions
+            if (searchInput.value.trim() === '' || !locations.includes(searchInput.value.trim())) {
+                event.preventDefault(); // Stop form submission
+                alert('Please select a location from the dropdown.');
+                isValid = false;
+            }
+
+            return isValid; // You can use this return value if needed
+        }
+
+        // Event listener for form submission
+        searchForm.addEventListener('submit', validateForm);
+
+
 
         </script>
     {% endif %}
 </div>
+
 
 </body>
 </html>

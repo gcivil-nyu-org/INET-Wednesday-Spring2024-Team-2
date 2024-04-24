@@ -93,7 +93,7 @@
 
 
 <div class="listings-container">
-
+<h3 class="text-center mt-4">Hey {{ user.full_name }}, Your Rentals </h3>
 
     <!-- Assuming listings is dynamically generated content -->
 <div class="container my-4">
@@ -105,7 +105,7 @@
                 <div class="listing-content">
                     <div class="listing-image">
                         <img src="{{ listing.first_image }}" alt="Listing Image">
-                        <div class="favorite-icon" onclick="toggleFavorite(event, {{ listing.id }})" data-listing-id="{{ listing.id }}">♥</div>
+                        
                     </div>
                     <div class="listing-details">
                         <h3>{{ listing.address }}</h3>
