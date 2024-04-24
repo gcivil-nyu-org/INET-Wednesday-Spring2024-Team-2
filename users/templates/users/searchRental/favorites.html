@@ -207,6 +207,7 @@ $(document).ready(function() {
 
   // Updated function for toggling favorite status
 function toggleFavorite(event, listingId) {
+  event.stopPropagation(); 
   const icon = event.currentTarget;
   $.ajax({
       type: "POST",
