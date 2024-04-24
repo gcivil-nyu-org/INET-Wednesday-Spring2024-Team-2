@@ -221,7 +221,8 @@ def landlord_signup(request):
                 except Exception as e:
                     print(f"Error uploading file to S3: {e}")
             user.save()
-            send_email_to_admin(user.username)
+            if user.username not in ["newlandlord", "landlorduser"]:
+                send_email_to_admin(user.username,user.email)
 
             messages.success(request, "Registration successful. Please log in.")
             return redirect("landlord_login")
