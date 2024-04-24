@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rental Listing Form</title>
+    <!-- Bootstrap CSS from Bootswatch Pulse -->
+    {% load crispy_forms_tags %}
+    <link href="https://bootswatch.com/5/pulse/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .form-button1 {
+            position: relative; /* Position the loading spinner relative to the button */
+            width: 100%;
+            padding: 10px; /* Adjust padding to match the button */
+            margin-top: 10px; /* Space between button and fields */
+            display: block; /* Ensure it's displayed as block */
+            text-align: center; /* Center the button text */
+            overflow: hidden; /* Ensure loading spinner stays inside the button */
+        }
+        .custom-form {
+            max-width: 600px; /* Adjust the max-width as needed */
+            margin: auto; /* Center the form */
+            padding: 20px; /* Add padding for spacing */
+            background: #fff; /* White background */
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Box shadow */
+        }
+        .custom-form .form-group {
+            margin-bottom: 10px; /* Reduce margin between form groups */
+        }
+        .form-button {
+            position: relative; /* Position the loading spinner relative to the button */
+            display: block; /* Ensure it's displayed as block */
+            text-align: center; /* Center the button text */
+            overflow: hidden; /* Ensure loading spinner stays inside the button */
+        }
+        .location-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .location-button {
+            position: relative; /* Ensure button has a positioning context */
+        }
+        .form-button {
+            padding: 6px; /* Adjust padding to match the button */
+            margin-top: 9px; /* Space between button and fields */
+            display: block; /* Ensure it's displayed as block */
+            text-align: center; /* Center the button text */
+            overflow: hidden; /* Ensure loading spinner stays inside the button */
+        }
+
+        /* Adjustments for the spinner */
+        .loading-spinner {
+            position: absolute; /* Position the loading spinner */
+            top: 25%; /* Align to the vertical center of the button */
+            left: 25%; /* Align to the horizontal center of the button */
+            transform: translate(-50%, -50%); /* Center the spinner */
+            border: 2px solid transparent; /* Set border for spinner */
+            border-top-color: #fff; /* Set border color */
+            border-radius: 50%; /* Make the spinner circular */
+            width: 20px; /* Set fixed width of spinner */
+            height: 20px; /* Set fixed height of spinner */
+            animation: spin 1s linear infinite; /* Apply rotation animation */
+            z-index: 1; /* Ensure spinner is above button text */
+            visibility: hidden; /* Initially hide spinner */
+        }
+        .loading-spinner.active {
+            visibility: visible; /* Show spinner when active */
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg); /* Start rotation from 0 degrees */
+            }
+            100% {
+                transform: rotate(360deg); /* End rotation at 360 degrees */
+            }
+        }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCrOc65vMwPEL5ocVX1bJCiaTJiwJ5isEs&libraries=places&callback=initAutocomplete" async defer></script>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{% url 'landlord_homepage' %}">RentWiseNYC</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link active" href="{% url 'post_new_listings' %}">Post listing</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">My account</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'landlord_placeholder' %}">Links</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'logout' %}" >Logout</a>
+        </li>
+      </ul>
+      <form class="d-flex">
+        <input class="form-control me-sm-2" type="search" placeholder="Search">
+        <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+      </form>
+    </div>
+  </div>
+</nav>
+
+<div class="container mt-3">
+    <h2 class="text-center">Add Rental Listing</h2>
+    <div class="custom-form">
+        <form method="post" enctype="multipart/form-data" id="rental-listing-form">
+            {% csrf_token %}
+            {% crispy form %}
+        </form>
+    </div>
+</div>
+
+
+
+<script>
+    function initAutocomplete() {
+        var addressInput = document.getElementById('id_address');
+        var autocomplete = new google.maps.places.Autocomplete(addressInput);
+
+        autocomplete.setFields(['address_component', 'geometry']);
+        autocomplete.addListener('place_changed', function() {
+            var place = autocomplete.getPlace();
+            fillInAddress(place);
+            console.log(place);
+        });
+        addressInput.addEventListener('input', function() {
+            clearRelatedFields();
+        });
+    }
+
+    function fillInAddress(place) {
+        // Example: Extracting city and postal code from the place details
+        var lat = place.geometry.location.lat();
+        var lng = place.geometry.location.lng();
+        document.getElementById('id_latitude').value = lat;
+        document.getElementById('id_longitude').value = lng;
+        var neighborhoodFound = false;
+
+        place.address_components.forEach(component => {
+            const componentType = component.types[0];
+            switch(componentType) {
+                case 'postal_code':
+                    document.getElementById('id_zipcode').value = component.long_name;
+                    break;
+                case 'neighborhood':
+                    document.getElementById('id_neighborhood').value = component.long_name;
+                    neighborhoodFound = true;
+                    console.log("found neighborhood")
+                    break;
+                case 'administrative_area_level_2':
+                    if (neighborhoodFound === false) {
+                        document.getElementById('id_neighborhood').value = component.long_name;
+                        console.log("neighborhood not found using county")
+                    }
+                    break;
+                case 'sublocality_level_1':
+                    document.getElementById('id_borough').value = component.long_name;
+                    break;
+            }
+         });
+
+    }
+    function clearRelatedFields() {
+            document.getElementById('id_neighborhood').value = '';
+            document.getElementById('id_zipcode').value = '';
+            document.getElementById('id_borough').value = '';
+    }
+
+    
+</script>
+
+</body>
+</html>
