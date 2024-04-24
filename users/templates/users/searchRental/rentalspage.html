@@ -53,16 +53,22 @@
             box-sizing: border-box; /* Include padding in width calculation */
         }
         .favorite-icon {
-          position: absolute;
-          top: 10px;
-          right: 10px;
-          cursor: pointer;
-          font-size: 24px; 
-          color: rgb(255, 253, 253); /* Default non-favorite color */
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 24px;
+            color: rgb(255, 253, 253); /* Default non-favorite color */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Shadow for better visibility */
         }
+
         .favorite-icon.active {
-          color: red; /* Favorited state color */
+            color: red; /* Favorited state color */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Shadow for better visibility */
         }
+
+
+
         .pagination li,
         .step-links a {
           display: inline-block;
