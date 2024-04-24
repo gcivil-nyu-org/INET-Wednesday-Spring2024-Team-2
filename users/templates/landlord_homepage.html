@@ -70,7 +70,13 @@
 {% include 'users/landlord_navbar.html' %} 
 
 <div class="listings-container">
-<h3 class="text-center mt-4">Hey {{ user.full_name }}, Your Rentals </h3>
+<h3 class="text-center mt-4">Hey {{ user.full_name }}, your rentals </h3>
+
+</div>
+<div class="text-center mb-3">
+    <a href="{% url 'post_new_listings' %}" class="btn btn-primary">Post New Listing</a>
+</div>
+</div>
 
     <!-- Assuming listings is dynamically generated content -->
 <div class="container my-4">
@@ -78,7 +84,7 @@
     {% if listings %}
     {% for listing in listings %}
         <div class="listing">
-            <a href="{% url 'listing_detail' listing.id %}">
+            <a href="{% url 'landlord_listing_detail' listing.id %}">
                 <div class="listing-content">
                     <div class="listing-image">
                         <img src="{{ listing.first_image }}" alt="Listing Image">
@@ -107,11 +113,7 @@
 {% else %}
         <p>No listings available.</p>
 {% endif %}
-</div>
-    <div class="text-center mb-3">
-        <a href="{% url 'post_new_listings' %}" class="btn btn-primary">Create New Listing</a>
-    </div>
-</div>
+
 
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->

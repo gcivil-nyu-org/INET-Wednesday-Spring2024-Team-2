@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load env_extras %}
+<input id="GOOGLE_MAPS_API_KEY" value="{% get_env_var 'GOOGLE_MAPS_API_KEY' %}" type="hidden" />
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listing Detail Page</title>
+    <!-- Bootstrap CSS from Bootswatch Pulse -->
+    <link href="https://bootswatch.com/5/pulse/bootstrap.css" rel="stylesheet">
+    <style>
+                .container {
+                    display: flex;
+                    flex-direction: column;
+                }
+        
+                .address-container {
+                    background-color: #f8f9fa;
+                    border: 1px solid #dee2e6;
+                    /* border-radius: 5px; */
+                    padding: 15px;
+                    margin-bottom: 10px;
+                    width: 100%;
+                }
+        
+                .image-and-details-container {
+                    display: flex;
+                    flex-direction: row;
+                }
+        
+                .image-container {
+                    max-width: 60%;
+                    display: flex;
+                    flex-direction: column;
+                    padding-right: 10px;
+                }
+        
+                #mainImageContainer {
+                    width: 100%;
+                    height: 500px;
+                    overflow: hidden;
+                    z-index: 10;
+                    position: relative;
+                }
+        
+                #mainImage {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+        
+                .thumbnail {
+                    width: 15%;
+                    /* Set the desired width for the thumbnails */
+                    height: auto;
+                    margin: 5px;
+                    cursor: pointer;
+                    border: 2px solid transparent;
+                    /* Set initial border style */
+                }
+        
+                .selected-thumbnail {
+                    border-color: #6610f2;
+                    /* Set border color for selected thumbnail */
+                }
+        
+                .listing-details-container {
+                    width: 40%;
+                    display: flex;
+                    flex-direction: column;
+                    margin-bottom: 10px;
+                }
+        
+                .listing-details {
+                    width: 100%;
+                    height: 500px;
+                    padding: 10px;
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                    background-color: #f8f9fa;
+                    border: 1px solid #dee2e6;
+                    margin-bottom: 10px;
+                }
+        
+                .date-available {
+                    display: flex;
+                    width: 100%;
+                    /* Set the desired width for the listing details container */
+                    justify-content: center;
+                    align-items: center;
+                    height: 80px;
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                    background-color: #f8f9fa;
+                    border: 1px solid #dee2e6;
+                }
+        
+                .info-container {
+                    width: 100%;
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                }
+        
+                .description-container {
+                    width: 60%;
+                    display: flex;
+                    background-color: #f8f9fa;
+                    border: 1px solid #dee2e6;
+                    flex-direction: column;
+                    padding-right: 10px;
+                    margin-right: 10px;
+                    height: 400px;
+                }
+        
+                .description-container p {
+                    margin-left: 15px;
+                    margin-right: 5px;
+                }
+        
+                .description-container h4 {
+                    margin: 15px;
+                    /* Add margin bottom to paragraphs */
+                }
+        
+                .clickable-map {
+                    width: 40%;
+                    border-radius: 5px;
+                    background-color: #f8f9fa;
+                    border: 1px solid #dee2e6;
+                    margin-bottom: 10px;
+                }
+                .hpd-info-container {
+                    width: 60%;
+                    display: block; 
+                    clear: both; 
+                    background-color: #f8f9fa;
+                    border: 1px solid #dee2e6;
+                    padding: 15px;
+                    margin-right: 10px;
+                    height: 300px;
+                }
+                .hpd-info {
+                    width:31%;
+                    height: 150px;
+                    overflow-y: auto; 
+                    background-color: #eeeaf9;
+                    border: 1px solid black;
+                    display: inline-block;
+                    margin: 5px;
+                    padding: 10px;
+                }
+                .additional-text {
+                    width: 97%;
+                    padding-left: 10px;
+                    padding-right: 10px;
+                    padding-bottom: 10px;
+                    box-sizing: border-box;
+                    margin: 5px;
+                }
+                .metro-stations-info {
+                    width: 40%;
+                    border-radius: 5px;
+                    background-color: #f8f9fa;
+                    border: 1px solid #dee2e6;
+                    height: 300px;
+                    padding: 15px;
+                }
+                body {
+                    padding-top: 70px; /* Adjust padding top to accommodate fixed navbar */
+                }
+                .dropdown-item{
+                    color: rgb(172, 169, 169);
+                }
+                
+    </style>
+</head>
+
+<!-- navbar -->
+{% include 'users/landlord_navbar.html' %} 
+
+<body>
+    <div class="container my-4">
+        <div class="address-container">
+            <h1>{{ listing.address }}</h1>
+        </div>
+        <div class="image-and-details-container">
+            <div class="image-container">
+                <!-- Display the first image prominently -->
+                {% if listing.images.all %}
+                <div id="mainImageContainer">
+                    <img id="mainImage" src="{{ listing.images.first.image_url }}" alt="Listing Image">
+
+                </div>
+                {% endif %}
+
+                <!-- Display other images as small thumbnails -->
+                {% if listing.images.all %}
+                <div id="thumbnails">
+                    {% for image in listing.images.all %}
+                    {% if forloop.first %}
+                    <img class="thumbnail selected-thumbnail" id="thumb{{ forloop.counter }}"
+                        src="{{ image.image_url }}" alt="Listing Thumbnail"
+                        onclick="displayImage('{{ image.image_url }}', {{ forloop.counter }})">
+                    {% else %}
+                    <img class="thumbnail" id="thumb{{ forloop.counter }}" src="{{ image.image_url }}"
+                        alt="Listing Thumbnail" onclick="displayImage('{{ image.image_url }}', {{ forloop.counter }})">
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="listing-details-container">
+                <div class="listing-details">
+                    <h4>Listing Details</h4>
+                    <strong>Bedrooms:</strong> {{ listing.beds }}<br>
+                    <strong>Bath:</strong> {{ listing.baths }}<br>
+                    <strong>Price:</strong> ${{ listing.price }}/month<br>
+                    <strong>Borough:</strong> {{ listing.borough }}<br>
+                    <strong>Neighbourhood:</strong> {{ listing.neighborhood }}<br>
+                    <strong>Square Footage:</strong> {{ listing.sq_ft }} sq ft<br>
+                    <p></p>
+                    <h4>Amenities:</h4>
+                    Doorman: {% if listing.doorman %}<span class="badge rounded-pill bg-secondary">Yes</span>{% else %}<span class="badge rounded-pill bg-light">No</span>{% endif %}<br>
+                    Elevator: {% if listing.elevator %}<span class="badge rounded-pill bg-secondary">Yes</span>{% else %}<span class="badge rounded-pill bg-light">No</span>{% endif %}<br>
+                    Laundry: {% if listing.washer_dryer_in_unit %}<span class="badge rounded-pill bg-secondary">Yes</span>{% else %}<span class="badge rounded-pill bg-light">No</span>{% endif %}<br>
+                    Dishwasher: {% if listing.dishwasher %}<span class="badge rounded-pill bg-secondary">Yes</span>{% else %}<span class="badge rounded-pill bg-light">No</span>{% endif %}<br>
+                    Parking: {% if listing.parking_available %}<span class="badge rounded-pill bg-secondary">Yes</span>{% else %}<span class="badge rounded-pill bg-light">No</span>{% endif %}
+                </div>
+                <div class="date-available">
+                    <h4>Date available: {{ listing.Availability_Date }}</h4>
+                </div>
+            </div>
+        </div>
+        <div class="info-container">
+            <div class="description-container">
+                <h4>Description:</h4>
+                <p>{{listing.address}} is a
+                    {{ listing.sq_ft }} square foot
+                    {{ listing.beds|floatformat:0 }} bed,
+                    {{ listing.baths|floatformat:0 }} bath
+                    {{ listing.unit_type|lower }} located in the
+                    {{ listing.neighborhood }} neighborhood in {{ listing.borough }}.
+                </p>
+                <h4>Contact Information:</h4>
+                <p>{{ listing.Landlord.email }}</p>
+            </div>
+            <div class="clickable-map">
+                <div id="map" style="width: 100%; height: 400px;"></div>
+            </div>
+        </div>
+        <div class ="info-container">
+            <div class="hpd-info-container">
+                <h4>Building Information</h4>
+                <div class="hpd-info-wrapper">
+                    <div class="hpd-info">
+                        <p><strong>Bedbug Report:</strong></p>
+                        {% if not listing.hpd_data.last_bedbug_date %}
+                            No bedbug history
+                        {% else %}
+                            Most recent report date: {{ listing.hpd_data.last_bedbug_date }}
+                        {% endif %}
+                        <br>
+                        {% if listing.hpd_data.ttl_infested_apartments is none %}
+                        {% elif listing.hpd_data.ttl_infested_apartments == 0 %}
+                            Total infested units: 0
+                        {% else %}
+                            Total infested units: {{ listing.hpd_data.ttl_infested_apartments }}
+                        {% endif %}
+                    </div>
+                    <div class="hpd-info">
+                        <p><strong>Building Violations:</strong></p>
+                        {% if not listing.hpd_data.most_recent_violation_date %}
+                            No violations
+                        {% else %}
+                            Most recent violation date: {{ listing.hpd_data.most_recent_violation_date }}
+                        {% endif %}
+                        <br>
+                        {% if not listing.hpd_data.count_violations %}
+                        {% else %}
+                            Total building violations: {{ listing.hpd_data.count_violations }}
+                        {% endif %}
+                    </div>
+                    <div class="hpd-info">
+                        <p><strong>Nearby 311 Calls:</strong></p>
+                        {% if not listing.hpd_data.num_complaints %}
+                            No nearby 311 complaints
+                        {% else %}
+                            Total complaints: {{ listing.hpd_data.num_complaints }}
+                        {% endif %}
+                        <br>
+                        {% if not listing.hpd_data.num_noise_complaints %}
+                        {% else %}
+                            Noise complaints: {{ listing.hpd_data.num_noise_complaints }}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="additional-text" placeholder="Additional Text">
+                    *The average building has 0.3 infested units, 5.3 recorded violations, and 22 nearby 311 complaints.
+                </div>
+            </div>
+            <div id="metroStations" class="metro-stations-info">
+                <h4>Nearby Metro Stations</h4>
+            <div id="metroStationsList">Loading nearby metro stations...</div>
+        </div>
+        </div>
+    </div>
+
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        let hiddenInput = document.getElementById("GOOGLE_MAPS_API_KEY");
+        let apiKey = hiddenInput.value;
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap&libraries=places,geometry`;
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+        function displayImage(imageUrl, thumbIndex) {
+            // Replace the main image with the clicked image
+            document.getElementById('mainImage').src = imageUrl;
+            
+            // Remove 'selected-thumbnail' class from all thumbnails
+            var thumbnails = document.getElementsByClassName('thumbnail');
+            for (var i = 0; i < thumbnails.length; i++) {
+                thumbnails[i].classList.remove('selected-thumbnail');
+            }
+            
+            // Add 'selected-thumbnail' class to the clicked thumbnail
+            document.getElementById('thumb' + thumbIndex).classList.add('selected-thumbnail');
+        }
+
+         // Initialize and display the map
+         function initMap() {
+            // Get latitude and longitude from your Django model
+            var latitude = {{ listing.latitude }};
+            var longitude = {{ listing.longitude }};
+
+            // Create a map centered at the specified coordinates
+            var map = new google.maps.Map(document.getElementById('map'), {
+                center: {lat: latitude, lng: longitude},
+                zoom: 15 // Adjust the zoom level as needed
+            });
+
+            // Add a marker to the map
+            var marker = new google.maps.Marker({
+                position: {lat: latitude, lng: longitude},
+                map: map,
+                title: '{{ listing.address }}' // Add the address as marker title
+            });
+
+            // Create a button element
+            const viewInGoogleMapsBtn = document.createElement('button');
+            viewInGoogleMapsBtn.textContent = 'View in Google Maps';
+            viewInGoogleMapsBtn.classList.add('btn', 'btn-primary', 'mt-2');
+            viewInGoogleMapsBtn.style.margin = '10px'; // Add some margin to the button
+            viewInGoogleMapsBtn.style.padding = '5px'; // Add padding for better appearance
+            viewInGoogleMapsBtn.addEventListener('click', function() {
+                window.open(`https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`, '_blank');
+            });
+
+            // Add the button to the map
+            map.controls[google.maps.ControlPosition.TOP_RIGHT].push(viewInGoogleMapsBtn);
+            }
+
+        // Function to get the CSRF token from cookies
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function findNearbyMetroStations() {
+        var listingLocation = new google.maps.LatLng({{ listing.latitude }}, {{ listing.longitude }});
+        var map = new google.maps.Map(document.createElement('div'), {
+            center: listingLocation,
+            zoom: 15
+        });
+
+        var request = {
+            location: listingLocation,
+            radius: '1000', // Search within 1000 meters.
+            type: ['subway_station'] // Search for subway stations.
+        };
+
+        var service = new google.maps.places.PlacesService(map);
+        service.nearbySearch(request, function(results, status) {
+            if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+                // Calculate distance for each station and add it to the result object
+                results.forEach(function(station) {
+                    station.distance = google.maps.geometry.spherical.computeDistanceBetween(listingLocation, station.geometry.location);
+                });
+
+                // Sort results by distance
+                results.sort(function(a, b) {
+                    return a.distance - b.distance;
+                });
+
+                // Select the top 3 nearest stations
+                var nearestStations = results.slice(0, 3);
+
+                // Generate HTML for the 3 nearest stations, converting distance to miles
+                var stationsHtml = nearestStations.map(function(station) {
+                    var distanceInMiles = (station.distance * 0.000621371).toFixed(2); // Convert meters to miles
+                    // return station.name + ' - ' + station.vicinity + ' (' + distanceInMiles + ' miles away)';
+                    return station.name + ' - ' + distanceInMiles + ' miles away.';
+                }).join('<br>');
+
+                document.getElementById('metroStationsList').innerHTML = stationsHtml;
+            } else {
+                document.getElementById('metroStationsList').innerHTML = 'No nearby metro stations found within 1000 meters';
+            }
+        });
+    }
+
+document.addEventListener("DOMContentLoaded", function() {
+    if (typeof google === 'object' && typeof google.maps === 'object' && google.maps.places && google.maps.geometry) {
+        findNearbyMetroStations();
+    } else {
+        // Wait a bit and try again to ensure the Google Maps, Places, and Geometry libraries are loaded
+        setTimeout(findNearbyMetroStations, 1000);
+    }
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    if (typeof google === 'object' && typeof google.maps === 'object' && google.maps.places && google.maps.geometry) {
+        findNearbyMetroStations();
+    } else {
+        // Wait a bit and try again to ensure the Google Maps, Places, and Geometry libraries are loaded
+        setTimeout(findNearbyMetroStations, 1000);
+    }
+});
+
+    </script>
+
+    <script>
+        document.getElementById('viewInGoogleMaps').addEventListener('click', function() {
+        var latitude = {{ listing.latitude }};
+        var longitude = {{ listing.longitude }};
+        window.open(`https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`, '_blank');
+        });
+    </script>
+    
+
+</body>
+</html>
