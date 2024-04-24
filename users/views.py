@@ -30,6 +30,7 @@ from .forms import LandlordSignupForm
 from .models import Favorite, Rental_Listings
 from .models import RentalImages
 from .utils import send_email_to_admin
+from django.db.models import OuterRef, Subquery, F
 
 logger = logging.getLogger(__name__)
 
@@ -309,7 +310,12 @@ def rentals_page(request):
 
     listings = Rental_Listings.objects.all()
     listings = apply_filters(listings, filter_params)
-    listings = listings.annotate(first_image=Min("images__image_url"))
+    random_image_subquery = RentalImages.objects.filter(
+        rental_listing_id=OuterRef('pk')  
+    ).order_by('?').values('image_url')[:1]  
+    listings = listings.annotate(
+        first_image=Subquery(random_image_subquery)
+    )
     sort_option = request.GET.get("sort")
     if sort_option == "recent":
         listings = listings.order_by(
