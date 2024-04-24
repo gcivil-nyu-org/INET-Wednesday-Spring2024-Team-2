@@ -407,6 +407,14 @@ def listing_detail(request, listing_id):
     context = {"listing": listing}
     return render(request, "users/searchRental/listing_detail.html", context)
 
+@no_cache
+def landlord_listing_detail(request, listing_id):
+    # Retrieve the specific listing based on the ID provided in the URL parameter
+    listing = get_object_or_404(Rental_Listings, id=listing_id)
+
+    context = {"listing": listing}
+    return render(request, "users/searchRental/landlord_listing_detail.html", context)
+
 
 @no_cache
 @csrf_exempt

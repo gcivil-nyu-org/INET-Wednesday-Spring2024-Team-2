@@ -23,40 +23,18 @@
             display: block; /* Ensure it's displayed as block */
             text-align: center; /* Center the text for consistency */
         }
+        body {
+            padding-top: 70px; /* Adjust padding top to accommodate fixed navbar */
+        }
+        .dropdown-item{
+          color: rgb(172, 169, 169);
+        }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="{% url 'landlord_homepage' %}">
-              RentWiseNYC <!-- Here's the simple text replacement -->
-          </a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarContent">
-            <ul class="navbar-nav me-auto">
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'placeholder' %}">Post Rental</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'placeholder' %}">My Listings</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'landlord_profile_update' %}">My account</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'placeholder' %}">Links</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'logout' %}" >Logout</a>
-              </li>
-            </ul>
-           
-          </div>
-        </div>
-      </nav>
 
+<!-- navbar -->
+{% include 'users/landlord_navbar.html' %} 
 
     <div class="container mt-5">
         <h2 class="text-center">Update Profile</h2>
@@ -94,5 +72,6 @@
 
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
