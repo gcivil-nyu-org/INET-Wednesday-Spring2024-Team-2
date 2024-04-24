@@ -86,8 +86,52 @@
 </head>
 <body>
 
+<<<<<<< HEAD
 <!-- navbar -->
 {% include '../user_navbar.html' %} 
+=======
+
+  <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{% url 'user_homepage' %}">
+          RentWiseNYC <!-- Here's the simple text replacement -->
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'rentalspage' %}">All rentals</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'favorites_page' %}">Favourites</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'profile_view_edit' %}">My account</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Resources
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="https://hpdonline.nyc.gov/hpdonline/">Violations and Bedbug Reports</a></li>
+                <li><a class="dropdown-item" href="https://example.com/landlord-behavioral-links">Landlord Behavioral Links</a></li>
+                <li><a class="dropdown-item" href="https://portal.311.nyc.gov/check-status/">311 Reports</a></li>
+            </ul>
+        </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'logout' %}" >Logout</a>
+          </li>
+        </ul>
+        <form class="d-flex" method="get" action="{% url 'rentalspage' %}">
+          <input class="form-control me-sm-2" type="search" placeholder="e.g. address, building" name="search_query" style="color: rgba(255, 255, 255, 0.75);">
+          <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+        </form>
+      </div>
+    </div>
+  </nav>
+>>>>>>> 17e33a474c395e9d6cf6247f4f9d8e4184b109d1
 
 <div class="container-fluid filter-sort-section">
     <div class="filter-sort-container">
