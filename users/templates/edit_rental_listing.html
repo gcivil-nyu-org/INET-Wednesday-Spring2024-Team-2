@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Listing</title>
+    <!-- Bootstrap CSS from Bootswatch Pulse -->
+    {% load crispy_forms_tags %}
+    <link href="https://bootswatch.com/5/pulse/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .form-button1 {
+            position: relative; /* Position the loading spinner relative to the button */
+            width: 100%;
+            padding: 10px; /* Adjust padding to match the button */
+            margin-top: 10px; /* Space between button and fields */
+            display: block; /* Ensure it's displayed as block */
+            text-align: center; /* Center the button text */
+            overflow: hidden; /* Ensure loading spinner stays inside the button */
+        }
+        .custom-form {
+            max-width: 600px; /* Adjust the max-width as needed */
+            margin: auto; /* Center the form */
+            padding: 20px; /* Add padding for spacing */
+            background: #fff; /* White background */
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Box shadow */
+        }
+        .custom-form .form-group {
+            margin-bottom: 10px; /* Reduce margin between form groups */
+        }
+        .form-button {
+            position: relative; /* Position the loading spinner relative to the button */
+            display: block; /* Ensure it's displayed as block */
+            text-align: center; /* Center the button text */
+            overflow: hidden; /* Ensure loading spinner stays inside the button */
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg); /* Start rotation from 0 degrees */
+            }
+            100% {
+                transform: rotate(360deg); /* End rotation at 360 degrees */
+            }
+        }
+        body {
+            padding-top: 70px; /* Adjust padding top to accommodate fixed navbar */
+        }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCrOc65vMwPEL5ocVX1bJCiaTJiwJ5isEs&libraries=places&callback=initAutocomplete" async defer></script>
+</head>
+<body>
+
+<!-- navbar -->
+{% include 'users/landlord_navbar.html' %} 
+
+<div class="container mt-3">
+    <h2 class="text-center">Edit Rental Listing</h2>
+    <div class="custom-form">
+        <form method="post" enctype="multipart/form-data" id="rental-listing-form">
+            {% csrf_token %}
+            {% crispy form %}
+        </form>
+    </div>
+</div>
+
+
+
+<script>
+    function initAutocomplete() {
+        var addressInput = document.getElementById('id_address');
+        var autocomplete = new google.maps.places.Autocomplete(addressInput);
+
+        autocomplete.setFields(['address_component', 'geometry']);
+        autocomplete.addListener('place_changed', function() {
+            var place = autocomplete.getPlace();
+            fillInAddress(place);
+            console.log(place);
+        });
+        addressInput.addEventListener('input', function() {
+            clearRelatedFields();
+        });
+    }
+
+    function fillInAddress(place) {
+        // Example: Extracting city and postal code from the place details
+        var lat = place.geometry.location.lat();
+        var lng = place.geometry.location.lng();
+        document.getElementById('id_latitude').value = lat;
+        document.getElementById('id_longitude').value = lng;
+        var neighborhoodFound = false;
+
+        place.address_components.forEach(component => {
+            const componentType = component.types[0];
+            switch(componentType) {
+                case 'postal_code':
+                    document.getElementById('id_zipcode').value = component.long_name;
+                    break;
+                case 'neighborhood':
+                    document.getElementById('id_neighborhood').value = component.long_name;
+                    neighborhoodFound = true;
+                    console.log("found neighborhood")
+                    break;
+                case 'administrative_area_level_2':
+                    if (neighborhoodFound === false) {
+                        document.getElementById('id_neighborhood').value = component.long_name;
+                        console.log("neighborhood not found using county")
+                    }
+                    break;
+                case 'sublocality_level_1':
+                    document.getElementById('id_borough').value = component.long_name;
+                    break;
+            }
+         });
+
+    }
+    function clearRelatedFields() {
+            document.getElementById('id_neighborhood').value = '';
+            document.getElementById('id_zipcode').value = '';
+            document.getElementById('id_borough').value = '';
+    }
+
+    
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
