@@ -12,39 +12,50 @@
           color: rgb(172, 169, 169);
         }
 </style>
+<script src="https://kit.fontawesome.com/ef2c1fa41b.js" crossorigin="anonymous"></script>
 
 <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
-    <div class="container-fluid">
+  <div class="container-fluid">
       <a class="navbar-brand" href="{% url 'landlord_homepage' %}">
+        <i class="fa-solid fa-city"></i>
           RentWiseNYC 
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
+          <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarContent">
-        <ul class="navbar-nav me-auto">
-          <li class="nav-item">
-            <a class="nav-link active" href="{% url 'post_new_listings' %}">Post listing</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'landlord_profile_update' %}">My account</a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Resources
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <li><a class="dropdown-item" href="https://hpdonline.nyc.gov/hpdonline/">Violations and Bedbug Reports</a></li>
-              <li><a class="dropdown-item" href="https://www.landlordwatchlist.com/">Landlord Behavioral Links</a></li>
-              <li><a class="dropdown-item" href="https://portal.311.nyc.gov/check-status/">311 Reports</a></li>
+          <ul class="navbar-nav me-auto">
+              <li class="nav-item">
+                  <a class="nav-link" href="{% url 'post_new_listings' %}"><i class="fa-solid fa-plus"></i> Post listing</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" href="{% url 'landlord_profile_update' %}"><i class="fa-regular fa-user"></i> My Account</a>
+              </li>
+              <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      <i class="fa-solid fa-link"></i> Resources
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                      <li><a class="dropdown-item" href="https://hpdonline.nyc.gov/hpdonline/" target="_blank">Violations and Bedbug Reports
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                      </a></li>
+                      <li><a class="dropdown-item" href="https://www.landlordwatchlist.com/" target="_blank">Landlord Behavioral Links
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                      </a></li>
+                      <li><a class="dropdown-item" href="https://portal.311.nyc.gov/check-status/" target="_blank">311 Reports
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                      </a></li>
+                  </ul>
+              </li>
           </ul>
-      </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'logout' %}" >Logout</a>
-          </li>
-        </ul>
+          <ul class="navbar-nav ml-auto"> <!-- ml-auto pushes the items to the right -->
+              <li class="nav-item">
+                  <a class="nav-link" href="{% url 'logout' %}" ><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+              </li>
+          </ul>
       </div>
-    </div>
-  </nav>
+  </div>
+</nav>
+
 
 </html>
