@@ -61,4 +61,6 @@ urlpatterns = [
         views.landlord_profile_update,
         name="landlord_profile_update",
     ),
+    path('listing/<int:listing_id>/edit/', views.edit_rental_listing, name='edit_rental_listing'),
+    path('listing/<int:listing_id>/delete/', views.delete_rental_listing, name='delete_rental_listing'),
 ]
