@@ -6,8 +6,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Listing Detail Page</title>
+    <title>Listing Detail</title>
     <!-- Bootstrap CSS from Bootswatch Pulse -->
+    <script src="https://kit.fontawesome.com/ef2c1fa41b.js" crossorigin="anonymous"></script>
     <link href="https://bootswatch.com/5/pulse/bootstrap.css" rel="stylesheet">
     <style>
                 .container {
@@ -380,10 +381,13 @@
 
             // Create a button element
             const viewInGoogleMapsBtn = document.createElement('button');
-            viewInGoogleMapsBtn.textContent = 'View in Google Maps';
             viewInGoogleMapsBtn.classList.add('btn', 'btn-primary', 'mt-2');
             viewInGoogleMapsBtn.style.margin = '10px'; // Add some margin to the button
             viewInGoogleMapsBtn.style.padding = '5px'; // Add padding for better appearance
+            const icon = document.createElement('i');
+            icon.classList.add('fa-solid', 'fa-map-location-dot');
+            viewInGoogleMapsBtn.appendChild(document.createTextNode(' Google Maps '));
+            viewInGoogleMapsBtn.appendChild(icon);
             viewInGoogleMapsBtn.addEventListener('click', function() {
                 window.open(`https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`, '_blank');
             });

@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rentals Page - RentWiseNyc</title>
+    <link rel="icon" href="{% static 'users/favicon.ico' %}" type="image/x-icon">
     <!-- Bootstrap CSS from Bootswatch Pulse -->
     <link href="https://bootswatch.com/5/pulse/bootstrap.css" rel="stylesheet">
     <style>
@@ -96,7 +97,7 @@
     <div class="filter-sort-container">
       <div class="btn-group">
         <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-          Filter
+          <i class="fa-solid fa-filter"></i> Filter
         </button>
         <div class="dropdown-menu p-4" style="width: 300px;">
           <form id="filterForm" method="GET">
@@ -168,7 +169,7 @@
       <!-- Sort Button -->
       <div class="btn-group ms-2">
         <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-          Sort
+          <i class="fa-solid fa-sort"></i> Sort
         </button>
         <ul class="dropdown-menu">
           <!-- Add dynamic sort options here with current filter parameters -->
@@ -180,7 +181,7 @@
       <div class="container-fluid">
         <div class="row">
             <div class="text-center fixed-bottom mb-3">
-                <a href="{% url 'rental_listings_map' %}?filter_params={{ filter_params }}" class="btn btn-primary">Map</a>
+                <a href="{% url 'rental_listings_map' %}?filter_params={{ filter_params }}" class="btn btn-primary"><i class="fa-solid fa-map-location-dot"></i>  &nbsp;Maps</a>
             </div>
         </div>
     </div>
