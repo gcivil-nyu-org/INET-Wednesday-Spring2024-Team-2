@@ -1,12 +1,21 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser,Rental_Listings
+from .models import CustomUser, Rental_Listings
 
 
 # Register your models here.
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
-    list_display = ["username", "email", "full_name", "user_type", "is_staff", "is_active", "s3_doclink", "verified"]
+    list_display = [
+        "username",
+        "email",
+        "full_name",
+        "user_type",
+        "is_staff",
+        "is_active",
+        "s3_doclink",
+        "verified",
+    ]
     fieldsets = (
         (None, {"fields": ("username", "password")}),
         ("Personal info", {"fields": ("full_name", "email", "user_type")}),
@@ -24,12 +33,25 @@ class CustomUserAdmin(UserAdmin):
         ),
         ("Important dates", {"fields": ("last_login", "date_joined")}),
         ("Status", {"fields": ("verified",)}),
-
     )
 
 
 class RentalListingsAdmin(admin.ModelAdmin):
-    list_display = ('address', 'price', 'Landlord_id', 'neighborhood', 'rooms', 'unit_type', 'beds', 'baths', 'sq_ft', 'zipcode', 'borough', 'Submitted_date', 'Availability_Date')
+    list_display = (
+        "address",
+        "price",
+        "Landlord_id",
+        "neighborhood",
+        "rooms",
+        "unit_type",
+        "beds",
+        "baths",
+        "sq_ft",
+        "zipcode",
+        "borough",
+        "Submitted_date",
+        "Availability_Date",
+    )
     # list_filter = ('city', 'zipcode', 'borough')
     # search_fields = ('address', 'city', 'zipcode')
     fieldsets = (
@@ -43,5 +65,3 @@ class RentalListingsAdmin(admin.ModelAdmin):
 # Register both admin classes
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Rental_Listings, RentalListingsAdmin)
-
-
