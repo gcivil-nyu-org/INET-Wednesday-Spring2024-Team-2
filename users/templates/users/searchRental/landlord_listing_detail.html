@@ -33,11 +33,12 @@
                 }
         
                 .image-container {
-                    max-width: 60%;
+                    width: 60%;
                     display: flex;
                     flex-direction: column;
                     padding-right: 10px;
                 }
+        
         
                 #mainImageContainer {
                     width: 100%;
@@ -55,17 +56,21 @@
         
                 .thumbnail {
                     width: 15%;
-                    /* Set the desired width for the thumbnails */
-                    height: auto;
+                    overflow:hidden;
+                    height: 80px;
                     margin: 5px;
                     cursor: pointer;
+                    position: relative;
                     border: 2px solid transparent;
-                    /* Set initial border style */
                 }
         
                 .selected-thumbnail {
                     border-color: #6610f2;
-                    /* Set border color for selected thumbnail */
+                    width: 15%;
+                    overflow:hidden;
+                    height: 80px;
+                    margin: 5px;
+                    position: relative;
                 }
         
                 .listing-details-container {
