@@ -64,8 +64,7 @@ def login_process(request, user_type, this_page, destination_url_name):
         form = CustomLoginForm()
         return render(request, this_page, {"form": form})
 
-    form = CustomLoginForm(request,
-                           request.POST)  # Pass the request to the form
+    form = CustomLoginForm(request, request.POST)  # Pass the request to the form
     if form.is_valid():
         username = form.cleaned_data["username"]
         password = form.cleaned_data["password"]
@@ -131,8 +130,7 @@ def user_signup(request):
                 user.verified = True
             else:
                 user.verified = False
-            login(request, user,
-                  backend="django.contrib.auth.backends.ModelBackend")
+            login(request, user, backend="django.contrib.auth.backends.ModelBackend")
             return redirect("user_homepage")
     else:
         form = UserSignUpForm()
@@ -168,6 +166,12 @@ def landlord_home(request):
         .annotate(first_image=Min("images__image_url"))
         .order_by("-Submitted_date")
     )
+    random_image_subquery = (
+        RentalImages.objects.filter(rental_listing_id=OuterRef("pk"))
+        .order_by("?")
+        .values("image_url")[:1]
+    )
+    listings = listings.annotate(first_image=Subquery(random_image_subquery))
     return render(request, "landlord_homepage.html", {"listings": listings})
 
 
@@ -196,8 +200,7 @@ def landlord_signup(request):
 
                     # Check if file already exists in S3 bucket
                     existing_files = s3_client.list_objects_v2(
-                        Bucket=settings.AWS_STORAGE_BUCKET_NAME,
-                        Prefix=file_name
+                        Bucket=settings.AWS_STORAGE_BUCKET_NAME, Prefix=file_name
                     )
 
                     if "Contents" in existing_files:
@@ -207,8 +210,7 @@ def landlord_signup(request):
                             " Please rename your file and try again.",
                         )
                         return render(
-                            request, "signup/landlord_signup.html",
-                            {"form": form}
+                            request, "signup/landlord_signup.html", {"form": form}
                         )
 
                     s3_client.upload_fileobj(
@@ -223,7 +225,7 @@ def landlord_signup(request):
                     print(f"Error uploading file to S3: {e}")
             user.save()
             if user.username not in ["newlandlord", "landlorduser"]:
-                send_email_to_admin(user.username,user.email)
+                send_email_to_admin(user.username, user.email)
 
             messages.success(request, "Registration successful. Please log in.")
             return redirect("landlord_login")
@@ -248,8 +250,7 @@ def apply_filters(listings, filter_params):
             pass
         else:
             # Filter by neighborhood or borough using exact match
-            listings = listings.filter(
-                Q(neighborhood=borough) | Q(borough=borough))
+            listings = listings.filter(Q(neighborhood=borough) | Q(borough=borough))
     if filter_params.get("min_price"):
         min_price = int(filter_params.get("min_price"))
         listings = listings.filter(price__gte=min_price)
@@ -276,8 +277,7 @@ def apply_filters(listings, filter_params):
         if filter_params.get("building_type") == "Any":
             listings = listings
         else:
-            listings = listings.filter(
-                unit_type=filter_params.get("building_type"))
+            listings = listings.filter(unit_type=filter_params.get("building_type"))
     if filter_params.get("parking"):
         listings = listings.filter(parking_available=True)
     if filter_params.get("search_query"):
@@ -294,6 +294,7 @@ def apply_filters(listings, filter_params):
 
 
 @no_cache
+@login_required
 @user_type_required("user")
 def rentals_page(request):
     filter_params = {
@@ -312,12 +313,12 @@ def rentals_page(request):
 
     listings = Rental_Listings.objects.all()
     listings = apply_filters(listings, filter_params)
-    random_image_subquery = RentalImages.objects.filter(
-        rental_listing_id=OuterRef('pk')  
-    ).order_by('?').values('image_url')[:1]  
-    listings = listings.annotate(
-        first_image=Subquery(random_image_subquery)
+    random_image_subquery = (
+        RentalImages.objects.filter(rental_listing_id=OuterRef("pk"))
+        .order_by("?")
+        .values("image_url")[:1]
     )
+    listings = listings.annotate(first_image=Subquery(random_image_subquery))
     sort_option = request.GET.get("sort")
     if sort_option == "recent":
         listings = listings.order_by(
@@ -327,16 +328,14 @@ def rentals_page(request):
         listings = listings.order_by("-price")
     else:
         listings = listings.order_by("price")
-    favorite_listings_ids = Favorite.objects.filter(
-        user=request.user).values_list(
+    favorite_listings_ids = Favorite.objects.filter(user=request.user).values_list(
         "listing__id", flat=True
     )
     filter_params = {k: v for k, v in filter_params.items() if v is not None}
     paginator = Paginator(listings, 5)  # Show 5 listings per page
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
-    favorite_listings_ids = Favorite.objects.filter(
-        user=request.user).values_list(
+    favorite_listings_ids = Favorite.objects.filter(user=request.user).values_list(
         "listing__id", flat=True
     )
     context = {
@@ -348,6 +347,8 @@ def rentals_page(request):
     return render(request, "users/searchRental/rentalspage.html", context)
 
 
+@no_cache
+@login_required
 @user_type_required("landlord")
 def add_rental_listing(request):
     if request.method == "POST":
@@ -357,9 +358,9 @@ def add_rental_listing(request):
             rental_listing = form.save(commit=False)
             rental_listing.Landlord = request.user
             rental_listing.Submitted_date = timezone.now().date()
-            apt_no = form.cleaned_data.get('apt_no', '')
+            apt_no = form.cleaned_data.get("apt_no", "")
             if apt_no:
-                base_address = rental_listing.address.split(',')[0]
+                base_address = rental_listing.address.split(",")[0]
                 full_address = f"{base_address} #{apt_no}"
                 rental_listing.address = full_address
             rental_listing.save()
@@ -392,27 +393,31 @@ def add_rental_listing(request):
 
 @no_cache
 @login_required
-def placeholder_view(request):
-    return render(request, "users/searchRental/placeholder.html")
-
-
-@user_type_required("landlord")
-def landlord_placeholder_view(request):
-    return render(request, "users/searchRental/landlord_placeholder.html")
-
-
-@no_cache
+@user_type_required("user")
 def listing_detail(request, listing_id):
     # Retrieve the specific listing based on the ID provided in the URL parameter
     listing = get_object_or_404(Rental_Listings, id=listing_id)
+    favorite_listings = Favorite.objects.filter(user=request.user).select_related(
+        "listing"
+    )
 
-    context = {"listing": listing}
+    favorite_listings_ids = Favorite.objects.filter(user=request.user).values_list(
+        "listing_id", flat=True
+    )
+
+    context = {
+        "listing": listing,
+        "favorite_listings_ids": list(favorite_listings_ids),
+    }
     return render(request, "users/searchRental/listing_detail.html", context)
 
+
 @no_cache
+@login_required
+@user_type_required("landlord")
 def landlord_listing_detail(request, listing_id):
     # Retrieve the specific listing based on the ID provided in the URL parameter
-    listing = get_object_or_404(Rental_Listings, id=listing_id,  Landlord = request.user)
+    listing = get_object_or_404(Rental_Listings, id=listing_id, Landlord=request.user)
 
     context = {"listing": listing}
     return render(request, "users/searchRental/landlord_listing_detail.html", context)
@@ -448,18 +453,30 @@ def toggle_favorite(request):
 @login_required
 @no_cache
 def favorites_page(request):
-    favorite_listings = Favorite.objects.filter(
-        user=request.user).select_related(
+    favorite_listings = Favorite.objects.filter(user=request.user).select_related(
         "listing"
     )
-    listings = [fav.listing for fav in favorite_listings]
 
-    listings_json = serializers.serialize("json", listings)
-    favorite_listings_ids = [listing.id for listing in listings]
+    favorite_listings_ids = Favorite.objects.filter(user=request.user).values_list(
+        "listing_id", flat=True
+    )
+
+    listings = Rental_Listings.objects.all()
+    # listings = Rental_Listings.objects.exclude(neighborhood="Hell's Kitchen").filter(id__in=favorite_listings_ids)
+    listings = listings.filter(id__in=favorite_listings_ids)
+
+    random_image_subquery = (
+        RentalImages.objects.filter(rental_listing_id=OuterRef("pk"))
+        .order_by("?")
+        .values("image_url")[:1]
+    )
+    listings = listings.annotate(first_image=Subquery(random_image_subquery))
+
+    images = RentalImages.objects.filter(rental_listing__in=favorite_listings_ids)
 
     context = {
-        "listings_json": listings_json,
-        "favorite_listings_ids": favorite_listings_ids,
+        "listings_json": listings,
+        "favorite_listings_ids": list(favorite_listings_ids),
     }
     return render(request, "users/searchRental/favorites.html", context)
 
@@ -478,6 +495,7 @@ def map_view(request):
         "this_domain": current_site.domain,
     }
     return render(request, "users/searchRental/map_view.html", context)
+
 
 @login_required
 @no_cache
@@ -499,8 +517,8 @@ def profile_view_edit(request):
     )
 
 
-@login_required
 @no_cache
+@login_required
 @user_type_required("landlord")
 def landlord_profile_update(request):
     if request.method == "POST":
@@ -518,11 +536,14 @@ def landlord_profile_update(request):
         {"form": form, "user": request.user},
     )
 
+
+@no_cache
+@login_required
 @user_type_required("landlord")
 def edit_rental_listing(request, listing_id):
     listing = get_object_or_404(Rental_Listings, id=listing_id, Landlord=request.user)
     images = RentalImages.objects.filter(rental_listing=listing)
-    if request.method == 'POST':
+    if request.method == "POST":
         form = RentalListingForm(request.POST, request.FILES, instance=listing)
 
         if form.is_valid():
@@ -536,9 +557,9 @@ def edit_rental_listing(request, listing_id):
                 rental_listing = form.save(commit=False)
                 rental_listing.Landlord = request.user
                 rental_listing.Submitted_date = timezone.now().date()
-                apt_no = form.cleaned_data.get('apt_no', '')
+                apt_no = form.cleaned_data.get("apt_no", "")
                 if apt_no:
-                    base_address = rental_listing.address.split(' #')[0]
+                    base_address = rental_listing.address.split(" #")[0]
                     full_address = f"{base_address} #{apt_no}"
                     rental_listing.address = full_address
                 rental_listing.save()
@@ -566,20 +587,22 @@ def edit_rental_listing(request, listing_id):
                     except Exception as e:
                         print(f"Error uploading file to S3: {e}")
 
-            return redirect('landlord_listing_detail', listing_id=listing.id)
+            return redirect("landlord_listing_detail", listing_id=listing.id)
     else:
         form = RentalListingForm(instance=listing)
-    return render(request, 'edit_rental_listing.html', {
-        'form': form,
-        'listing': listing,
-        'images': images
-    })
+    return render(
+        request,
+        "edit_rental_listing.html",
+        {"form": form, "listing": listing, "images": images},
+    )
 
 
+@no_cache
+@login_required
 @user_type_required("landlord")
 def delete_rental_listing(request, listing_id):
     listing = get_object_or_404(Rental_Listings, id=listing_id, Landlord=request.user)
-    if request.method == 'POST':
+    if request.method == "POST":
         s3_client = boto3.client(
             "s3",
             aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
@@ -591,27 +614,33 @@ def delete_rental_listing(request, listing_id):
 
         # List objects in S3 to verify which exist
         response = s3_client.list_objects_v2(Bucket=bucket_name, Prefix=folder_name)
-        existing_keys = {obj['Key'] for obj in response.get('Contents', [])}  # Use a set for faster lookup
+        existing_keys = {
+            obj["Key"] for obj in response.get("Contents", [])
+        }  # Use a set for faster lookup
 
         with transaction.atomic():
             images = RentalImages.objects.filter(rental_listing=listing)
             for image in images:
-                file_key = folder_name + image.image_url.split('/')[-1]  # Construct the full key
+                file_key = (
+                    folder_name + image.image_url.split("/")[-1]
+                )  # Construct the full key
 
                 # Try to delete the object from S3
                 try:
                     if file_key in existing_keys:
                         print(f"Deleting {file_key} from S3")
-                        #s3_client.delete_object(Bucket=bucket_name, Key=file_key)
-                        image.delete()  
+                        # s3_client.delete_object(Bucket=bucket_name, Key=file_key)
+                        image.delete()
                     else:
                         print(f"File {file_key} not found in S3")
-                        messages.error(request, f'File {file_key} not found in S3.')
+                        messages.error(request, f"File {file_key} not found in S3.")
                 except Exception as e:
                     errors_occurred = True
-                    messages.error(request, f'Failed to delete image {file_key} from S3: {str(e)}')
-                    transaction.set_rollback(True) 
-                    break 
+                    messages.error(
+                        request, f"Failed to delete image {file_key} from S3: {str(e)}"
+                    )
+                    transaction.set_rollback(True)
+                    break
 
             if not errors_occurred:
                 listing.delete()
@@ -619,8 +648,10 @@ def delete_rental_listing(request, listing_id):
                 raise Exception("Error occurred while deleting images from S3.")
 
         if not errors_occurred:
-            return redirect('landlord_homepage')
+            return redirect("landlord_homepage")
         else:
-           context = {"listing": listing}
-           return render(request, "users/searchRental/landlord_listing_detail.html", context)
+            context = {"listing": listing}
+            return render(
+                request, "users/searchRental/landlord_listing_detail.html", context
+            )
     return render(request, "users/searchRental/landlord_listing_detail.html", context)
