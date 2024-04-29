@@ -166,6 +166,12 @@ def landlord_home(request):
         .annotate(first_image=Min("images__image_url"))
         .order_by("-Submitted_date")
     )
+    random_image_subquery = (
+        RentalImages.objects.filter(rental_listing_id=OuterRef("pk"))
+        .order_by("?")
+        .values("image_url")[:1]
+    )
+    listings = listings.annotate(first_image=Subquery(random_image_subquery))
     return render(request, "landlord_homepage.html", {"listings": listings})
 
 
@@ -288,6 +294,7 @@ def apply_filters(listings, filter_params):
 
 
 @no_cache
+@login_required
 @user_type_required("user")
 def rentals_page(request):
     filter_params = {
@@ -340,6 +347,8 @@ def rentals_page(request):
     return render(request, "users/searchRental/rentalspage.html", context)
 
 
+@no_cache
+@login_required
 @user_type_required("landlord")
 def add_rental_listing(request):
     if request.method == "POST":
@@ -384,16 +393,7 @@ def add_rental_listing(request):
 
 @no_cache
 @login_required
-def placeholder_view(request):
-    return render(request, "users/searchRental/placeholder.html")
-
-
-@user_type_required("landlord")
-def landlord_placeholder_view(request):
-    return render(request, "users/searchRental/landlord_placeholder.html")
-
-
-@no_cache
+@user_type_required("user")
 def listing_detail(request, listing_id):
     # Retrieve the specific listing based on the ID provided in the URL parameter
     listing = get_object_or_404(Rental_Listings, id=listing_id)
@@ -413,6 +413,8 @@ def listing_detail(request, listing_id):
 
 
 @no_cache
+@login_required
+@user_type_required("landlord")
 def landlord_listing_detail(request, listing_id):
     # Retrieve the specific listing based on the ID provided in the URL parameter
     listing = get_object_or_404(Rental_Listings, id=listing_id, Landlord=request.user)
@@ -515,8 +517,8 @@ def profile_view_edit(request):
     )
 
 
-@login_required
 @no_cache
+@login_required
 @user_type_required("landlord")
 def landlord_profile_update(request):
     if request.method == "POST":
@@ -535,6 +537,8 @@ def landlord_profile_update(request):
     )
 
 
+@no_cache
+@login_required
 @user_type_required("landlord")
 def edit_rental_listing(request, listing_id):
     listing = get_object_or_404(Rental_Listings, id=listing_id, Landlord=request.user)
@@ -593,6 +597,8 @@ def edit_rental_listing(request, listing_id):
     )
 
 
+@no_cache
+@login_required
 @user_type_required("landlord")
 def delete_rental_listing(request, listing_id):
     listing = get_object_or_404(Rental_Listings, id=listing_id, Landlord=request.user)
