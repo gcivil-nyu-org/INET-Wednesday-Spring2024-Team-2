@@ -450,16 +450,26 @@ def toggle_favorite(request):
 def favorites_page(request):
     favorite_listings = Favorite.objects.filter(
         user=request.user).select_related(
-        "listing"
-    )
-    listings = [fav.listing for fav in favorite_listings]
+        "listing")
 
-    listings_json = serializers.serialize("json", listings)
-    favorite_listings_ids = [listing.id for listing in listings]
+    favorite_listings_ids = Favorite.objects.filter(user=request.user).values_list('listing_id', flat=True)
+
+    listings = Rental_Listings.objects.all()
+    # listings = Rental_Listings.objects.exclude(neighborhood="Hell's Kitchen").filter(id__in=favorite_listings_ids)
+    listings = listings.filter(id__in=favorite_listings_ids)
+
+    random_image_subquery = RentalImages.objects.filter(
+        rental_listing_id=OuterRef('pk')  
+    ).order_by('?').values('image_url')[:1]  
+    listings = listings.annotate(
+        first_image=Subquery(random_image_subquery)
+    )
+
+    images = RentalImages.objects.filter(rental_listing__in=favorite_listings_ids)
 
     context = {
-        "listings_json": listings_json,
-        "favorite_listings_ids": favorite_listings_ids,
+        "listings_json": listings,
+        "favorite_listings_ids": list(favorite_listings_ids),
     }
     return render(request, "users/searchRental/favorites.html", context)
 
