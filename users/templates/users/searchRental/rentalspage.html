@@ -23,30 +23,31 @@
             gap: 20px; /* Gap between grid items */
         }
         .listing {
-            position: relative;
-            border-radius: 5px;
-            overflow: hidden;
+        position: relative;
+        border-radius: 5px;
+        overflow: hidden;
+        height: 500px;
         }
         .listing a {
             text-decoration: none;
             color: black;
         }
         .listing-content {
-            display: flex;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            overflow: hidden;
-            width: 100%; /* Ensure full width for flex layout */
+          display: flex;
+          border: 1px solid #ddd;
+          border-radius: 5px;
+          overflow: hidden;
+          width: 100%; /* Ensure full width for flex layout */
         }
         .listing-image {
-            width: 50%; /* Set fixed width for image */
+            height: 450px;
+            width: 50%;
             position: relative;
         }
         .listing-image img {
-            width: 100%;
-            height: auto; /* Maintain aspect ratio */
-            display: block;
-            object-fit: cover; /* Cover container */
+            width: 100%; 
+            height: 100%;
+            object-fit: cover; 
         }
         .listing-details {
             width: 50%; /* Set fixed width for details */
