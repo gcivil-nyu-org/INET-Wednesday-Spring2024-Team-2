@@ -405,8 +405,13 @@ def landlord_placeholder_view(request):
 def listing_detail(request, listing_id):
     # Retrieve the specific listing based on the ID provided in the URL parameter
     listing = get_object_or_404(Rental_Listings, id=listing_id)
+    favorite_listings = Favorite.objects.filter(
+        user=request.user).select_related(
+        "listing")
 
-    context = {"listing": listing}
+    favorite_listings_ids = Favorite.objects.filter(user=request.user).values_list('listing_id', flat=True)
+
+    context = {"listing": listing, "favorite_listings_ids": list(favorite_listings_ids),}
     return render(request, "users/searchRental/listing_detail.html", context)
 
 @no_cache
