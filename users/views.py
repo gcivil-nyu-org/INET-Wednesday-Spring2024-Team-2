@@ -30,6 +30,8 @@ from .forms import LandlordSignupForm
 from .models import Favorite, Rental_Listings
 from .models import RentalImages
 from .utils import send_email_to_admin
+from django.db.models import OuterRef, Subquery, F
+from django.db import transaction
 
 logger = logging.getLogger(__name__)
 
@@ -220,7 +222,8 @@ def landlord_signup(request):
                 except Exception as e:
                     print(f"Error uploading file to S3: {e}")
             user.save()
-            send_email_to_admin(user.username)
+            if user.username not in ["newlandlord", "landlorduser"]:
+                send_email_to_admin(user.username,user.email)
 
             messages.success(request, "Registration successful. Please log in.")
             return redirect("landlord_login")
@@ -309,7 +312,12 @@ def rentals_page(request):
 
     listings = Rental_Listings.objects.all()
     listings = apply_filters(listings, filter_params)
-    listings = listings.annotate(first_image=Min("images__image_url"))
+    random_image_subquery = RentalImages.objects.filter(
+        rental_listing_id=OuterRef('pk')  
+    ).order_by('?').values('image_url')[:1]  
+    listings = listings.annotate(
+        first_image=Subquery(random_image_subquery)
+    )
     sort_option = request.GET.get("sort")
     if sort_option == "recent":
         listings = listings.order_by(
@@ -400,6 +408,14 @@ def listing_detail(request, listing_id):
 
     context = {"listing": listing}
     return render(request, "users/searchRental/listing_detail.html", context)
+
+@no_cache
+def landlord_listing_detail(request, listing_id):
+    # Retrieve the specific listing based on the ID provided in the URL parameter
+    listing = get_object_or_404(Rental_Listings, id=listing_id,  Landlord = request.user)
+
+    context = {"listing": listing}
+    return render(request, "users/searchRental/landlord_listing_detail.html", context)
 
 
 @no_cache
@@ -501,3 +517,110 @@ def landlord_profile_update(request):
         "users/Profile/landlord_profile_update.html",
         {"form": form, "user": request.user},
     )
+
+@user_type_required("landlord")
+def edit_rental_listing(request, listing_id):
+    listing = get_object_or_404(Rental_Listings, id=listing_id, Landlord=request.user)
+    images = RentalImages.objects.filter(rental_listing=listing)
+    if request.method == 'POST':
+        form = RentalListingForm(request.POST, request.FILES, instance=listing)
+
+        if form.is_valid():
+            with transaction.atomic():
+                new_images = request.FILES.getlist("photo")
+
+                # If new images are uploaded, delete all existing images
+                if new_images:
+                    images.delete()
+
+                rental_listing = form.save(commit=False)
+                rental_listing.Landlord = request.user
+                rental_listing.Submitted_date = timezone.now().date()
+                apt_no = form.cleaned_data.get('apt_no', '')
+                if apt_no:
+                    base_address = rental_listing.address.split(' #')[0]
+                    full_address = f"{base_address} #{apt_no}"
+                    rental_listing.address = full_address
+                rental_listing.save()
+
+                # Save the new images
+                AWS_STORAGE_BUCKET_NAME = "landlord-verification-files"
+                for image in new_images:
+                    file_name, file_extension = os.path.splitext(image.name)
+                    unique_file_name = f"images/{uuid.uuid4()}{file_extension}"
+                    try:
+                        s3_client = boto3.client(
+                            "s3",
+                            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+                        )
+                        s3_client.upload_fileobj(
+                            image,
+                            AWS_STORAGE_BUCKET_NAME,
+                            unique_file_name,
+                        )
+                        image_url = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{unique_file_name}"
+                        RentalImages.objects.create(
+                            rental_listing=rental_listing, image_url=image_url
+                        )
+                    except Exception as e:
+                        print(f"Error uploading file to S3: {e}")
+
+            return redirect('landlord_listing_detail', listing_id=listing.id)
+    else:
+        form = RentalListingForm(instance=listing)
+    return render(request, 'edit_rental_listing.html', {
+        'form': form,
+        'listing': listing,
+        'images': images
+    })
+
+
+@user_type_required("landlord")
+def delete_rental_listing(request, listing_id):
+    listing = get_object_or_404(Rental_Listings, id=listing_id, Landlord=request.user)
+    if request.method == 'POST':
+        s3_client = boto3.client(
+            "s3",
+            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+        )
+        bucket_name = "landlord-verification-files"
+        folder_name = "pdfs/"
+        errors_occurred = False
+
+        # List objects in S3 to verify which exist
+        response = s3_client.list_objects_v2(Bucket=bucket_name, Prefix=folder_name)
+        existing_keys = {obj['Key'] for obj in response.get('Contents', [])}  # Use a set for faster lookup
+
+        with transaction.atomic():
+            images = RentalImages.objects.filter(rental_listing=listing)
+            for image in images:
+                file_key = folder_name + image.image_url.split('/')[-1]  # Construct the full key
+
+                # Try to delete the object from S3
+                try:
+                    if file_key in existing_keys:
+                        print(f"Deleting {file_key} from S3")
+                        #s3_client.delete_object(Bucket=bucket_name, Key=file_key)
+                        image.delete()  
+                    else:
+                        print(f"File {file_key} not found in S3")
+                        messages.error(request, f'File {file_key} not found in S3.')
+                except Exception as e:
+                    errors_occurred = True
+                    messages.error(request, f'Failed to delete image {file_key} from S3: {str(e)}')
+                    transaction.set_rollback(True) 
+                    break 
+
+            if not errors_occurred:
+                listing.delete()
+            else:
+                raise Exception("Error occurred while deleting images from S3.")
+
+        if not errors_occurred:
+            return redirect('landlord_homepage')
+        else:
+           context = {"listing": listing}
+           return render(request, "users/searchRental/landlord_listing_detail.html", context)
+    return render(request, "users/searchRental/landlord_listing_detail.html", context)

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rental Listing Form</title>
+    <title>Edit Listing</title>
     <!-- Bootstrap CSS from Bootswatch Pulse -->
     {% load crispy_forms_tags %}
     <link href="https://bootswatch.com/5/pulse/bootstrap.min.css" rel="stylesheet">
@@ -36,40 +36,6 @@
             text-align: center; /* Center the button text */
             overflow: hidden; /* Ensure loading spinner stays inside the button */
         }
-        .location-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .location-button {
-            position: relative; /* Ensure button has a positioning context */
-        }
-        .form-button {
-            padding: 6px; /* Adjust padding to match the button */
-            margin-top: 9px; /* Space between button and fields */
-            display: block; /* Ensure it's displayed as block */
-            text-align: center; /* Center the button text */
-            overflow: hidden; /* Ensure loading spinner stays inside the button */
-        }
-
-        /* Adjustments for the spinner */
-        .loading-spinner {
-            position: absolute; /* Position the loading spinner */
-            top: 25%; /* Align to the vertical center of the button */
-            left: 25%; /* Align to the horizontal center of the button */
-            transform: translate(-50%, -50%); /* Center the spinner */
-            border: 2px solid transparent; /* Set border for spinner */
-            border-top-color: #fff; /* Set border color */
-            border-radius: 50%; /* Make the spinner circular */
-            width: 20px; /* Set fixed width of spinner */
-            height: 20px; /* Set fixed height of spinner */
-            animation: spin 1s linear infinite; /* Apply rotation animation */
-            z-index: 1; /* Ensure spinner is above button text */
-            visibility: hidden; /* Initially hide spinner */
-        }
-        .loading-spinner.active {
-            visibility: visible; /* Show spinner when active */
-        }
 
         @keyframes spin {
             0% {
@@ -91,7 +57,7 @@
 {% include 'users/landlord_navbar.html' %} 
 
 <div class="container mt-3">
-    <h2 class="text-center">Add Rental Listing</h2>
+    <h2 class="text-center">Edit Rental Listing</h2>
     <div class="custom-form">
         <form method="post" enctype="multipart/form-data" id="rental-listing-form">
             {% csrf_token %}

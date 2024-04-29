@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rentals Page - RentWiseNyc</title>
+    <link rel="icon" href="{% static 'users/favicon.ico' %}" type="image/x-icon">
     <!-- Bootstrap CSS from Bootswatch Pulse -->
     <link href="https://bootswatch.com/5/pulse/bootstrap.css" rel="stylesheet">
     <style>
@@ -53,16 +54,22 @@
             box-sizing: border-box; /* Include padding in width calculation */
         }
         .favorite-icon {
-          position: absolute;
-          top: 10px;
-          right: 10px;
-          cursor: pointer;
-          font-size: 24px; 
-          color: rgb(255, 253, 253); /* Default non-favorite color */
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 24px;
+            color: rgb(255, 253, 253); /* Default non-favorite color */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Shadow for better visibility */
         }
+
         .favorite-icon.active {
-          color: red; /* Favorited state color */
+            color: red; /* Favorited state color */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Shadow for better visibility */
         }
+
+
+
         .pagination li,
         .step-links a {
           display: inline-block;
@@ -77,62 +84,20 @@
         body {
             padding-top: 70px; /* Adjust padding top to accommodate fixed navbar */
         }
-        .dropdown-item{
-          color: rgb(172, 169, 169);
-        }
         
 
     </style>
 </head>
 <body>
 
-
-  <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="{% url 'user_homepage' %}">
-          RentWiseNYC <!-- Here's the simple text replacement -->
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarContent">
-        <ul class="navbar-nav me-auto">
-          <li class="nav-item">
-            <a class="nav-link active" href="{% url 'placeholder' %}">All rentals</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'favorites_page' %}">Favourites</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'profile_view_edit' %}">My account</a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Resources
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="https://hpdonline.nyc.gov/hpdonline/">Violations and Bedbug Reports</a></li>
-                <li><a class="dropdown-item" href="https://example.com/landlord-behavioral-links">Landlord Behavioral Links</a></li>
-                <li><a class="dropdown-item" href="https://portal.311.nyc.gov/check-status/">311 Reports</a></li>
-            </ul>
-        </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'logout' %}" >Logout</a>
-          </li>
-        </ul>
-        <form class="d-flex" method="get" action="{% url 'rentalspage' %}">
-          <input class="form-control me-sm-2" type="search" placeholder="e.g. address, building" name="search_query" style="color: rgba(255, 255, 255, 0.75);">
-          <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
-        </form>
-      </div>
-    </div>
-  </nav>
+<!-- navbar -->
+{% include '../user_navbar.html' %} 
 
 <div class="container-fluid filter-sort-section">
     <div class="filter-sort-container">
       <div class="btn-group">
         <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-          Filter
+          <i class="fa-solid fa-filter"></i> Filter
         </button>
         <div class="dropdown-menu p-4" style="width: 300px;">
           <form id="filterForm" method="GET">
@@ -204,7 +169,7 @@
       <!-- Sort Button -->
       <div class="btn-group ms-2">
         <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-          Sort
+          <i class="fa-solid fa-sort"></i> Sort
         </button>
         <ul class="dropdown-menu">
           <!-- Add dynamic sort options here with current filter parameters -->
@@ -216,7 +181,7 @@
       <div class="container-fluid">
         <div class="row">
             <div class="text-center fixed-bottom mb-3">
-                <a href="{% url 'rental_listings_map' %}?filter_params={{ filter_params }}" class="btn btn-primary">Map</a>
+                <a href="{% url 'rental_listings_map' %}?filter_params={{ filter_params }}" class="btn btn-primary"><i class="fa-solid fa-map-location-dot"></i>  &nbsp;Maps</a>
             </div>
         </div>
     </div>

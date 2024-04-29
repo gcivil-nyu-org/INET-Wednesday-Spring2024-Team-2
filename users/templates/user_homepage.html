@@ -3,18 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Homepage</title>
     {% load static %}
+    <title>User Homepage</title>
+    <link rel="icon" href="{% static 'users/favicon.ico' %}" type="image/x-icon">
+    <script src="https://kit.fontawesome.com/ef2c1fa41b.js" crossorigin="anonymous"></script>
+   
     <!-- Using the Pulse theme from Bootswatch -->
     <link rel="stylesheet" href="https://bootswatch.com/5/pulse/bootstrap.css">
     <style>
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000; /* Adjust z-index as needed */
-        }
         body {
             padding-top: 70px; /* Adjust padding top to accommodate fixed navbar */
             background-image: url("{% static 'users/images/builds3.png' %}");
@@ -85,56 +81,12 @@
         .invalid-feedback.active {
             display: block; /* Show when there's an error */
         }
-        .dropdown-item{
-          color: rgb(172, 169, 169);
-        }
-
     </style>
 </head>
 <body class="bg-light">
-<nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="{% url 'user_homepage' %}">
-            RentWiseNYC <!-- Here's the simple text replacement -->
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
-                aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarContent">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link active" href="{% url 'placeholder' %}">All rentals</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'favorites_page' %}">Favourites</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'profile_view_edit' %}">My account</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Resources
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="https://hpdonline.nyc.gov/hpdonline/">Violations and Bedbug Reports</a></li>
-                        <li><a class="dropdown-item" href="https://example.com/landlord-behavioral-links">Landlord Behavioral Links</a></li>
-                        <li><a class="dropdown-item" href="https://portal.311.nyc.gov/check-status/">311 Reports</a></li>
-                    </ul>
-                </li>
-                
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
-                </li>
-            </ul>
-            <form class="d-flex" method="get" action="{% url 'rentalspage' %}">
-                <input class="form-control me-sm-2" type="search" placeholder="e.g. address, building"
-                       name="search_query" style="color: rgba(255, 255, 255, 0.75);">
-                <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
-            </form>
-        </div>
-    </div>
-</nav>
+    
+<!-- navbar -->
+{% include 'users/user_navbar.html' %} 
 
 <div class="container mt-5">
     {% if user.is_authenticated %}
