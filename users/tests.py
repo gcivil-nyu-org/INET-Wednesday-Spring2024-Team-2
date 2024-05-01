@@ -6,15 +6,16 @@ from .models import CustomUser, Rental_Listings, Favorite
 from django.contrib.messages import get_messages
 from datetime import date, timedelta
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.utils import timezone
 import json
 import os
 import sys
 import unittest
 from unittest.mock import patch, MagicMock
 from .views import landlord_profile_update, map_view, profile_view_edit, apply_filters
-from .forms import User, UserSignUpForm
+from .forms import User, UserSignUpForm, CustomUserEditForm
 from .models import CustomUser, Rental_Listings
-from .views import map_view
+from .views import map_view, add_rental_listing
 
 
 class CustomUserModelTests(TestCase):
@@ -614,105 +615,6 @@ class ManagePyTestCase(unittest.TestCase):
             main()
 
 
-# class MapViewTestCase(TestCase):
-#     def setUp(self):
-#         self.factory = RequestFactory()
-
-# def test_map_view_with_valid_filter_params(self):
-#     # Create some Rental_Listings objects for testing
-#     # Replace this with appropriate creation of Rental_Listings objects
-#     rental_listing_1 = Rental_Listings.objects.create(
-#         address="123 Main St",
-#         beds=2,
-#         baths=2,
-#         price=2000,
-#         borough="Brooklyn",
-#         neighborhood="Park Slope",
-#         sq_ft=1000,
-#         Availability_Date="2024-04-03",
-#         latitude=40.1234,
-#         longitude=-73.5678,
-#     )
-#     rental_listing_2 = Rental_Listings.objects.create(
-#         address="456 Main St",
-#         beds=1,
-#         baths=1,
-#         price=4000,
-#         borough="Manhattan",
-#         neighborhood="Murray Hill",
-#         sq_ft=1500,
-#         Availability_Date="2024-04-03",
-#         latitude=40.6996587,
-#         longitude=-73.9294536,
-#     )
-
-#     # Prepare a request with valid filter_params
-#     request = self.factory.get(
-#         "/map/",
-#         {
-#             "filter_params": '{"borough": "Manhattan", "min_price": "", "max_price": ""}'
-#         },
-#     )
-
-#     # Call the view function
-#     response = map_view(request)
-
-#     # Check if the response status code is 200
-#     self.assertEqual(response.status_code, 200)
-
-
-# class ProfileViewEditTestCase(TestCase):
-#     def setUp(self):
-#         self.factory = RequestFactory()
-#         self.user = CustomUser.objects.create_user(
-#             username='testuser', email='test@example.com', user_type='user' , phone_number = 9876543210, city = 'New York'
-#         )
-
-#     def test_profile_view_edit_get(self):
-#         url = reverse('profile_view_edit')
-#         request = self.factory.get(url)
-#         request.user = self.user
-#         response = profile_view_edit(request)
-#         self.assertEqual(response.status_code, 200)
-
-#     def test_profile_view_edit_post(self):
-#         url = reverse('profile_view_edit')
-#         data = {'full_name': 'Test User', 'phone_number' :  9876543211, 'city': 'Brooklyn' }
-#         request = self.factory.post(url, data)
-#         request.user = self.user
-#         response = profile_view_edit(request)
-#         self.assertEqual(response.status_code, 200)  # Check for redirect after successful form submission
-
-#         updated_user = CustomUser.objects.get(pk=self.user.pk)
-#         self.assertEqual(updated_user.full_name, 'Test User')
-
-
-# class LandlordProfileUpdateTestCase(TestCase):
-#     def setUp(self):
-#         self.factory = RequestFactory()
-#         self.user = CustomUser.objects.create_user(
-#             username='testlandlord', email='landlord@example.com', user_type='landlord', phone_number = 9876543210, city = 'New York'
-#         )
-
-#     def test_landlord_profile_update_get(self):
-#         url = reverse('landlord_profile_update')
-#         request = self.factory.get(url)
-#         request.user = self.user
-#         response = landlord_profile_update(request)
-#         self.assertEqual(response.status_code, 200)
-
-#     def test_landlord_profile_update_post(self):
-#         url = reverse('landlord_profile_update')
-#         data = {'full_name': 'Test Landlord',  'phone_number'  : 9876543211, 'city' : 'New York'}
-#         request = self.factory.post(url, data)
-#         request.user = self.user
-#         response = landlord_profile_update(request)
-#         self.assertEqual(response.status_code, 200)  # Check for redirect after successful form submission
-
-#         updated_user = CustomUser.objects.get(pk=self.user.pk)
-#         self.assertEqual(updated_user.full_name, 'Test Landlord')
-
-
 class ProfileUpdateTestCase(TestCase):
     def setUp(self):
         # Create a test user
@@ -1007,3 +909,87 @@ class TestApplyFilters(TestCase):
         self.assertEqual(len(filtered_listings), Rental_Listings.objects.count())
         filter_params = {"bathrooms": "1"}
         filtered_listings = apply_filters(Rental_Listings.objects.all(), filter_params)
+
+
+class EditRentalListingViewTestCase(TestCase):
+    def setUp(self):
+        self.user = CustomUser.objects.create_user(
+            username="landlord_user", password="password", user_type=CustomUser.LANDLORD
+        )
+        self.client.force_login(self.user)
+        self.rental_listing = Rental_Listings.objects.create(
+            Landlord=self.user,
+            address="Test Address",
+            price=1000,
+            baths=2,
+            beds=1,
+            rooms=4,
+        )
+
+    def test_edit_rental_listing_view_get(self):
+        response = self.client.get(
+            reverse("edit_rental_listing", args=[self.rental_listing.id])
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "edit_rental_listing.html")
+
+
+class DeleteRentalListingViewTestCase(TestCase):
+    def setUp(self):
+        self.user = CustomUser.objects.create_user(
+            username="landlord_user", password="password", user_type=CustomUser.LANDLORD
+        )
+        self.client.force_login(self.user)
+        self.rental_listing = Rental_Listings.objects.create(
+            Landlord=self.user,
+            address="Test Address",
+            price=1000,
+            baths=2,
+            beds=1,
+            rooms=4,
+        )
+
+
+class LandlordProfileUpdateViewTestCase(TestCase):
+    def setUp(self):
+        self.user = CustomUser.objects.create_user(
+            username="landlord_user", password="password", user_type=CustomUser.LANDLORD
+        )
+        self.client.force_login(self.user)
+
+    def test_landlord_profile_update_view_get(self):
+        response = self.client.get(reverse("landlord_profile_update"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "users/Profile/landlord_profile_update.html")
+        self.assertIsInstance(response.context["form"], CustomUserEditForm)
+        self.assertEqual(response.context["user"], self.user)
+
+
+class AddRentalListingViewTestCase(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = CustomUser.objects.create_user(
+            username="landlord_user", password="password", user_type=CustomUser.LANDLORD
+        )
+        self.user.user_type = (
+            "landlord"  # Assuming you have a custom user model with a user_type field
+        )
+        self.client.force_login(self.user)
+
+    def test_add_rental_listing_view_get(self):
+        request = self.factory.get(reverse("post_new_listings"))
+        request.user = self.user
+        response = add_rental_listing(request)
+
+    def test_add_rental_listing_view_post(self):
+        post_data = {
+            "address": "Test Address",
+            "price": 1000,
+            "baths": 2,
+            "beds": 1,
+            "rooms": 4,
+        }
+        request = self.factory.post(reverse("post_new_listings"), post_data)
+        request.user = self.user
+        response = add_rental_listing(request)
+        self.assertEqual(response.status_code, 200)  # Redirect expected
