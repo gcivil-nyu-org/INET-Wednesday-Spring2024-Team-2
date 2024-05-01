@@ -38,11 +38,13 @@ class UserSignUpForm(UserCreationForm):
         if User.objects.filter(username=self.cleaned_data["email"]).exists():
             raise ValidationError("Email already exists. Please use a different one.")
         return email
+
     def clean_phone_number(self):
-        phone_number = self.cleaned_data.get('phone_number')
+        phone_number = self.cleaned_data.get("phone_number")
         if len(phone_number) != 10 or not phone_number.isdigit():
             raise ValidationError("Phone number must be 10 digits.")
         return phone_number
+
 
 class LandlordSignupForm(UserCreationForm):
     pdf_file = forms.FileField(required=False, label="OwnerShip Document")  #
@@ -86,11 +88,17 @@ class LandlordSignupForm(UserCreationForm):
 class RentalListingForm(forms.ModelForm):
     ROOMS_CHOICES = [(i, str(i)) for i in range(1, 11)]
     BATHS_CHOICES = [(i * 0.5, str(i * 0.5)) for i in range(2, 21)]
-   
 
-    UNIT_TYPE_CHOICES = [("Apartment", "Apartment"), ("House", "House"),("Multi-family", "Multi-family"), 
-                         ("Condo","Condo"),("Rental Unit","Rental Unit"),("Building","Building"),
-                           ("Townhouse","Townhouse"),("Co-op","Co-op")]
+    UNIT_TYPE_CHOICES = [
+        ("Apartment", "Apartment"),
+        ("House", "House"),
+        ("Multi-family", "Multi-family"),
+        ("Condo", "Condo"),
+        ("Rental Unit", "Rental Unit"),
+        ("Building", "Building"),
+        ("Townhouse", "Townhouse"),
+        ("Co-op", "Co-op"),
+    ]
     NEIGHBORHOOD_CHOICES = [
         ("Manhattan", "Manhattan"),
         ("Brooklyn", "Brooklyn"),
@@ -130,83 +138,112 @@ class RentalListingForm(forms.ModelForm):
         ("Staten Island", "Staten Island"),
     ]
     address = forms.CharField(
-        widget=forms.TextInput(attrs={'id': 'id_address', 'placeholder': 'Enter your address', 'autocomplete': 'off'})
+        widget=forms.TextInput(
+            attrs={
+                "id": "id_address",
+                "placeholder": "Enter your address",
+                "autocomplete": "off",
+            }
+        )
     )
     rooms = forms.ChoiceField(choices=ROOMS_CHOICES)
     beds = forms.ChoiceField(choices=ROOMS_CHOICES)
     baths = forms.ChoiceField(choices=BATHS_CHOICES)
     unit_type = forms.ChoiceField(choices=UNIT_TYPE_CHOICES)
-    neighborhood = forms.CharField(required=True,widget=forms.TextInput(attrs={'id': 'id_neighborhood'}))
-    borough = forms.ChoiceField(choices=BOROUGH_CHOICES, widget=forms.Select(attrs={'id': 'id_borough'}))
-    photo = forms.ImageField(required=False, label= 'Images',widget=forms.ClearableFileInput(attrs={'multiple': True}))
-    latitude = forms.FloatField( widget=forms.HiddenInput(attrs={'readonly': 'readonly'}))
-    longitude = forms.FloatField(widget=forms.HiddenInput(attrs={'readonly': 'readonly'}))
-    zipcode = forms.CharField(required=True, label= 'Zip', widget=forms.TextInput(attrs={'id': 'id_zipcode' ,'placeholder': ''}))
-    sq_ft = forms.IntegerField(required=True, label= 'Area(sqft)')
-    Availability_Date = forms.DateField(required=True, widget=forms.DateInput(attrs={"type": "date"}))
-    apt_no = forms.CharField(required=False, label= 'Apt#', widget=forms.TextInput(attrs={'id': 'id_aptNo' ,'placeholder': ''}) )
+    neighborhood = forms.CharField(
+        required=True, widget=forms.TextInput(attrs={"id": "id_neighborhood"})
+    )
+    borough = forms.ChoiceField(
+        choices=BOROUGH_CHOICES, widget=forms.Select(attrs={"id": "id_borough"})
+    )
+    photo = forms.ImageField(
+        required=False,
+        label="Images",
+        widget=forms.ClearableFileInput(attrs={"multiple": True}),
+    )
+    latitude = forms.FloatField(
+        widget=forms.HiddenInput(attrs={"readonly": "readonly"})
+    )
+    longitude = forms.FloatField(
+        widget=forms.HiddenInput(attrs={"readonly": "readonly"})
+    )
+    zipcode = forms.CharField(
+        required=True,
+        label="Zip",
+        widget=forms.TextInput(attrs={"id": "id_zipcode", "placeholder": ""}),
+    )
+    sq_ft = forms.IntegerField(required=True, label="Area(sqft)")
+    Availability_Date = forms.DateField(
+        required=True, widget=forms.DateInput(attrs={"type": "date"})
+    )
+    apt_no = forms.CharField(
+        required=False,
+        label="Apt#",
+        widget=forms.TextInput(attrs={"id": "id_aptNo", "placeholder": ""}),
+    )
 
     def __init__(self, *args, **kwargs):
         super(RentalListingForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
-        self.helper.form_method = 'post'
-        self.helper.form_enctype = 'multipart/form-data'
+        self.helper.form_method = "post"
+        self.helper.form_enctype = "multipart/form-data"
         self.helper.layout = Layout(
             Row(
-                Column('address', css_class='form-group col-md-8 mb-0'),
-                Column('zipcode', css_class='form-group col-md-2 mb-0'),
-                Column('apt_no', css_class='form-group col-md-2 mb-0'),
-                css_class='form-row',
-            ),
-             Row(
-                Column('price', css_class='form-group col-md-4 mb-0'),
-                Column('sq_ft', css_class='form-group col-md-4 mb-0'),
-                Column('broker_fee', css_class='form-group col-md-4 mb-0'),
-                css_class='form-row',
+                Column("address", css_class="form-group col-md-8 mb-0"),
+                Column("zipcode", css_class="form-group col-md-2 mb-0"),
+                Column("apt_no", css_class="form-group col-md-2 mb-0"),
+                css_class="form-row",
             ),
             Row(
-                Column('rooms', css_class='form-group col-md-4 mb-0'),
-                Column('beds', css_class='form-group col-md-4 mb-0'),
-                Column('baths', css_class='form-group col-md-4 mb-0'),
-                css_class='form-row',
-            ),
-
-            Row(
-                Column('neighborhood', css_class='form-group col-md-4 mb-0'),
-                Column('borough', css_class='form-group col-md-4 mb-0'),
-                Column('unit_type', css_class='form-group col-md-4 mb-0'),
-                css_class='form-row',
+                Column("price", css_class="form-group col-md-4 mb-0"),
+                Column("sq_ft", css_class="form-group col-md-4 mb-0"),
+                Column("broker_fee", css_class="form-group col-md-4 mb-0"),
+                css_class="form-row",
             ),
             Row(
-                Column('dishwasher', css_class='form-group col-md-6 mb-0'),
-                Column('doorman', css_class='form-group col-md-6 mb-0'),
-                css_class='form-row',
+                Column("rooms", css_class="form-group col-md-4 mb-0"),
+                Column("beds", css_class="form-group col-md-4 mb-0"),
+                Column("baths", css_class="form-group col-md-4 mb-0"),
+                css_class="form-row",
             ),
             Row(
-                Column('central_air_conditioning', css_class='form-group col-md-6 mb-0'),
-                Column('furnished', css_class='form-group col-md-6 mb-0'),
-                css_class='form-row',
+                Column("neighborhood", css_class="form-group col-md-4 mb-0"),
+                Column("borough", css_class="form-group col-md-4 mb-0"),
+                Column("unit_type", css_class="form-group col-md-4 mb-0"),
+                css_class="form-row",
             ),
-           
             Row(
-                Column('parking_available', css_class='form-group col-md-6 mb-0'),
-                Column('washer_dryer_in_unit', css_class='form-group col-md-6 mb-0'),
-                css_class='form-row',
+                Column("dishwasher", css_class="form-group col-md-6 mb-0"),
+                Column("doorman", css_class="form-group col-md-6 mb-0"),
+                css_class="form-row",
             ),
-            Column('elevator', css_class='form-group col-md-4 mb-0'),
-
-
-             "Availability_Date",
-           Row(
-                Column('latitude', css_class='form-group col-md-4 mb-0 align-self-end'),  # Add 'align-self-end' class
-                Column('longitude', css_class='form-group col-md-4 mb-0 align-self-end'),  # Add 'align-self-end' class
-                css_class='form-row location-row',
+            Row(
+                Column(
+                    "central_air_conditioning", css_class="form-group col-md-6 mb-0"
+                ),
+                Column("furnished", css_class="form-group col-md-6 mb-0"),
+                css_class="form-row",
             ),
-
+            Row(
+                Column("parking_available", css_class="form-group col-md-6 mb-0"),
+                Column("washer_dryer_in_unit", css_class="form-group col-md-6 mb-0"),
+                css_class="form-row",
+            ),
+            Column("elevator", css_class="form-group col-md-4 mb-0"),
+            "Availability_Date",
+            Row(
+                Column(
+                    "latitude", css_class="form-group col-md-4 mb-0 align-self-end"
+                ),  # Add 'align-self-end' class
+                Column(
+                    "longitude", css_class="form-group col-md-4 mb-0 align-self-end"
+                ),  # Add 'align-self-end' class
+                css_class="form-row location-row",
+            ),
             Field("photo", multiple=True),
             Submit("submit", "Submit", css_class="btn btn-primary form-button1"),
-            
         )
+
     class Meta:
         model = Rental_Listings
         fields = [
@@ -233,15 +270,14 @@ class RentalListingForm(forms.ModelForm):
             "latitude",
             "longitude",
         ]
-        widgets = {
-            "Availability_Date": forms.DateInput(attrs={"type": "date"})
-        }
+        widgets = {"Availability_Date": forms.DateInput(attrs={"type": "date"})}
 
     def clean_price(self):
         price = self.cleaned_data["price"]
         if price < 0:
             raise ValidationError("Price cannot be negative.")
         return price
+
     def clean_brokerfee(self):
         broker_fee = self.cleaned_data["broker_fee"]
         if broker_fee < 0:

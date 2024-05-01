@@ -11,8 +11,7 @@ import os
 import sys
 import unittest
 from unittest.mock import patch, MagicMock
-from .views import landlord_profile_update, map_view, profile_view_edit, \
-    apply_filters
+from .views import landlord_profile_update, map_view, profile_view_edit, apply_filters
 from .forms import User, UserSignUpForm
 from .models import CustomUser, Rental_Listings
 from .views import map_view
@@ -298,31 +297,45 @@ class FavoriteModelTests(TestCase):
             address="123 Fav St", price=1500.00, baths=1, Landlord=self.user
         )
         self.client = Client()
-        self.client.login(username='favuser', password='testpass123')
-        self.toggle_favorite_url = reverse('toggle_favorite')
+        self.client.login(username="favuser", password="testpass123")
+        self.toggle_favorite_url = reverse("toggle_favorite")
 
     def test_toggle_favorite_add(self):
-        response = self.client.post(self.toggle_favorite_url, {'listing_id': self.listing.id})
+        response = self.client.post(
+            self.toggle_favorite_url, {"listing_id": self.listing.id}
+        )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Favorite.objects.count(), 1)
-        self.assertJSONEqual(str(response.content, encoding='utf8'), {"status": "added"})
+        self.assertJSONEqual(
+            str(response.content, encoding="utf8"), {"status": "added"}
+        )
 
     def test_toggle_favorite_remove(self):
         Favorite.objects.create(user=self.user, listing=self.listing)
-        response = self.client.post(self.toggle_favorite_url, {'listing_id': self.listing.id})
+        response = self.client.post(
+            self.toggle_favorite_url, {"listing_id": self.listing.id}
+        )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Favorite.objects.count(), 0)
-        self.assertJSONEqual(str(response.content, encoding='utf8'), {"status": "removed"})
+        self.assertJSONEqual(
+            str(response.content, encoding="utf8"), {"status": "removed"}
+        )
 
     def test_toggle_favorite_with_invalid_listing(self):
-        response = self.client.post(self.toggle_favorite_url, {'listing_id': 9999})  # Assuming 9999 is an invalid ID
+        response = self.client.post(
+            self.toggle_favorite_url, {"listing_id": 9999}
+        )  # Assuming 9999 is an invalid ID
         self.assertEqual(response.status_code, 404)
-        self.assertJSONEqual(str(response.content, encoding='utf8'), {"error": "Listing not found"})
+        self.assertJSONEqual(
+            str(response.content, encoding="utf8"), {"error": "Listing not found"}
+        )
 
     def test_toggle_favorite_without_listing_id(self):
         response = self.client.post(self.toggle_favorite_url, {})
         self.assertEqual(response.status_code, 400)
-        self.assertJSONEqual(str(response.content, encoding='utf8'), {"error": "Listing ID is required"})
+        self.assertJSONEqual(
+            str(response.content, encoding="utf8"), {"error": "Listing ID is required"}
+        )
 
 
 class LogoutViewTests(TestCase):
@@ -807,6 +820,7 @@ class LandlordProfileUpdateTestCase(TestCase):
         self.assertEqual(response.status_code, 200)  # Page reloads with form errors
         self.assertFormError(response, "form", "full_name", "This field is required.")
 
+
 class RentalListingsFormTests(TestCase):
     def setUp(self):
         self.user = CustomUser.objects.create_user(
@@ -814,26 +828,26 @@ class RentalListingsFormTests(TestCase):
         )
 
         self.common_data = {
-            'address': "123 Main St",
-            'zipcode': "10001",
-            'price': 1500,
-            'sq_ft': 500,
-            'rooms': 3,
-            'beds': 2,
-            'baths': 1.5,
-            'unit_type': "Apartment",
-            'neighborhood': "Midtown",
-            'borough': "Manhattan",
-            'broker_fee': False,
-            'central_air_conditioning': True,
-            'dishwasher': True,
-            'doorman': False,
-            'elevator': True,
-            'furnished': False,
-            'parking_available': True,
-            'washer_dryer_in_unit': False,
-            'Submitted_date': date.today(),
-            'Availability_Date': date.today() + timedelta(days=10)
+            "address": "123 Main St",
+            "zipcode": "10001",
+            "price": 1500,
+            "sq_ft": 500,
+            "rooms": 3,
+            "beds": 2,
+            "baths": 1.5,
+            "unit_type": "Apartment",
+            "neighborhood": "Midtown",
+            "borough": "Manhattan",
+            "broker_fee": False,
+            "central_air_conditioning": True,
+            "dishwasher": True,
+            "doorman": False,
+            "elevator": True,
+            "furnished": False,
+            "parking_available": True,
+            "washer_dryer_in_unit": False,
+            "Submitted_date": date.today(),
+            "Availability_Date": date.today() + timedelta(days=10),
         }
 
     def test_form_with_valid_data(self):
@@ -841,38 +855,43 @@ class RentalListingsFormTests(TestCase):
 
     def test_form_with_negative_price(self):
         data = self.common_data.copy()
-        data['price'] = -100
+        data["price"] = -100
         form = RentalListingForm(data=data)
         self.assertFalse(form.is_valid())
-        self.assertIn('price', form.errors)
-        self.assertEqual(form.errors['price'], ['Price cannot be negative.'])
+        self.assertIn("price", form.errors)
+        self.assertEqual(form.errors["price"], ["Price cannot be negative."])
 
     def test_form_with_invalid_zipcode(self):
         data = self.common_data.copy()
-        data['zipcode'] = '123'
+        data["zipcode"] = "123"
         form = RentalListingForm(data=data)
         self.assertFalse(form.is_valid())
-        self.assertIn('zipcode', form.errors)
-        self.assertEqual(form.errors['zipcode'], ['Please enter a valid 5-digit zip code.'])
+        self.assertIn("zipcode", form.errors)
+        self.assertEqual(
+            form.errors["zipcode"], ["Please enter a valid 5-digit zip code."]
+        )
 
     def test_form_with_invalid_availability_date(self):
         data = self.common_data.copy()
-        data['Availability_Date'] = date.today() - timedelta(days=1)
+        data["Availability_Date"] = date.today() - timedelta(days=1)
         form = RentalListingForm(data=data)
         self.assertFalse(form.is_valid())
-        self.assertIn('Availability_Date', form.errors)
-        self.assertEqual(form.errors['Availability_Date'], ['The availability date cannot be in the past.'])
+        self.assertIn("Availability_Date", form.errors)
+        self.assertEqual(
+            form.errors["Availability_Date"],
+            ["The availability date cannot be in the past."],
+        )
 
     def test_form_with_rooms_less_than_beds(self):
         data = self.common_data.copy()
-        data['rooms'] = 1
-        data['beds'] = 2
+        data["rooms"] = 1
+        data["beds"] = 2
         form = RentalListingForm(data=data)
         self.assertFalse(form.is_valid())
 
     def test_form_with_large_address(self):
         data = self.common_data.copy()
-        data['address'] = 'x' * 256
+        data["address"] = "x" * 256
         form = RentalListingForm(data=data)
         self.assertFalse(form.is_valid())
 
@@ -881,43 +900,64 @@ class TestApplyFilters(TestCase):
     def setUp(self):
         # Creating test listings
         self.listing1 = Rental_Listings.objects.create(
-            neighborhood='Manhattan', borough='Manhattan', price=2000,
-            beds=2, baths=1, elevator=True, washer_dryer_in_unit=False,
-            broker_fee=0, unit_type='Apartment', address='123 Main Street'
+            neighborhood="Manhattan",
+            borough="Manhattan",
+            price=2000,
+            beds=2,
+            baths=1,
+            elevator=True,
+            washer_dryer_in_unit=False,
+            broker_fee=0,
+            unit_type="Apartment",
+            address="123 Main Street",
         )
         self.listing2 = Rental_Listings.objects.create(
-            neighborhood='Brooklyn', borough='Brooklyn', price=1500,
-            beds=1, baths=1, elevator=False, washer_dryer_in_unit=True,
-            broker_fee=500, unit_type='House', address='124 Main Street'
+            neighborhood="Brooklyn",
+            borough="Brooklyn",
+            price=1500,
+            beds=1,
+            baths=1,
+            elevator=False,
+            washer_dryer_in_unit=True,
+            broker_fee=500,
+            unit_type="House",
+            address="124 Main Street",
         )
         self.listing3 = Rental_Listings.objects.create(
-            neighborhood='Queens', borough='Queens', price=1000,
-            beds=3, baths=2, elevator=True, washer_dryer_in_unit=True,
-            broker_fee=300, unit_type='Apartment', address='125 Main Street'
+            neighborhood="Queens",
+            borough="Queens",
+            price=1000,
+            beds=3,
+            baths=2,
+            elevator=True,
+            washer_dryer_in_unit=True,
+            broker_fee=300,
+            unit_type="Apartment",
+            address="125 Main Street",
         )
 
     def test_filter_by_borough(self):
-        filter_params = {'borough': 'Manhattan'}
+        filter_params = {"borough": "Manhattan"}
         filtered_listings = apply_filters(Rental_Listings.objects.all(), filter_params)
         self.assertTrue(self.listing1 in filtered_listings)
         self.assertFalse(self.listing2 in filtered_listings)
         self.assertFalse(self.listing3 in filtered_listings)
 
     def test_filter_by_price_range(self):
-        filter_params = {'min_price': 1200, 'max_price': 2500}
+        filter_params = {"min_price": 1200, "max_price": 2500}
         filtered_listings = apply_filters(Rental_Listings.objects.all(), filter_params)
         self.assertTrue(self.listing1 in filtered_listings)
         self.assertTrue(self.listing2 in filtered_listings)
         self.assertFalse(self.listing3 in filtered_listings)
 
     def test_filter_by_bedrooms(self):
-        filter_params = {'bedrooms': '2'}
+        filter_params = {"bedrooms": "2"}
         filtered_listings = apply_filters(Rental_Listings.objects.all(), filter_params)
         self.assertTrue(self.listing1 in filtered_listings)
         self.assertFalse(self.listing2 in filtered_listings)
 
     def test_filter_by_elevator(self):
-        filter_params = {'elevator': True}
+        filter_params = {"elevator": True}
         filtered_listings = apply_filters(Rental_Listings.objects.all(), filter_params)
         self.assertTrue(self.listing1 in filtered_listings)
         self.assertFalse(self.listing2 in filtered_listings)
@@ -929,36 +969,41 @@ class TestApplyFilters(TestCase):
         self.assertEqual(len(filtered_listings), 3)
 
     def test_filter_no_fee(self):
-        filter_params = {'no_fee': True}
+        filter_params = {"no_fee": True}
         filtered_listings = apply_filters(Rental_Listings.objects.all(), filter_params)
-        self.assertIn(self.listing1, filtered_listings)  # Assuming listing1 has no broker fee
-        self.assertNotIn(self.listing2, filtered_listings)  # Assuming listing2 has a broker fee
+        self.assertIn(
+            self.listing1, filtered_listings
+        )  # Assuming listing1 has no broker fee
+        self.assertNotIn(
+            self.listing2, filtered_listings
+        )  # Assuming listing2 has a broker fee
 
     def test_filter_laundry(self):
-        filter_params = {'laundry': True}
+        filter_params = {"laundry": True}
         filtered_listings = apply_filters(Rental_Listings.objects.all(), filter_params)
-        self.assertNotIn(self.listing1, filtered_listings)  # Assuming listing1 does not have laundry
+        self.assertNotIn(
+            self.listing1, filtered_listings
+        )  # Assuming listing1 does not have laundry
         self.assertIn(self.listing2, filtered_listings)  # Assuming listing2 has laundry
 
     def test_filter_building_type(self):
-        filter_params = {'building_type': 'Apartment'}
+        filter_params = {"building_type": "Apartment"}
         filtered_listings = apply_filters(Rental_Listings.objects.all(), filter_params)
         self.assertIn(self.listing1, filtered_listings)
         self.assertNotIn(self.listing2, filtered_listings)
 
     def test_filter_parking(self):
-        filter_params = {'parking': True}
+        filter_params = {"parking": True}
         filtered_listings = apply_filters(Rental_Listings.objects.all(), filter_params)
 
     def test_filter_search_query(self):
-        filter_params = {'search_query': 'Main Street'}
+        filter_params = {"search_query": "Main Street"}
         filtered_listings = apply_filters(Rental_Listings.objects.all(), filter_params)
         pass
 
     def test_filter_bathrooms(self):
-        filter_params = {'bathrooms': 'Any'}
+        filter_params = {"bathrooms": "Any"}
         filtered_listings = apply_filters(Rental_Listings.objects.all(), filter_params)
         self.assertEqual(len(filtered_listings), Rental_Listings.objects.count())
-        filter_params = {'bathrooms': '1'}
+        filter_params = {"bathrooms": "1"}
         filtered_listings = apply_filters(Rental_Listings.objects.all(), filter_params)
-
