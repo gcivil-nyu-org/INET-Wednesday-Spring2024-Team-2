@@ -1,7 +1,6 @@
 from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
-from .views import placeholder_view, landlord_placeholder_view
 
 urlpatterns = [
     path("", views.home, name="index"),
@@ -46,12 +45,12 @@ urlpatterns = [
     ),
     path("rentalspage/", views.rentals_page, name="rentalspage"),
     path("post_new_listings/", views.add_rental_listing, name="post_new_listings"),
-    path("placeholder/", placeholder_view, name="placeholder"),
-    path(
-        "landlord_placeholder/", landlord_placeholder_view, name="landlord_placeholder"
-    ),
     path("listings/<int:listing_id>/", views.listing_detail, name="listing_detail"),
-    path("listings/landlord/<int:listing_id>/", views.landlord_listing_detail, name="landlord_listing_detail"),
+    path(
+        "listings/landlord/<int:listing_id>/",
+        views.landlord_listing_detail,
+        name="landlord_listing_detail",
+    ),
     path("toggle_favorite/", views.toggle_favorite, name="toggle_favorite"),
     path("favorites/", views.favorites_page, name="favorites_page"),
     path("map/", views.map_view, name="rental_listings_map"),
@@ -61,6 +60,14 @@ urlpatterns = [
         views.landlord_profile_update,
         name="landlord_profile_update",
     ),
-    path('listing/<int:listing_id>/edit/', views.edit_rental_listing, name='edit_rental_listing'),
-    path('listing/<int:listing_id>/delete/', views.delete_rental_listing, name='delete_rental_listing'),
+    path(
+        "listing/<int:listing_id>/edit/",
+        views.edit_rental_listing,
+        name="edit_rental_listing",
+    ),
+    path(
+        "listing/<int:listing_id>/delete/",
+        views.delete_rental_listing,
+        name="delete_rental_listing",
+    ),
 ]
