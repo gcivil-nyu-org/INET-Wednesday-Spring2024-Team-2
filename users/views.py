@@ -606,7 +606,7 @@ def delete_rental_listing(request, listing_id):
                         image.delete()  
                     else:
                         print(f"File {file_key} not found in S3")
-                        messages.error(request, f'File {file_key} not found in S3.')
+                        #messages.error(request, f"File {file_key} not found in S3.")
                 except Exception as e:
                     errors_occurred = True
                     messages.error(request, f'Failed to delete image {file_key} from S3: {str(e)}')
