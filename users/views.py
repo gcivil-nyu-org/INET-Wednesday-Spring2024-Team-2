@@ -82,13 +82,13 @@ def login_process(request, user_type, this_page, destination_url_name):
                 # noqa:<E501>
             )
             return render(request, this_page, {"form": form})
-        # if user_type == "landlord" and user.verified is False:
-        #     messages.error(
-        #         request,
-        #         "Your account has not been verified by the admin yet. Please wait!",
-        #     )
-        #     return render(request, this_page, {"form": form})
-        # ..
+        if user_type == "landlord" and user.verified is False:
+            messages.error(
+                request,
+                "Your account has not been verified by the admin yet. Please wait!",
+            )
+            return render(request, this_page, {"form": form})
+        
         login(request, user)
         return redirect(reverse(destination_url_name))
 
